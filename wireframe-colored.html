@@ -1,0 +1,1497 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aarogyam — Wireframe Package (Lo-Fi)</title>
+<style>
+  :root{
+    --paper:#ffffff;
+    --ink:#1e2c2f;
+    --g900:#28383b;
+    --g700:#3f5457;
+    --g600:#5f7376;
+    --g500:#7f9295;
+    --g400:#a9b9bb;
+    --g300:#cdd9da;
+    --g250:#d6e0e1;
+    --g200:#e0e8e9;
+    --g150:#e9f0f0;
+    --g100:#eef3f3;
+    --g50:#f5f8f8;
+    --line:#cdd9da;
+    --line-soft:#e0e8e9;
+    --shadow:0 1px 0 #e5eded;
+    /* healthcare accents — calm clinical teal + soft blue/green */
+    --accent:#2f8e84;
+    --accent-d:#246f67;
+    --accent-soft:#e3f1ef;
+    --blue:#3f7fa6;
+    --green:#4a9d6e;
+    --green-soft:#e8f3ec;
+    --nav-bg:#213c3b;
+    --mono:"SFMono-Regular",ui-monospace,"Cascadia Mono",Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;font-family:var(--sans);color:var(--ink);
+    background:#e8eff0;line-height:1.45;-webkit-font-smoothing:antialiased;
+  }
+
+  /* ---------- Layout shell ---------- */
+  .layout{display:grid;grid-template-columns:248px 1fr;min-height:100vh}
+  .nav{
+    position:sticky;top:0;align-self:start;height:100vh;overflow-y:auto;
+    background:var(--nav-bg);color:#e9f0ef;padding:18px 14px;font-size:13px;
+  }
+  .nav .brand{font-weight:700;font-size:15px;letter-spacing:.06em;color:#fff;margin:2px 6px 2px}
+  .nav .brand small{display:block;font-weight:400;font-size:10.5px;letter-spacing:.18em;color:#9b9b9b;margin-top:3px;text-transform:uppercase}
+  .nav .grp{margin-top:16px;padding:0 6px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#7e7e7e}
+  .nav a{display:block;color:#cfcfcf;text-decoration:none;padding:5px 8px;border-radius:4px;font-size:12.5px}
+  .nav a:hover{background:#2f4f4c;color:#fff}
+  .content{padding:40px 48px 120px;max-width:1240px}
+  @media(max-width:900px){
+    .layout{grid-template-columns:1fr}
+    .nav{position:static;height:auto}
+    .content{padding:28px 18px 80px}
+  }
+
+  /* ---------- Section scaffolding ---------- */
+  .sec{margin:0 0 64px;scroll-margin-top:18px}
+  .sec-h{border-bottom:2px solid var(--accent);padding-bottom:8px;margin-bottom:8px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .sec-h .num{font-family:var(--mono);font-size:12px;color:var(--g500)}
+  .sec-h h2{margin:0;font-size:22px;letter-spacing:-.01em}
+  .sec-note{color:var(--g600);font-size:13.5px;margin:6px 0 22px;max-width:760px}
+  .screen-h{display:flex;align-items:center;gap:10px;margin:26px 0 10px}
+  .screen-h .tag{font-family:var(--mono);font-size:11px;background:var(--accent);color:#fff;padding:2px 8px;border-radius:3px}
+  .screen-h h3{margin:0;font-size:16px}
+  .screen-h .sub{color:var(--g500);font-size:12.5px;font-family:var(--mono)}
+  .cap{font-family:var(--mono);font-size:11px;color:var(--g500);margin:8px 2px 0;text-transform:uppercase;letter-spacing:.08em}
+
+  /* ---------- Device frames ---------- */
+  .frames{display:flex;flex-wrap:wrap;gap:26px;align-items:flex-start}
+  .device{background:var(--paper);border:1.5px solid var(--g400);border-radius:7px;overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,.06)}
+  .device.desktop{width:100%}
+  .device.tablet{width:430px;max-width:100%}
+  .device.mobile{width:300px;max-width:100%}
+  .dvc-bar{display:flex;align-items:center;gap:6px;background:var(--g100);border-bottom:1px solid var(--line);padding:7px 12px;font-family:var(--mono);font-size:10.5px;color:var(--g600)}
+  .dvc-bar .dot{width:9px;height:9px;border-radius:50%;background:var(--g300);border:1px solid var(--g400)}
+  .dvc-bar .lbl{margin-left:auto;letter-spacing:.06em}
+
+  /* ---------- App shell (topbar + sidebar) ---------- */
+  .app{display:block}
+  .topbar{display:flex;align-items:center;gap:18px;background:#fbfbfb;border-bottom:1.5px solid var(--line);padding:0 16px;height:50px}
+  .topbar .logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px}
+  .topbar .logo .mark{width:24px;height:24px;border:1.5px solid var(--accent);border-radius:6px;display:grid;place-items:center;font-size:11px;color:var(--accent-d)}
+  .topbar nav{display:flex;gap:6px;flex-wrap:wrap}
+  .topbar nav span{font-size:12px;color:var(--g600);padding:4px 9px;border-radius:5px}
+  .topbar nav span.on{background:var(--accent-soft);color:var(--accent-d);font-weight:600}
+  .topbar .right{margin-left:auto;display:flex;align-items:center;gap:10px}
+  .bell{width:26px;height:26px;border:1.4px solid var(--g400);border-radius:6px;display:grid;place-items:center;position:relative;font-size:12px;color:var(--g600)}
+  .bell .pip{position:absolute;top:-3px;right:-3px;width:13px;height:13px;background:var(--accent);color:#fff;border-radius:50%;font-size:8px;display:grid;place-items:center;font-family:var(--mono)}
+  .avatar{width:28px;height:28px;border-radius:50%;background:var(--g200);border:1.4px solid var(--g400)}
+
+  .appbody{display:grid;grid-template-columns:190px 1fr}
+  .side{border-right:1.5px solid var(--line);background:#fcfcfc;padding:12px 10px;min-height:420px}
+  .side .role{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;color:var(--g500);text-transform:uppercase;margin:4px 6px 10px}
+  .side .item{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:6px;font-size:12.5px;color:var(--g700);margin-bottom:2px}
+  .side .item .ic{width:14px;height:14px;border:1.4px solid var(--g400);border-radius:4px}
+  .side .item.on{background:var(--accent-soft);color:var(--accent-d);font-weight:600}
+  .side .item.on .ic{background:var(--accent);border-color:var(--accent-d)}
+  .side hr{border:0;border-top:1px solid var(--line-soft);margin:10px 4px}
+  .main{padding:18px 18px 26px;min-height:420px;background:#fff}
+
+  /* ---------- Auth / centered pages ---------- */
+  .authpage{background:var(--g50);padding:26px;display:grid;place-items:center;min-height:420px}
+  .authcard{background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:24px;width:380px;max-width:100%}
+  .authcard h4{margin:0 0 4px;font-size:16px}
+  .authcard .muted{color:var(--g500);font-size:12px;margin:0 0 16px}
+
+  /* ---------- Wireframe primitives ---------- */
+  .page-title{font-size:15px;font-weight:700;margin:0 0 2px}
+  .page-sub{color:var(--g500);font-size:12px;margin:0 0 16px}
+  .ph-img{
+    background:
+      linear-gradient(to top right, transparent calc(50% - .8px), var(--g300) calc(50% - .8px), var(--g300) calc(50% + .8px), transparent calc(50% + .8px)),
+      linear-gradient(to top left, transparent calc(50% - .8px), var(--g300) calc(50% - .8px), var(--g300) calc(50% + .8px), transparent calc(50% + .8px)),
+      var(--g50);
+    border:1.4px solid var(--g300);border-radius:8px;display:grid;place-items:center;
+    color:var(--g500);font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;min-height:120px;text-align:center
+  }
+  .ph-line{height:9px;background:var(--g200);border-radius:4px;margin:7px 0}
+  .ph-line.w90{width:90%}.ph-line.w80{width:80%}.ph-line.w70{width:70%}.ph-line.w60{width:60%}.ph-line.w50{width:50%}.ph-line.w40{width:40%}.ph-line.w30{width:30%}
+  .ph-line.dk{background:var(--g300)}
+  .ph-head{height:13px;width:42%;background:var(--g400);border-radius:4px;margin:2px 0 10px}
+
+  .input{border:1.4px solid var(--g300);border-radius:6px;background:#fff;height:34px;display:flex;align-items:center;padding:0 10px;color:var(--g500);font-size:12px;margin-bottom:10px}
+  .input.area{height:62px;align-items:flex-start;padding-top:8px}
+  .field-l{font-size:11px;color:var(--g600);margin:0 0 4px;font-weight:600}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+  .select{border:1.4px solid var(--g300);border-radius:6px;height:34px;display:flex;align-items:center;justify-content:space-between;padding:0 10px;color:var(--g500);font-size:12px;margin-bottom:10px}
+  .select::after{content:"▾";color:var(--g400)}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:34px;padding:0 16px;border-radius:6px;font-size:12.5px;font-weight:600;border:1.5px solid var(--accent-d);background:var(--accent);color:#fff;cursor:default}
+  .btn.ghost{background:#fff;color:var(--accent-d);border-color:var(--accent)}
+  .btn.sub{background:var(--g100);color:var(--g700);border-color:var(--g300)}
+  .btn.sm{height:28px;padding:0 11px;font-size:11.5px}
+  .btn.block{width:100%}
+  .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+
+  .chip{display:inline-flex;align-items:center;gap:6px;border:1.3px solid var(--g300);border-radius:20px;padding:4px 11px;font-size:11.5px;color:var(--g600);background:#fff}
+  .chip.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+
+  .badge{display:inline-flex;align-items:center;gap:5px;border-radius:20px;padding:2px 9px;font-size:10.5px;font-family:var(--mono);border:1.3px solid #b7dcc6;color:#2f7d54;background:var(--green-soft)}
+  .badge.dk{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .badge::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--green)}
+  .badge.dk::before{background:#fff}
+
+  .card{border:1.4px solid var(--g300);border-radius:9px;background:#fff;padding:14px}
+  .card.soft{background:var(--g50)}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .grid-5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+  .grid-6{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+  .stack>*+*{margin-top:14px}
+
+  .stat{border:1.4px solid var(--g300);border-radius:9px;padding:12px 13px;background:#fff}
+  .stat .k{font-family:var(--mono);font-size:10px;color:var(--g500);text-transform:uppercase;letter-spacing:.08em}
+  .stat .v{font-size:24px;font-weight:700;margin-top:6px;color:var(--g900)}
+  .stat .d{font-size:10.5px;color:var(--g500);margin-top:2px}
+
+  /* tables */
+  table.wf{width:100%;border-collapse:collapse;font-size:12px}
+  table.wf th{background:var(--g100);text-align:left;padding:9px 10px;border:1px solid var(--line-soft);font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--g600);font-weight:700}
+  table.wf td{padding:9px 10px;border:1px solid var(--line-soft);color:var(--g700)}
+  table.wf tr:nth-child(even) td{background:var(--g50)}
+  .tact{display:inline-flex;gap:6px}
+  .tact span{font-family:var(--mono);font-size:10.5px;border:1.2px solid var(--g300);border-radius:4px;padding:2px 6px;color:var(--g600);background:#fff}
+  .miniqr{width:18px;height:18px;display:inline-block;vertical-align:middle;
+    background:
+      conic-gradient(#243b3e 90deg,#fff 0 180deg,#243b3e 0 270deg,#fff 0);
+    background-size:6px 6px;border:1px solid var(--g500)}
+
+  /* QR */
+  .qr{width:120px;height:120px;border:1.4px solid var(--g500);background:
+      conic-gradient(#243b3e 90deg,#fff 0 180deg,#243b3e 0 270deg,#fff 0);
+    background-color:#243b3e;background-size:14px 14px;border-radius:6px}
+  .qr.lg{width:150px;height:150px;background-size:16px 16px}
+
+  /* timeline */
+  .tl{position:relative;padding-left:22px}
+  .tl::before{content:"";position:absolute;left:6px;top:4px;bottom:4px;width:2px;background:var(--g300)}
+  .tl-node{position:relative;margin-bottom:16px}
+  .tl-node::before{content:"";position:absolute;left:-22px;top:3px;width:11px;height:11px;border-radius:50%;background:#fff;border:2.4px solid var(--accent)}
+  .tl-year{font-family:var(--mono);font-size:11px;color:var(--g500);font-weight:700;margin:0 0 8px;letter-spacing:.08em}
+
+  /* notifications */
+  .note{display:flex;gap:11px;border:1.3px solid var(--g300);border-radius:8px;padding:11px 12px;background:#fff;align-items:flex-start}
+  .note.unread{border-left:4px solid var(--accent);background:var(--accent-soft)}
+  .note .nic{width:30px;height:30px;border-radius:7px;border:1.4px solid var(--g400);flex:0 0 auto;display:grid;place-items:center;color:var(--g500);font-size:13px}
+  .note .nt{flex:1}
+
+  /* modal */
+  .modal-wrap{background:repeating-linear-gradient(45deg,#d6e0e1,#d6e0e1 9px,#cdd9da 9px,#cdd9da 18px);border:1.4px dashed var(--g400);border-radius:9px;padding:26px;display:grid;place-items:center}
+  .modal{background:#fff;border:1.5px solid var(--g500);border-radius:10px;width:380px;max-width:100%;box-shadow:0 14px 30px rgba(0,0,0,.18)}
+  .modal .mh{display:flex;align-items:center;justify-content:space-between;padding:13px 15px;border-bottom:1px solid var(--line-soft)}
+  .modal .mh b{font-size:13.5px}
+  .modal .mh .x{width:22px;height:22px;border:1.3px solid var(--g300);border-radius:5px;display:grid;place-items:center;color:var(--g500);font-size:12px}
+  .modal .mb{padding:15px}
+  .modal .mf{display:flex;justify-content:flex-end;gap:10px;padding:12px 15px;border-top:1px solid var(--line-soft);background:var(--g50)}
+
+  /* dropzone */
+  .drop{border:1.6px dashed var(--g400);border-radius:9px;background:var(--g50);padding:22px;text-align:center;color:var(--g500);font-size:12px}
+  .drop .ic{width:34px;height:34px;border:1.6px solid var(--accent);border-radius:8px;margin:0 auto 8px;display:grid;place-items:center;font-size:16px;color:var(--accent-d)}
+
+  /* OTP */
+  .otp{display:flex;gap:10px;justify-content:center;margin:6px 0 14px}
+  .otp .b{width:42px;height:50px;border:1.6px solid var(--g400);border-radius:8px;display:grid;place-items:center;font-size:18px;color:var(--g600);font-family:var(--mono)}
+
+  /* flow diagram */
+  .flow{display:flex;flex-direction:column;align-items:center;gap:0;padding:8px 0}
+  .node{border:1.6px solid var(--g600);background:#fff;border-radius:8px;padding:9px 16px;font-size:12.5px;font-weight:600;color:var(--g800);text-align:center;min-width:150px}
+  .node.start{background:var(--accent);color:#fff;border-color:var(--accent);border-radius:22px}
+  .node.dash{border-style:dashed;font-weight:500;color:var(--g600)}
+  .node.dec{background:var(--g100);border-color:var(--g500);border-radius:4px;font-family:var(--mono);font-size:11.5px}
+  .arrow{width:2px;height:22px;background:var(--g400);position:relative}
+  .arrow::after{content:"";position:absolute;bottom:0;left:50%;transform:translateX(-50%);border-left:5px solid transparent;border-right:5px solid transparent;border-top:7px solid var(--g500)}
+  .branch{display:flex;gap:28px;justify-content:center;flex-wrap:wrap;width:100%}
+  .branchcol{display:flex;flex-direction:column;align-items:center}
+  .blabel{font-family:var(--mono);font-size:10.5px;color:var(--g500);background:var(--g100);border:1px solid var(--line-soft);border-radius:4px;padding:2px 8px;margin-bottom:6px}
+
+  /* sitemap tree */
+  .tree{font-size:12.5px}
+  .tree .root{display:inline-block;border:1.6px solid var(--accent);background:var(--accent);color:#fff;border-radius:8px;padding:8px 16px;font-weight:700;margin-bottom:18px}
+  .tier{display:flex;gap:16px;flex-wrap:wrap}
+  .col{flex:1;min-width:180px;border:1.4px solid var(--g300);border-radius:9px;padding:12px;background:#fff}
+  .col h5{margin:0 0 9px;font-size:12.5px;display:flex;align-items:center;gap:8px}
+  .col h5 .b{font-family:var(--mono);font-size:9px;background:var(--accent);color:#fff;padding:2px 6px;border-radius:3px}
+  .col ul{margin:0;padding-left:16px;color:var(--g600)}
+  .col li{margin:3px 0}
+
+  /* legend swatches */
+  .swatches{display:flex;gap:10px;flex-wrap:wrap}
+  .sw{width:54px;text-align:center;font-family:var(--mono);font-size:9px;color:var(--g500)}
+  .sw .c{height:38px;border-radius:6px;border:1px solid var(--g300);margin-bottom:4px}
+
+  .legend{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+  .legend .li{display:flex;gap:10px;align-items:center;border:1px solid var(--line-soft);border-radius:8px;padding:9px 11px;background:#fff;font-size:12px;color:var(--g600)}
+
+  .callout{border-left:3px solid var(--accent);background:var(--g50);padding:10px 14px;font-size:12.5px;color:var(--g600);border-radius:0 8px 8px 0;margin:14px 0}
+  .twocol{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  @media(max-width:760px){.twocol,.grid-4,.grid-3,.grid-5,.grid-6,.row2,.row3{grid-template-columns:1fr}.appbody{grid-template-columns:1fr}}
+
+  .toplink{font-size:11px;color:var(--g500);text-decoration:none;font-family:var(--mono);float:right}
+  .toplink:hover{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- ============ JUMP NAV ============ -->
+  <aside class="nav">
+    <div class="brand">AAROGYAM<small>Wireframe Package</small></div>
+    <div class="grp">Foundations</div>
+    <a href="#cover">Overview</a>
+    <a href="#system">Design System</a>
+    <a href="#sitemap">Site Map</a>
+    <a href="#userflow">User Flow</a>
+    <a href="#navflow">Navigation Flow</a>
+    <a href="#rbac">Role-Based Access</a>
+    <a href="#globalnav">Global Navigation</a>
+    <div class="grp">Auth</div>
+    <a href="#s1">01 · Landing</a>
+    <a href="#s2">02 · Register</a>
+    <a href="#s3">03 · OTP Verify</a>
+    <a href="#s4">04 · Login</a>
+    <div class="grp">Patient</div>
+    <a href="#s5">05 · Dashboard</a>
+    <a href="#s6">06 · Profile</a>
+    <a href="#s7">07 · Medical History</a>
+    <a href="#s8">08 · Reports</a>
+    <a href="#s9">09 · Prescriptions</a>
+    <a href="#s10">10 · Prescription Detail</a>
+    <a href="#s11">11 · QR Health Card</a>
+    <div class="grp">Doctor</div>
+    <a href="#s12">12 · Dashboard</a>
+    <a href="#s13">13 · Patient Search</a>
+    <a href="#s14">14 · Patient Details</a>
+    <a href="#s15">15 · Create Visit</a>
+    <a href="#s16">16 · Add Diagnosis</a>
+    <a href="#s17">17 · Create Prescription</a>
+    <a href="#s18">18 · Approval Pending</a>
+    <div class="grp">Admin</div>
+    <a href="#s19">19 · Dashboard</a>
+    <a href="#s20">20 · Doctor Approvals</a>
+    <a href="#s21">21 · User Management</a>
+    <a href="#s22">22 · Notifications</a>
+    <a href="#s23">23 · Audit Logs</a>
+    <div class="grp">Systems</div>
+    <a href="#responsive">Responsive Layouts</a>
+    <a href="#components">Component Library</a>
+    <a href="#states">Empty / Error / Loading</a>
+    <a href="#modals">Modal Library</a>
+  </aside>
+
+  <main class="content">
+
+  <!-- ============ COVER ============ -->
+  <section class="sec" id="cover">
+    <div class="sec-h"><span class="num">DOC</span><h2>Aarogyam — Low-Fidelity Wireframe Package</h2></div>
+    <p class="sec-note"><b>"One Health Identity For Life."</b> A digital health-identity platform giving every citizen a unique Aarogyam ID that centralises medical reports, prescriptions, diagnoses, a health timeline, doctor consultations, and a QR health card. This document is a grayscale, production-oriented wireframe system covering 23 screens across three roles — Patient, Doctor, Admin — plus flows, responsive frames, a component library, and state designs. Built for direct hand-off to Figma and React.</p>
+    <div class="grid-4">
+      <div class="stat"><div class="k">Screens</div><div class="v">23</div><div class="d">Auth · Patient · Doctor · Admin</div></div>
+      <div class="stat"><div class="k">Roles</div><div class="v">3</div><div class="d">RBAC enforced</div></div>
+      <div class="stat"><div class="k">Breakpoints</div><div class="v">3</div><div class="d">Desktop · Tablet · Mobile</div></div>
+      <div class="stat"><div class="k">Fidelity</div><div class="v">Lo</div><div class="d">Grayscale, structure-first</div></div>
+    </div>
+    <div class="callout">How to read these wireframes: solid dark boxes = primary actions; outlined boxes = secondary; gray bars = text/content not yet written; boxes with an ✕ = image/illustration placeholders; checkerboard squares = QR codes. Nothing here is final visual design — it defines layout, hierarchy, components, and flow.</div>
+  </section>
+
+  <!-- ============ DESIGN SYSTEM ============ -->
+  <section class="sec" id="system">
+    <div class="sec-h"><span class="num">00</span><h2>Design System &amp; Wireframe Conventions</h2><a class="toplink" href="#cover">↑ top</a></div>
+    <p class="sec-note">A constrained grayscale token set keeps the wireframes neutral so reviewers focus on structure, not colour. In React these map to CSS variables; in Figma to colour/typography styles.</p>
+
+    <p class="cap">Grayscale tokens</p>
+    <div class="swatches" style="margin-bottom:22px">
+      <div class="sw"><div class="c" style="background:#fff"></div>paper</div>
+      <div class="sw"><div class="c" style="background:#f7f7f7"></div>g50</div>
+      <div class="sw"><div class="c" style="background:#f1f1f1"></div>g100</div>
+      <div class="sw"><div class="c" style="background:#e4e4e4"></div>g200</div>
+      <div class="sw"><div class="c" style="background:#cccccc"></div>g300</div>
+      <div class="sw"><div class="c" style="background:#aeaeae"></div>g400</div>
+      <div class="sw"><div class="c" style="background:#8a8a8a"></div>g500</div>
+      <div class="sw"><div class="c" style="background:#555"></div>g700</div>
+      <div class="sw"><div class="c" style="background:#333"></div>g900</div>
+      <div class="sw"><div class="c" style="background:#1a1a1a"></div>ink</div>
+    </div>
+
+    <div class="twocol">
+      <div>
+        <p class="cap">Type scale</p>
+        <div class="card">
+          <div style="font-size:24px;font-weight:700">Display / 24 · page heading</div>
+          <div style="font-size:16px;font-weight:700;margin-top:8px">Title / 16 · section heading</div>
+          <div style="font-size:13px;margin-top:8px">Body / 13 · paragraphs &amp; table cells</div>
+          <div style="font-family:var(--mono);font-size:11px;color:var(--g500);margin-top:8px">MONO / 11 · LABELS · IDS · META</div>
+        </div>
+      </div>
+      <div>
+        <p class="cap">Symbol legend</p>
+        <div class="legend">
+          <div class="li"><span class="ph-line w30" style="margin:0;flex:0 0 40px"></span> text content (unwritten)</div>
+          <div class="li"><span class="ph-img" style="width:40px;min-height:30px"></span> image / illustration</div>
+          <div class="li"><span class="miniqr"></span> QR code placeholder</div>
+          <div class="li"><span class="btn sm">Btn</span> primary action</div>
+          <div class="li"><span class="btn sm ghost">Btn</span> secondary action</div>
+          <div class="li"><span class="badge">status</span> status badge</div>
+        </div>
+      </div>
+    </div>
+
+    <p class="cap" style="margin-top:18px">Spacing &amp; radius</p>
+    <div class="card soft" style="font-family:var(--mono);font-size:11.5px;color:var(--g600)">
+      space scale → 4 · 8 · 12 · 14 · 18 · 26 · 40 px &nbsp;|&nbsp; radius → 4 (controls) · 6–9 (cards) · 20 (chips/badges) &nbsp;|&nbsp; container max → 1240 px &nbsp;|&nbsp; grid → 12-col desktop, 8-col tablet, 4-col mobile
+    </div>
+  </section>
+
+  <!-- ============ SITE MAP ============ -->
+  <section class="sec" id="sitemap">
+    <div class="sec-h"><span class="num">01</span><h2>Complete Site Map</h2><a class="toplink" href="#cover">↑ top</a></div>
+    <p class="sec-note">Every route in the platform, grouped by access zone. Public routes are reachable without auth; the three module columns are gated by role.</p>
+    <div class="tree">
+      <div class="root">Aarogyam · root</div>
+      <div class="tier">
+        <div class="col">
+          <h5><span class="b">PUBLIC</span> Unauthenticated</h5>
+          <ul>
+            <li>/ Landing</li>
+            <li>/register</li>
+            <li>/verify-otp</li>
+            <li>/login</li>
+            <li>/forgot-password</li>
+            <li>/about · /privacy · /terms · /contact</li>
+          </ul>
+        </div>
+        <div class="col">
+          <h5><span class="b">PATIENT</span> Module</h5>
+          <ul>
+            <li>/app/dashboard</li>
+            <li>/app/profile</li>
+            <li>/app/history</li>
+            <li>/app/reports</li>
+            <li>/app/prescriptions</li>
+            <li>/app/prescriptions/:id</li>
+            <li>/app/health-card</li>
+            <li>/app/notifications</li>
+          </ul>
+        </div>
+        <div class="col">
+          <h5><span class="b">DOCTOR</span> Module</h5>
+          <ul>
+            <li>/dr/dashboard</li>
+            <li>/dr/approval-pending</li>
+            <li>/dr/search</li>
+            <li>/dr/patient/:id</li>
+            <li>/dr/visit/new</li>
+            <li>/dr/diagnosis/new</li>
+            <li>/dr/prescription/new</li>
+            <li>/dr/notifications</li>
+          </ul>
+        </div>
+        <div class="col">
+          <h5><span class="b">ADMIN</span> Module</h5>
+          <ul>
+            <li>/admin/dashboard</li>
+            <li>/admin/approvals</li>
+            <li>/admin/users</li>
+            <li>/admin/notifications</li>
+            <li>/admin/audit-logs</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ USER FLOW ============ -->
+  <section class="sec" id="userflow">
+    <div class="sec-h"><span class="num">02</span><h2>User Flow Diagram</h2><a class="toplink" href="#cover">↑ top</a></div>
+    <p class="sec-note">The end-to-end onboarding path from landing to a role-appropriate destination, including the doctor approval gate.</p>
+    <div class="card soft">
+      <div class="flow">
+        <div class="node start">Landing Page</div>
+        <div class="arrow"></div>
+        <div class="node">Register</div>
+        <div class="arrow"></div>
+        <div class="node">OTP Verification</div>
+        <div class="arrow"></div>
+        <div class="node">Login</div>
+        <div class="arrow"></div>
+        <div class="node dec">Role Detection?</div>
+        <div class="arrow"></div>
+        <div class="branch">
+          <div class="branchcol">
+            <div class="blabel">if Patient</div>
+            <div class="node">Patient Dashboard</div>
+          </div>
+          <div class="branchcol">
+            <div class="blabel">if Doctor</div>
+            <div class="node dec">Approval Check?</div>
+            <div class="arrow"></div>
+            <div class="branch">
+              <div class="branchcol">
+                <div class="blabel">pending</div>
+                <div class="node dash">Approval Pending</div>
+              </div>
+              <div class="branchcol">
+                <div class="blabel">approved</div>
+                <div class="node">Doctor Dashboard</div>
+              </div>
+            </div>
+          </div>
+          <div class="branchcol">
+            <div class="blabel">if Admin</div>
+            <div class="node">Admin Dashboard</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ NAV FLOW ============ -->
+  <section class="sec" id="navflow">
+    <div class="sec-h"><span class="num">03</span><h2>Navigation Flow Diagram</h2><a class="toplink" href="#cover">↑ top</a></div>
+    <p class="sec-note">How a signed-in user moves between screens within each module. Top nav switches primary areas; contextual actions push deeper detail screens.</p>
+    <div class="grid-3">
+      <div class="card">
+        <h5 style="margin:0 0 10px;font-size:13px">Patient navigation</h5>
+        <div class="flow" style="align-items:stretch">
+          <div class="node" style="min-width:auto">Dashboard</div>
+          <div class="arrow"></div>
+          <div class="node dash" style="min-width:auto">History → Visit card</div>
+          <div class="arrow"></div>
+          <div class="node dash" style="min-width:auto">Reports → Upload modal</div>
+          <div class="arrow"></div>
+          <div class="node dash" style="min-width:auto">Prescriptions → Detail → PDF</div>
+          <div class="arrow"></div>
+          <div class="node dash" style="min-width:auto">QR Health Card</div>
+        </div>
+      </div>
+      <div class="card">
+        <h5 style="margin:0 0 10px;font-size:13px">Doctor navigation</h5>
+        <div class="flow" style="align-items:stretch">
+          <div class="node" style="min-width:auto">Dashboard</div>
+          <div class="arrow"></div>
+          <div class="node dash" style="min-width:auto">Patient Search</div>
+          <div class="arrow"></div>
+          <div class="node dash" style="min-width:auto">Patient Details</div>
+          <div class="arrow"></div>
+          <div class="node dash" style="min-width:auto">Create Visit → Diagnosis</div>
+          <div class="arrow"></div>
+          <div class="node dash" style="min-width:auto">Create Prescription → PDF</div>
+        </div>
+      </div>
+      <div class="card">
+        <h5 style="margin:0 0 10px;font-size:13px">Admin navigation</h5>
+        <div class="flow" style="align-items:stretch">
+          <div class="node" style="min-width:auto">Dashboard</div>
+          <div class="arrow"></div>
+          <div class="node dash" style="min-width:auto">Doctor Approvals → Reject modal</div>
+          <div class="arrow"></div>
+          <div class="node dash" style="min-width:auto">User Management (tabs)</div>
+          <div class="arrow"></div>
+          <div class="node dash" style="min-width:auto">Notifications</div>
+          <div class="arrow"></div>
+          <div class="node dash" style="min-width:auto">Audit Logs</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ RBAC ============ -->
+  <section class="sec" id="rbac">
+    <div class="sec-h"><span class="num">04</span><h2>Role-Based Access Flow</h2><a class="toplink" href="#cover">↑ top</a></div>
+    <p class="sec-note">A single login resolves to a role claim. The router guards each zone; unauthorised access falls back to the user's own home or an error state.</p>
+    <table class="wf">
+      <thead><tr><th>Capability</th><th>Patient</th><th>Doctor (approved)</th><th>Admin</th></tr></thead>
+      <tbody>
+        <tr><td>View own health record &amp; timeline</td><td>✔ full</td><td>— search-scoped</td><td>read-only audit</td></tr>
+        <tr><td>Upload own medical reports</td><td>✔</td><td>✔ for patient</td><td>✗</td></tr>
+        <tr><td>Create visit / diagnosis / prescription</td><td>✗</td><td>✔</td><td>✗</td></tr>
+        <tr><td>Search any patient by ID</td><td>✗</td><td>✔</td><td>✔</td></tr>
+        <tr><td>Approve / reject doctors</td><td>✗</td><td>✗</td><td>✔</td></tr>
+        <tr><td>Manage users (disable / activate)</td><td>✗</td><td>✗</td><td>✔</td></tr>
+        <tr><td>View audit logs</td><td>✗</td><td>✗</td><td>✔</td></tr>
+        <tr><td>Generate QR health card</td><td>✔</td><td>✗</td><td>✗</td></tr>
+      </tbody>
+    </table>
+    <div class="callout">Gate logic: <span style="font-family:var(--mono)">isAuthed → hasRole(route.role) → (role==='doctor' ? isApproved : true)</span>. A pending doctor is authenticated but routed only to the Approval Pending screen until an admin approves.</div>
+  </section>
+
+  <!-- ============ GLOBAL NAVIGATION ============ -->
+  <section class="sec" id="globalnav">
+    <div class="sec-h"><span class="num">05</span><h2>Global Navigation</h2><a class="toplink" href="#cover">↑ top</a></div>
+    <p class="sec-note">A persistent top bar carries brand, primary destinations, notifications and the profile menu. A role-aware left sidebar carries module sub-navigation. The sidebar swaps its items per role; the top bar stays consistent.</p>
+
+    <p class="cap">Top navigation bar (signed-in)</p>
+    <div class="device desktop" style="margin-bottom:22px">
+      <div class="dvc-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="lbl">TOP NAV</span></div>
+      <div class="topbar">
+        <div class="logo"><span class="mark">◎</span> Aarogyam</div>
+        <nav>
+          <span class="on">Dashboard</span><span>Medical History</span><span>Reports</span><span>Prescriptions</span>
+        </nav>
+        <div class="right"><div class="bell">◔<span class="pip">3</span></div><div class="avatar"></div></div>
+      </div>
+    </div>
+
+    <p class="cap">Sidebar variants per module</p>
+    <div class="grid-3">
+      <div class="device"><div class="dvc-bar"><span class="lbl">PATIENT SIDEBAR</span></div>
+        <div class="side" style="min-height:auto">
+          <div class="role">Patient module</div>
+          <div class="item on"><span class="ic"></span>Dashboard</div>
+          <div class="item"><span class="ic"></span>Profile</div>
+          <div class="item"><span class="ic"></span>Medical History</div>
+          <div class="item"><span class="ic"></span>Reports</div>
+          <div class="item"><span class="ic"></span>Prescriptions</div>
+          <div class="item"><span class="ic"></span>QR Health Card</div>
+          <hr><div class="item"><span class="ic"></span>Notifications</div>
+          <div class="item"><span class="ic"></span>Log out</div>
+        </div>
+      </div>
+      <div class="device"><div class="dvc-bar"><span class="lbl">DOCTOR SIDEBAR</span></div>
+        <div class="side" style="min-height:auto">
+          <div class="role">Doctor module</div>
+          <div class="item on"><span class="ic"></span>Dashboard</div>
+          <div class="item"><span class="ic"></span>Patient Search</div>
+          <div class="item"><span class="ic"></span>My Patients</div>
+          <div class="item"><span class="ic"></span>Create Visit</div>
+          <div class="item"><span class="ic"></span>Prescriptions</div>
+          <hr><div class="item"><span class="ic"></span>Notifications</div>
+          <div class="item"><span class="ic"></span>Log out</div>
+        </div>
+      </div>
+      <div class="device"><div class="dvc-bar"><span class="lbl">ADMIN SIDEBAR</span></div>
+        <div class="side" style="min-height:auto">
+          <div class="role">Admin module</div>
+          <div class="item on"><span class="ic"></span>Dashboard</div>
+          <div class="item"><span class="ic"></span>Doctor Approvals</div>
+          <div class="item"><span class="ic"></span>User Management</div>
+          <div class="item"><span class="ic"></span>Audit Logs</div>
+          <hr><div class="item"><span class="ic"></span>Notifications</div>
+          <div class="item"><span class="ic"></span>Log out</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 1 — LANDING ============ -->
+  <section class="sec" id="s1">
+    <div class="sec-h"><span class="num">AUTH</span><h2>Public &amp; Authentication Screens</h2><a class="toplink" href="#cover">↑ top</a></div>
+
+    <div class="screen-h"><span class="tag">SCREEN 01</span><h3>Landing Page</h3><span class="sub">/</span></div>
+    <div class="device desktop">
+      <div class="dvc-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="lbl">DESKTOP · 1440</span></div>
+      <!-- public top bar -->
+      <div class="topbar">
+        <div class="logo"><span class="mark">◎</span> Aarogyam</div>
+        <nav><span>Features</span><span>How it works</span><span>About</span></nav>
+        <div class="right"><span class="btn sm ghost">Login</span><span class="btn sm">Register</span></div>
+      </div>
+      <div class="main" style="padding:0">
+        <!-- HERO -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:26px;padding:34px 28px;border-bottom:1px solid var(--line-soft);background:var(--g50)">
+          <div>
+            <div class="badge" style="margin-bottom:14px">One Health Identity For Life</div>
+            <div class="ph-head" style="height:24px;width:78%"></div>
+            <div class="ph-head" style="height:24px;width:55%"></div>
+            <div class="ph-line w90"></div><div class="ph-line w80"></div><div class="ph-line w60"></div>
+            <div class="btn-row" style="margin-top:16px"><span class="btn">Register free</span><span class="btn ghost">Login</span></div>
+          </div>
+          <div class="ph-img" style="min-height:220px">HERO ILLUSTRATION</div>
+        </div>
+        <!-- FEATURES -->
+        <div style="padding:28px">
+          <div class="ph-head" style="margin:0 auto 18px;width:240px;text-align:center"></div>
+          <div class="grid-3">
+            <div class="card"><div class="ph-img" style="min-height:56px;width:56px;margin-bottom:10px">ICON</div><b style="font-size:13px">Digital Health Identity</b><div class="ph-line w90"></div><div class="ph-line w70"></div></div>
+            <div class="card"><div class="ph-img" style="min-height:56px;width:56px;margin-bottom:10px">ICON</div><b style="font-size:13px">QR Health Card</b><div class="ph-line w90"></div><div class="ph-line w70"></div></div>
+            <div class="card"><div class="ph-img" style="min-height:56px;width:56px;margin-bottom:10px">ICON</div><b style="font-size:13px">Medical Reports</b><div class="ph-line w90"></div><div class="ph-line w70"></div></div>
+            <div class="card"><div class="ph-img" style="min-height:56px;width:56px;margin-bottom:10px">ICON</div><b style="font-size:13px">Prescriptions</b><div class="ph-line w90"></div><div class="ph-line w70"></div></div>
+            <div class="card"><div class="ph-img" style="min-height:56px;width:56px;margin-bottom:10px">ICON</div><b style="font-size:13px">Health Timeline</b><div class="ph-line w90"></div><div class="ph-line w70"></div></div>
+            <div class="card"><div class="ph-img" style="min-height:56px;width:56px;margin-bottom:10px">ICON</div><b style="font-size:13px">Secure Storage</b><div class="ph-line w90"></div><div class="ph-line w70"></div></div>
+          </div>
+        </div>
+        <!-- HOW IT WORKS -->
+        <div style="padding:0 28px 28px">
+          <div class="ph-head" style="margin:0 auto 18px;width:200px;text-align:center"></div>
+          <div class="grid-5">
+            <div class="card soft" style="text-align:center"><div class="badge dk" style="margin-bottom:8px">1</div><b style="font-size:12px;display:block">Register</b></div>
+            <div class="card soft" style="text-align:center"><div class="badge dk" style="margin-bottom:8px">2</div><b style="font-size:12px;display:block">Get Aarogyam ID</b></div>
+            <div class="card soft" style="text-align:center"><div class="badge dk" style="margin-bottom:8px">3</div><b style="font-size:12px;display:block">Upload Reports</b></div>
+            <div class="card soft" style="text-align:center"><div class="badge dk" style="margin-bottom:8px">4</div><b style="font-size:12px;display:block">Consultation</b></div>
+            <div class="card soft" style="text-align:center"><div class="badge dk" style="margin-bottom:8px">5</div><b style="font-size:12px;display:block">Health Timeline</b></div>
+          </div>
+        </div>
+        <!-- FOOTER -->
+        <div style="display:flex;gap:30px;padding:22px 28px;border-top:1px solid var(--line);background:var(--g100);font-size:12px;color:var(--g600)">
+          <div class="logo" style="font-size:12px"><span class="mark" style="width:20px;height:20px">◎</span>Aarogyam</div>
+          <span>About</span><span>Privacy Policy</span><span>Terms</span><span style="margin-left:auto">Contact</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 2 — REGISTER ============ -->
+  <section class="sec" id="s2">
+    <div class="screen-h"><span class="tag">SCREEN 02</span><h3>Register Page</h3><span class="sub">/register · role-conditional fields</span></div>
+    <div class="frames">
+      <div class="device" style="width:520px;max-width:100%">
+        <div class="dvc-bar"><span class="lbl">REGISTER · PATIENT SELECTED</span></div>
+        <div class="authpage" style="min-height:auto;padding:22px">
+          <div class="authcard" style="width:460px">
+            <h4>Create your account</h4>
+            <p class="muted">It takes about two minutes.</p>
+            <div class="field-l">Account type</div>
+            <div class="chips"><span class="chip on">Patient</span><span class="chip">Doctor</span></div>
+            <div class="field-l">Full name</div><div class="input">Jane Mehta</div>
+            <div class="row2"><div><div class="field-l">Email</div><div class="input">jane@mail.com</div></div><div><div class="field-l">Phone</div><div class="input">+91 ……</div></div></div>
+            <div class="row2"><div><div class="field-l">Password</div><div class="input">••••••••</div></div><div><div class="field-l">Confirm password</div><div class="input">••••••••</div></div></div>
+            <div class="cap" style="margin:6px 0 10px">— Patient details —</div>
+            <div class="row2"><div><div class="field-l">Date of birth</div><div class="input">dd / mm / yyyy</div></div><div><div class="field-l">Gender</div><div class="select">Select</div></div></div>
+            <div class="row2"><div><div class="field-l">Blood group</div><div class="select">Select</div></div><div><div class="field-l">Emergency contact</div><div class="input">+91 ……</div></div></div>
+            <div class="field-l">Address</div><div class="input area"></div>
+            <div class="btn-row"><span class="btn ghost">Send OTP</span><span class="btn block" style="flex:1">Register</span></div>
+            <p class="muted" style="margin-top:12px">Already registered? <b>Login</b></p>
+          </div>
+        </div>
+      </div>
+      <div class="device" style="width:360px;max-width:100%">
+        <div class="dvc-bar"><span class="lbl">DOCTOR FIELDS VARIANT</span></div>
+        <div class="authpage" style="min-height:auto;padding:22px">
+          <div class="authcard" style="width:100%">
+            <div class="chips"><span class="chip">Patient</span><span class="chip on">Doctor</span></div>
+            <div class="cap" style="margin:0 0 10px">— Doctor details —</div>
+            <div class="field-l">License number</div><div class="input">MCI-……</div>
+            <div class="field-l">Specialization</div><div class="select">Select</div>
+            <div class="field-l">Hospital / clinic name</div><div class="input"></div>
+            <div class="callout" style="margin:8px 0">Doctor accounts require admin approval before access is granted.</div>
+            <div class="btn-row"><span class="btn ghost">Send OTP</span><span class="btn">Register</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 3 — OTP ============ -->
+  <section class="sec" id="s3">
+    <div class="screen-h"><span class="tag">SCREEN 03</span><h3>OTP Verification</h3><span class="sub">/verify-otp</span></div>
+    <div class="frames">
+      <div class="device" style="width:380px;max-width:100%">
+        <div class="dvc-bar"><span class="lbl">OTP ENTRY</span></div>
+        <div class="authpage" style="min-height:auto;padding:26px">
+          <div class="authcard" style="text-align:center;width:100%">
+            <h4>Verify your number</h4>
+            <p class="muted">Enter the 6-digit code sent to +91 ••• ••• 210</p>
+            <div class="otp"><div class="b">4</div><div class="b">7</div><div class="b">2</div><div class="b">•</div><div class="b">•</div><div class="b">•</div></div>
+            <span class="btn block">Verify &amp; continue</span>
+            <p class="muted" style="margin-top:14px">Didn't get it? <b>Resend OTP</b> · 0:28</p>
+          </div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:260px">
+        <p class="cap">Flow within this step</p>
+        <div class="card soft"><div class="flow">
+          <div class="node start" style="min-width:120px">Register submitted</div>
+          <div class="arrow"></div><div class="node">SMS / Email OTP sent</div>
+          <div class="arrow"></div><div class="node dec">Code correct?</div>
+          <div class="arrow"></div>
+          <div class="branch">
+            <div class="branchcol"><div class="blabel">no</div><div class="node dash">Show error · Resend</div></div>
+            <div class="branchcol"><div class="blabel">yes</div><div class="node">Account verified → Login</div></div>
+          </div>
+        </div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 4 — LOGIN ============ -->
+  <section class="sec" id="s4">
+    <div class="screen-h"><span class="tag">SCREEN 04</span><h3>Login Page</h3><span class="sub">/login</span></div>
+    <div class="device" style="width:380px;max-width:100%">
+      <div class="dvc-bar"><span class="lbl">LOGIN</span></div>
+      <div class="authpage" style="min-height:auto;padding:26px">
+        <div class="authcard" style="width:100%">
+          <div class="logo" style="justify-content:center;margin-bottom:10px"><span class="mark">◎</span> Aarogyam</div>
+          <h4 style="text-align:center">Welcome back</h4>
+          <p class="muted" style="text-align:center">Sign in to your health identity</p>
+          <div class="field-l">Email or phone</div><div class="input">jane@mail.com</div>
+          <div class="field-l">Password</div><div class="input">••••••••</div>
+          <div style="text-align:right;margin:-2px 0 12px"><span style="font-size:11px;color:var(--g600)">Forgot password?</span></div>
+          <span class="btn block">Login</span>
+          <p class="muted" style="text-align:center;margin-top:12px">New here? <b>Create an account</b></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 5 — PATIENT DASHBOARD ============ -->
+  <section class="sec" id="s5">
+    <div class="sec-h"><span class="num">PATIENT</span><h2>Patient Module</h2><a class="toplink" href="#cover">↑ top</a></div>
+
+    <div class="screen-h"><span class="tag">SCREEN 05</span><h3>Patient Dashboard</h3><span class="sub">/app/dashboard</span></div>
+    <div class="device desktop">
+      <div class="dvc-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="lbl">DESKTOP · 1440</span></div>
+      <div class="topbar">
+        <div class="logo"><span class="mark">◎</span> Aarogyam</div>
+        <nav><span class="on">Dashboard</span><span>Medical History</span><span>Reports</span><span>Prescriptions</span></nav>
+        <div class="right"><div class="bell">◔<span class="pip">3</span></div><div class="avatar"></div></div>
+      </div>
+      <div class="appbody">
+        <div class="side">
+          <div class="role">Patient module</div>
+          <div class="item on"><span class="ic"></span>Dashboard</div>
+          <div class="item"><span class="ic"></span>Profile</div>
+          <div class="item"><span class="ic"></span>Medical History</div>
+          <div class="item"><span class="ic"></span>Reports</div>
+          <div class="item"><span class="ic"></span>Prescriptions</div>
+          <div class="item"><span class="ic"></span>QR Health Card</div>
+        </div>
+        <div class="main">
+          <div class="page-title">Good morning, Jane</div>
+          <div class="page-sub">Here's a snapshot of your health record.</div>
+          <!-- summary cards -->
+          <div class="grid-4">
+            <div class="stat"><div class="k">Total visits</div><div class="v">12</div><div class="d">last: 14 Jun</div></div>
+            <div class="stat"><div class="k">Diagnoses</div><div class="v">5</div><div class="d">2 active</div></div>
+            <div class="stat"><div class="k">Prescriptions</div><div class="v">9</div><div class="d">1 ongoing</div></div>
+            <div class="stat"><div class="k">Reports</div><div class="v">23</div><div class="d">3 this month</div></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:14px;margin-top:14px">
+            <!-- left: timeline + quick actions -->
+            <div class="stack">
+              <div class="card">
+                <b style="font-size:13px">Recent activity</b>
+                <div class="tl" style="margin-top:12px">
+                  <div class="tl-node"><div class="ph-line dk w40" style="margin-top:0"></div><div class="ph-line w70"></div></div>
+                  <div class="tl-node"><div class="ph-line dk w40" style="margin-top:0"></div><div class="ph-line w60"></div></div>
+                  <div class="tl-node"><div class="ph-line dk w40" style="margin-top:0"></div><div class="ph-line w80"></div></div>
+                </div>
+              </div>
+              <div class="card">
+                <b style="font-size:13px">Quick actions</b>
+                <div class="btn-row" style="margin-top:10px"><span class="btn sm">Upload Report</span><span class="btn sm ghost">View History</span><span class="btn sm ghost">Download Records</span></div>
+              </div>
+            </div>
+            <!-- right: profile + QR + notifications -->
+            <div class="stack">
+              <div class="card" style="text-align:center">
+                <div class="avatar" style="width:54px;height:54px;margin:0 auto 8px"></div>
+                <b style="font-size:13px;display:block">Jane Mehta</b>
+                <div class="badge" style="margin:6px 0">AAID · 2291 4480 1123</div>
+                <div class="cap" style="margin:0">Blood group · O+</div>
+              </div>
+              <div class="card" style="text-align:center">
+                <b style="font-size:12px;display:block;margin-bottom:8px">QR Health Card</b>
+                <div class="qr" style="margin:0 auto 10px"></div>
+                <span class="btn sm ghost block">Download QR</span>
+              </div>
+              <div class="card">
+                <b style="font-size:12px">Upcoming &amp; reminders</b>
+                <div class="note" style="margin-top:8px;padding:8px"><div class="nic">◔</div><div class="nt"><div class="ph-line dk w60" style="margin-top:0"></div><div class="ph-line w90"></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 6 — PATIENT PROFILE ============ -->
+  <section class="sec" id="s6">
+    <div class="screen-h"><span class="tag">SCREEN 06</span><h3>Patient Profile</h3><span class="sub">/app/profile · view / edit</span></div>
+    <div class="device desktop">
+      <div class="dvc-bar"><span class="lbl">DESKTOP · 1440</span></div>
+      <div class="topbar"><div class="logo"><span class="mark">◎</span> Aarogyam</div><nav><span>Dashboard</span><span>Medical History</span><span>Reports</span><span>Prescriptions</span></nav><div class="right"><div class="bell">◔<span class="pip">3</span></div><div class="avatar"></div></div></div>
+      <div class="appbody">
+        <div class="side"><div class="role">Patient module</div><div class="item"><span class="ic"></span>Dashboard</div><div class="item on"><span class="ic"></span>Profile</div><div class="item"><span class="ic"></span>Medical History</div><div class="item"><span class="ic"></span>Reports</div><div class="item"><span class="ic"></span>Prescriptions</div><div class="item"><span class="ic"></span>QR Health Card</div></div>
+        <div class="main">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div><div class="page-title">My Profile</div><div class="page-sub">Manage your personal and medical information.</div></div>
+            <div style="margin-left:auto" class="btn-row"><span class="btn ghost sm">Edit</span><span class="btn sm">Save</span></div>
+          </div>
+          <div class="grid-2">
+            <div class="card"><b style="font-size:13px">Personal information</b>
+              <div class="row2" style="margin-top:10px"><div><div class="field-l">Full name</div><div class="input">Jane Mehta</div></div><div><div class="field-l">DOB</div><div class="input">12 / 04 / 1991</div></div></div>
+              <div class="row2"><div><div class="field-l">Gender</div><div class="input">Female</div></div><div><div class="field-l">Phone</div><div class="input">+91 ……</div></div></div>
+            </div>
+            <div class="card"><b style="font-size:13px">Medical information</b>
+              <div class="row2" style="margin-top:10px"><div><div class="field-l">Blood group</div><div class="input">O+</div></div><div><div class="field-l">Allergies</div><div class="input">Penicillin</div></div></div>
+              <div class="field-l">Chronic conditions</div><div class="input">Hypertension</div>
+            </div>
+            <div class="card"><b style="font-size:13px">Emergency contact</b>
+              <div class="row2" style="margin-top:10px"><div><div class="field-l">Name</div><div class="input">R. Mehta</div></div><div><div class="field-l">Phone</div><div class="input">+91 ……</div></div></div>
+            </div>
+            <div class="card"><b style="font-size:13px">Account settings</b>
+              <div class="field-l" style="margin-top:10px">Change password</div><div class="input">••••••••</div>
+              <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--g600);margin-top:6px">Two-factor authentication <span class="badge">on</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 7 — MEDICAL HISTORY ============ -->
+  <section class="sec" id="s7">
+    <div class="screen-h"><span class="tag">SCREEN 07</span><h3>Medical History</h3><span class="sub">/app/history · timeline view</span></div>
+    <div class="device desktop">
+      <div class="dvc-bar"><span class="lbl">DESKTOP · 1440</span></div>
+      <div class="topbar"><div class="logo"><span class="mark">◎</span> Aarogyam</div><nav><span>Dashboard</span><span class="on">Medical History</span><span>Reports</span><span>Prescriptions</span></nav><div class="right"><div class="bell">◔<span class="pip">3</span></div><div class="avatar"></div></div></div>
+      <div class="appbody">
+        <div class="side"><div class="role">Patient module</div><div class="item"><span class="ic"></span>Dashboard</div><div class="item"><span class="ic"></span>Profile</div><div class="item on"><span class="ic"></span>Medical History</div><div class="item"><span class="ic"></span>Reports</div><div class="item"><span class="ic"></span>Prescriptions</div></div>
+        <div class="main">
+          <div class="page-title">Medical History</div>
+          <div class="page-sub">Your complete care timeline, newest first.</div>
+          <!-- search + filters -->
+          <div class="input" style="margin-bottom:10px">🔍 Search visits, doctors, diagnoses…</div>
+          <div class="chips"><span class="chip on">All</span><span class="chip">Disease</span><span class="chip">Vaccination</span><span class="chip">Surgery</span><span class="chip">Allergy</span><span class="chip">Condition</span></div>
+          <!-- timeline -->
+          <div class="tl">
+            <div class="tl-year">2026</div>
+            <div class="tl-node">
+              <div class="card">
+                <div style="display:flex;align-items:center;gap:10px"><b style="font-size:13px">Dr. A. Rao — Cardiology</b><span class="badge">Disease</span><span class="cap" style="margin:0;margin-left:auto">14 Jun 2026</span></div>
+                <div style="margin-top:8px;font-size:12px;color:var(--g600)"><b>Diagnosis:</b> Stage-1 hypertension</div>
+                <div class="btn-row" style="margin-top:8px"><span class="chip">℞ Prescription</span><span class="chip">2 Reports</span></div>
+              </div>
+            </div>
+            <div class="tl-node">
+              <div class="card">
+                <div style="display:flex;align-items:center;gap:10px"><b style="font-size:13px">City Clinic — Immunisation</b><span class="badge">Vaccination</span><span class="cap" style="margin:0;margin-left:auto">02 Mar 2026</span></div>
+                <div style="margin-top:8px;font-size:12px;color:var(--g600)"><b>Record:</b> Influenza booster</div>
+              </div>
+            </div>
+            <div class="tl-year" style="margin-top:14px">2025</div>
+            <div class="tl-node"><div class="card"><div style="display:flex;align-items:center;gap:10px"><b style="font-size:13px">Dr. S. Iyer — General</b><span class="badge">Condition</span><span class="cap" style="margin:0;margin-left:auto">19 Nov 2025</span></div><div class="ph-line w80"></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 8 — REPORTS ============ -->
+  <section class="sec" id="s8">
+    <div class="screen-h"><span class="tag">SCREEN 08</span><h3>Medical Reports</h3><span class="sub">/app/reports · table + upload</span></div>
+    <div class="device desktop">
+      <div class="dvc-bar"><span class="lbl">DESKTOP · 1440</span></div>
+      <div class="topbar"><div class="logo"><span class="mark">◎</span> Aarogyam</div><nav><span>Dashboard</span><span>Medical History</span><span class="on">Reports</span><span>Prescriptions</span></nav><div class="right"><div class="bell">◔<span class="pip">3</span></div><div class="avatar"></div></div></div>
+      <div class="appbody">
+        <div class="side"><div class="role">Patient module</div><div class="item"><span class="ic"></span>Dashboard</div><div class="item"><span class="ic"></span>Profile</div><div class="item"><span class="ic"></span>Medical History</div><div class="item on"><span class="ic"></span>Reports</div><div class="item"><span class="ic"></span>Prescriptions</div></div>
+        <div class="main">
+          <div style="display:flex;align-items:center"><div><div class="page-title">Medical Reports</div><div class="page-sub">All lab results and scans in one place.</div></div><span class="btn sm" style="margin-left:auto">＋ Upload Report</span></div>
+          <div class="drop" style="margin-bottom:14px"><div class="ic">⤒</div>Drag files here or click to upload · PDF, JPG, PNG up to 25 MB</div>
+          <table class="wf">
+            <thead><tr><th>Title</th><th>Type</th><th>Date</th><th>Uploaded by</th><th style="width:130px">Actions</th></tr></thead>
+            <tbody>
+              <tr><td>Lipid panel</td><td>Lab</td><td>14 Jun 2026</td><td>Self</td><td><span class="tact"><span>View</span><span>Download</span><span>Delete</span></span></td></tr>
+              <tr><td>Chest X-Ray</td><td>Imaging</td><td>14 Jun 2026</td><td>Dr. A. Rao</td><td><span class="tact"><span>View</span><span>Download</span><span>Delete</span></span></td></tr>
+              <tr><td>CBC report</td><td>Lab</td><td>02 Mar 2026</td><td>City Clinic</td><td><span class="tact"><span>View</span><span>Download</span><span>Delete</span></span></td></tr>
+              <tr><td>ECG</td><td>Cardiac</td><td>19 Nov 2025</td><td>Self</td><td><span class="tact"><span>View</span><span>Download</span><span>Delete</span></span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <p class="cap">Upload modal (triggered by "Upload Report")</p>
+    <div class="modal-wrap">
+      <div class="modal">
+        <div class="mh"><b>Upload medical report</b><span class="x">✕</span></div>
+        <div class="mb">
+          <div class="field-l">Report title</div><div class="input"></div>
+          <div class="row2"><div><div class="field-l">Type</div><div class="select">Lab</div></div><div><div class="field-l">Date</div><div class="input">dd / mm / yyyy</div></div></div>
+          <div class="drop"><div class="ic">⤒</div>Choose a file or drag it here</div>
+        </div>
+        <div class="mf"><span class="btn ghost sm">Cancel</span><span class="btn sm">Upload</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 9 — PRESCRIPTIONS ============ -->
+  <section class="sec" id="s9">
+    <div class="screen-h"><span class="tag">SCREEN 09</span><h3>Prescriptions</h3><span class="sub">/app/prescriptions</span></div>
+    <div class="device desktop">
+      <div class="dvc-bar"><span class="lbl">DESKTOP · 1440</span></div>
+      <div class="topbar"><div class="logo"><span class="mark">◎</span> Aarogyam</div><nav><span>Dashboard</span><span>Medical History</span><span>Reports</span><span class="on">Prescriptions</span></nav><div class="right"><div class="bell">◔<span class="pip">3</span></div><div class="avatar"></div></div></div>
+      <div class="appbody">
+        <div class="side"><div class="role">Patient module</div><div class="item"><span class="ic"></span>Dashboard</div><div class="item"><span class="ic"></span>Profile</div><div class="item"><span class="ic"></span>Medical History</div><div class="item"><span class="ic"></span>Reports</div><div class="item on"><span class="ic"></span>Prescriptions</div></div>
+        <div class="main">
+          <div class="page-title">Prescriptions</div><div class="page-sub">Every prescription issued to you.</div>
+          <div class="input" style="margin-bottom:12px">🔍 Search by doctor or diagnosis…</div>
+          <table class="wf">
+            <thead><tr><th>Date</th><th>Doctor</th><th>Diagnosis</th><th>Medicines</th><th style="width:150px">Actions</th></tr></thead>
+            <tbody>
+              <tr><td>14 Jun 2026</td><td>Dr. A. Rao</td><td>Hypertension</td><td>3 items</td><td><span class="tact"><span>View</span><span>Download PDF</span></span></td></tr>
+              <tr><td>02 Mar 2026</td><td>City Clinic</td><td>Influenza</td><td>2 items</td><td><span class="tact"><span>View</span><span>Download PDF</span></span></td></tr>
+              <tr><td>19 Nov 2025</td><td>Dr. S. Iyer</td><td>Gastritis</td><td>4 items</td><td><span class="tact"><span>View</span><span>Download PDF</span></span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 10 — PRESCRIPTION DETAILS ============ -->
+  <section class="sec" id="s10">
+    <div class="screen-h"><span class="tag">SCREEN 10</span><h3>Prescription Details</h3><span class="sub">/app/prescriptions/:id</span></div>
+    <div class="device desktop">
+      <div class="dvc-bar"><span class="lbl">DESKTOP · 1440</span></div>
+      <div class="topbar"><div class="logo"><span class="mark">◎</span> Aarogyam</div><nav><span>Dashboard</span><span>Medical History</span><span>Reports</span><span class="on">Prescriptions</span></nav><div class="right"><div class="bell">◔<span class="pip">3</span></div><div class="avatar"></div></div></div>
+      <div class="appbody">
+        <div class="side"><div class="role">Patient module</div><div class="item"><span class="ic"></span>Dashboard</div><div class="item"><span class="ic"></span>Profile</div><div class="item"><span class="ic"></span>Medical History</div><div class="item"><span class="ic"></span>Reports</div><div class="item on"><span class="ic"></span>Prescriptions</div></div>
+        <div class="main">
+          <div style="display:flex;align-items:center"><span class="cap" style="margin:0">← Back to prescriptions</span><span class="btn sm" style="margin-left:auto">⤓ Download PDF</span></div>
+          <div class="grid-2" style="margin-top:12px">
+            <div class="card"><b style="font-size:12px">Prescribing doctor</b><div style="display:flex;gap:10px;margin-top:8px"><div class="avatar"></div><div><div class="ph-line dk w70" style="margin-top:2px"></div><div class="ph-line w50"></div></div></div></div>
+            <div class="card"><b style="font-size:12px">Patient</b><div style="display:flex;gap:10px;margin-top:8px"><div class="avatar"></div><div><div class="ph-line dk w70" style="margin-top:2px"></div><div class="ph-line w50"></div></div></div></div>
+          </div>
+          <div class="card" style="margin-top:14px"><b style="font-size:12px">Diagnosis</b><div style="margin-top:6px;font-size:12.5px;color:var(--g700)">Stage-1 hypertension · advised lifestyle change &amp; medication.</div></div>
+          <div class="card" style="margin-top:14px"><b style="font-size:12px">Medicines</b>
+            <table class="wf" style="margin-top:8px"><thead><tr><th>Name</th><th>Dosage</th><th>Frequency</th><th>Duration</th><th>Instructions</th></tr></thead>
+            <tbody>
+              <tr><td>Amlodipine</td><td>5 mg</td><td>Once daily</td><td>30 days</td><td>After breakfast</td></tr>
+              <tr><td>Losartan</td><td>50 mg</td><td>Once daily</td><td>30 days</td><td>At night</td></tr>
+            </tbody></table>
+          </div>
+          <div class="card" style="margin-top:14px"><b style="font-size:12px">Notes</b><div class="ph-line w90"></div><div class="ph-line w70"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 11 — QR HEALTH CARD ============ -->
+  <section class="sec" id="s11">
+    <div class="screen-h"><span class="tag">SCREEN 11</span><h3>QR Health Card</h3><span class="sub">/app/health-card · Aadhaar-style layout</span></div>
+    <div class="frames">
+      <div class="device" style="width:520px;max-width:100%">
+        <div class="dvc-bar"><span class="lbl">HEALTH CARD</span></div>
+        <div class="main" style="background:var(--g50)">
+          <div class="page-title">Your Aarogyam Health Card</div><div class="page-sub">Show this card or QR at any registered facility.</div>
+          <!-- card -->
+          <div class="card" style="background:#fff;border:1.6px solid var(--g500);max-width:440px">
+            <div style="display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--line-soft);padding-bottom:8px;margin-bottom:12px"><span class="mark" style="width:22px;height:22px;border:1.5px solid var(--g600);border-radius:6px;display:grid;place-items:center;font-size:11px">◎</span><b style="font-size:12px;letter-spacing:.1em">AAROGYAM · HEALTH IDENTITY</b></div>
+            <div style="display:flex;gap:16px">
+              <div class="ph-img" style="width:90px;min-height:110px">PHOTO</div>
+              <div style="flex:1">
+                <div class="cap" style="margin:0">Name</div><b style="font-size:14px">Jane Mehta</b>
+                <div class="cap" style="margin:8px 0 0">Aarogyam ID</div><div style="font-family:var(--mono);font-size:14px;letter-spacing:.08em">2291 4480 1123</div>
+                <div style="display:flex;gap:18px;margin-top:8px"><div><div class="cap" style="margin:0">Blood</div><b>O+</b></div><div><div class="cap" style="margin:0">Emergency</div><b style="font-size:12px">+91 ••• 4521</b></div></div>
+              </div>
+              <div class="qr lg"></div>
+            </div>
+          </div>
+          <div class="btn-row" style="margin-top:14px"><span class="btn sm">⤓ Download</span><span class="btn sm ghost">🖶 Print</span></div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:220px">
+        <p class="cap">Notes</p>
+        <div class="callout" style="margin-top:0">The card mirrors the familiarity of a national ID card so citizens immediately understand its purpose. The QR encodes a signed, scope-limited token — scanning reveals only emergency-relevant fields unless the holder authorises full access.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 12 — DOCTOR DASHBOARD ============ -->
+  <section class="sec" id="s12">
+    <div class="sec-h"><span class="num">DOCTOR</span><h2>Doctor Module</h2><a class="toplink" href="#cover">↑ top</a></div>
+
+    <div class="screen-h"><span class="tag">SCREEN 12</span><h3>Doctor Dashboard</h3><span class="sub">/dr/dashboard · approved doctors only</span></div>
+    <div class="device desktop">
+      <div class="dvc-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="lbl">DESKTOP · 1440</span></div>
+      <div class="topbar"><div class="logo"><span class="mark">◎</span> Aarogyam</div><nav><span class="on">Dashboard</span><span>Patient Search</span><span>My Patients</span></nav><div class="right"><span class="badge">Dr · Approved</span><div class="bell">◔<span class="pip">2</span></div><div class="avatar"></div></div></div>
+      <div class="appbody">
+        <div class="side"><div class="role">Doctor module</div><div class="item on"><span class="ic"></span>Dashboard</div><div class="item"><span class="ic"></span>Patient Search</div><div class="item"><span class="ic"></span>My Patients</div><div class="item"><span class="ic"></span>Create Visit</div><div class="item"><span class="ic"></span>Prescriptions</div></div>
+        <div class="main">
+          <div class="page-title">Dr. A. Rao — Cardiology</div><div class="page-sub">Today's clinical overview.</div>
+          <div class="grid-4">
+            <div class="stat"><div class="k">Patients treated</div><div class="v">318</div><div class="d">all time</div></div>
+            <div class="stat"><div class="k">Visits today</div><div class="v">7</div><div class="d">2 remaining</div></div>
+            <div class="stat"><div class="k">Diagnoses added</div><div class="v">11</div><div class="d">this week</div></div>
+            <div class="stat"><div class="k">Prescriptions</div><div class="v">26</div><div class="d">this week</div></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:14px;margin-top:14px">
+            <div class="card">
+              <div style="display:flex;align-items:center"><b style="font-size:13px">Recent patients</b><span class="cap" style="margin:0;margin-left:auto">View all</span></div>
+              <table class="wf" style="margin-top:10px"><thead><tr><th>Patient</th><th>Aarogyam ID</th><th>Last visit</th><th>Action</th></tr></thead>
+              <tbody>
+                <tr><td>R. Kapoor</td><td>2291 ••• 9087</td><td>14 Jun</td><td><span class="tact"><span>Open</span></span></td></tr>
+                <tr><td>M. Singh</td><td>4410 ••• 2231</td><td>14 Jun</td><td><span class="tact"><span>Open</span></span></td></tr>
+                <tr><td>P. Desai</td><td>1180 ••• 5567</td><td>13 Jun</td><td><span class="tact"><span>Open</span></span></td></tr>
+              </tbody></table>
+            </div>
+            <div class="stack">
+              <div class="card"><b style="font-size:13px">Quick actions</b><div class="btn-row" style="margin-top:10px"><span class="btn sm">＋ Create Visit</span><span class="btn sm ghost">Add Diagnosis</span><span class="btn sm ghost">New Prescription</span></div></div>
+              <div class="card"><b style="font-size:13px">Activity feed</b>
+                <div class="tl" style="margin-top:10px"><div class="tl-node"><div class="ph-line dk w50" style="margin-top:0"></div><div class="ph-line w80"></div></div><div class="tl-node"><div class="ph-line dk w40" style="margin-top:0"></div><div class="ph-line w70"></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 13 — PATIENT SEARCH ============ -->
+  <section class="sec" id="s13">
+    <div class="screen-h"><span class="tag">SCREEN 13</span><h3>Patient Search</h3><span class="sub">/dr/search</span></div>
+    <div class="device desktop">
+      <div class="dvc-bar"><span class="lbl">DESKTOP · 1440</span></div>
+      <div class="topbar"><div class="logo"><span class="mark">◎</span> Aarogyam</div><nav><span>Dashboard</span><span class="on">Patient Search</span><span>My Patients</span></nav><div class="right"><div class="bell">◔<span class="pip">2</span></div><div class="avatar"></div></div></div>
+      <div class="appbody">
+        <div class="side"><div class="role">Doctor module</div><div class="item"><span class="ic"></span>Dashboard</div><div class="item on"><span class="ic"></span>Patient Search</div><div class="item"><span class="ic"></span>My Patients</div><div class="item"><span class="ic"></span>Create Visit</div></div>
+        <div class="main">
+          <div class="page-title">Find a patient</div><div class="page-sub">Search the registry to open a health record.</div>
+          <div class="chips"><span class="chip on">Aarogyam ID</span><span class="chip">Name</span><span class="chip">Phone number</span></div>
+          <div style="display:flex;gap:10px;margin-bottom:16px"><div class="input" style="flex:1;margin:0">🔍 Enter Aarogyam ID…</div><span class="btn">Search</span></div>
+          <p class="cap">Results</p>
+          <div class="grid-2">
+            <div class="card"><div style="display:flex;gap:12px;align-items:center"><div class="avatar" style="width:44px;height:44px"></div><div style="flex:1"><b style="font-size:13px">R. Kapoor</b><div class="cap" style="margin:2px 0 0">AAID 2291 ••• 9087 · O+ · 41 yrs</div></div><span class="btn sm">View Record</span></div></div>
+            <div class="card"><div style="display:flex;gap:12px;align-items:center"><div class="avatar" style="width:44px;height:44px"></div><div style="flex:1"><b style="font-size:13px">R. Kapoor (Jr)</b><div class="cap" style="margin:2px 0 0">AAID 5567 ••• 1180 · A+ · 12 yrs</div></div><span class="btn sm">View Record</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 14 — PATIENT DETAILS ============ -->
+  <section class="sec" id="s14">
+    <div class="screen-h"><span class="tag">SCREEN 14</span><h3>Patient Details (Doctor view)</h3><span class="sub">/dr/patient/:id</span></div>
+    <div class="device desktop">
+      <div class="dvc-bar"><span class="lbl">DESKTOP · 1440</span></div>
+      <div class="topbar"><div class="logo"><span class="mark">◎</span> Aarogyam</div><nav><span>Dashboard</span><span class="on">Patient Search</span><span>My Patients</span></nav><div class="right"><div class="bell">◔<span class="pip">2</span></div><div class="avatar"></div></div></div>
+      <div class="appbody">
+        <div class="side"><div class="role">Doctor module</div><div class="item"><span class="ic"></span>Dashboard</div><div class="item on"><span class="ic"></span>Patient Search</div><div class="item"><span class="ic"></span>My Patients</div><div class="item"><span class="ic"></span>Create Visit</div></div>
+        <div class="main">
+          <!-- patient summary -->
+          <div class="card" style="display:flex;gap:14px;align-items:center">
+            <div class="avatar" style="width:52px;height:52px"></div>
+            <div style="flex:1"><b style="font-size:14px">R. Kapoor</b><div class="cap" style="margin:2px 0 0">AAID 2291 ••• 9087 · O+ · 41 yrs · Male</div></div>
+            <div class="btn-row"><span class="btn sm">＋ Add Visit</span><span class="btn sm ghost">Add Diagnosis</span><span class="btn sm ghost">Add Prescription</span><span class="btn sm ghost">Upload Report</span></div>
+          </div>
+          <!-- tabs -->
+          <div class="chips" style="margin-top:14px"><span class="chip on">History</span><span class="chip">Reports</span><span class="chip">Diagnoses</span><span class="chip">Prescriptions</span></div>
+          <div class="tl">
+            <div class="tl-year">2026</div>
+            <div class="tl-node"><div class="card"><div style="display:flex;align-items:center;gap:10px"><b style="font-size:13px">Visit — chest pain on exertion</b><span class="badge">Disease</span><span class="cap" style="margin:0;margin-left:auto">14 Jun</span></div><div class="ph-line w80"></div></div></div>
+            <div class="tl-node"><div class="card"><div style="display:flex;align-items:center;gap:10px"><b style="font-size:13px">Visit — routine review</b><span class="badge">Condition</span><span class="cap" style="margin:0;margin-left:auto">02 Mar</span></div><div class="ph-line w70"></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 15 — CREATE VISIT ============ -->
+  <section class="sec" id="s15">
+    <div class="screen-h"><span class="tag">SCREEN 15</span><h3>Create Visit</h3><span class="sub">/dr/visit/new</span></div>
+    <div class="device" style="width:560px;max-width:100%">
+      <div class="dvc-bar"><span class="lbl">CREATE VISIT</span></div>
+      <div class="main">
+        <div class="page-title">New visit</div><div class="page-sub">Record a consultation for this patient.</div>
+        <div class="field-l">Patient</div><div class="input">R. Kapoor · AAID 2291 ••• 9087</div>
+        <div class="field-l">Chief complaint</div><div class="input">Chest pain on exertion</div>
+        <div class="field-l">Notes</div><div class="input area"></div>
+        <div class="btn-row" style="margin-top:8px"><span class="btn ghost sm">Cancel</span><span class="btn sm">Create Visit</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 16 — ADD DIAGNOSIS ============ -->
+  <section class="sec" id="s16">
+    <div class="screen-h"><span class="tag">SCREEN 16</span><h3>Add Diagnosis</h3><span class="sub">/dr/diagnosis/new</span></div>
+    <div class="device" style="width:560px;max-width:100%">
+      <div class="dvc-bar"><span class="lbl">ADD DIAGNOSIS</span></div>
+      <div class="main">
+        <div class="page-title">Add diagnosis</div><div class="page-sub">Attach a coded diagnosis to a visit.</div>
+        <div class="row2"><div><div class="field-l">Visit</div><div class="select">Visit · 14 Jun 2026</div></div><div><div class="field-l">Diagnosis type</div><div class="select">Disease</div></div></div>
+        <div class="cap" style="margin:2px 0 8px">Type options: Disease · Vaccination · Surgery · Allergy · Condition</div>
+        <div class="field-l">Title</div><div class="input">Stage-1 hypertension</div>
+        <div class="field-l">Description</div><div class="input area"></div>
+        <div class="btn-row" style="margin-top:8px"><span class="btn ghost sm">Cancel</span><span class="btn sm">Save Diagnosis</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 17 — CREATE PRESCRIPTION ============ -->
+  <section class="sec" id="s17">
+    <div class="screen-h"><span class="tag">SCREEN 17</span><h3>Create Prescription</h3><span class="sub">/dr/prescription/new · dynamic medicine rows</span></div>
+    <div class="device desktop">
+      <div class="dvc-bar"><span class="lbl">DESKTOP · 1440</span></div>
+      <div class="main">
+        <div class="page-title">New prescription</div><div class="page-sub">Build and issue a prescription, then generate a PDF.</div>
+        <!-- header context -->
+        <div class="row3">
+          <div><div class="field-l">Patient</div><div class="input">R. Kapoor</div></div>
+          <div><div class="field-l">Visit</div><div class="select">14 Jun 2026</div></div>
+          <div><div class="field-l">Diagnosis</div><div class="select">Hypertension</div></div>
+        </div>
+        <!-- dynamic medicine section -->
+        <div class="card" style="margin-top:8px">
+          <div style="display:flex;align-items:center"><b style="font-size:13px">Medicines</b><span class="btn sm ghost" style="margin-left:auto">＋ Add medicine</span></div>
+          <table class="wf" style="margin-top:10px">
+            <thead><tr><th>Name</th><th>Dosage</th><th>Frequency</th><th>Duration</th><th>Instructions</th><th></th></tr></thead>
+            <tbody>
+              <tr><td><div class="input" style="margin:0;height:28px">Amlodipine</div></td><td><div class="input" style="margin:0;height:28px">5 mg</div></td><td><div class="input" style="margin:0;height:28px">1× daily</div></td><td><div class="input" style="margin:0;height:28px">30 d</div></td><td><div class="input" style="margin:0;height:28px">After food</div></td><td><span class="tact"><span>✕</span></span></td></tr>
+              <tr><td><div class="input" style="margin:0;height:28px">Losartan</div></td><td><div class="input" style="margin:0;height:28px">50 mg</div></td><td><div class="input" style="margin:0;height:28px">1× daily</div></td><td><div class="input" style="margin:0;height:28px">30 d</div></td><td><div class="input" style="margin:0;height:28px">At night</div></td><td><span class="tact"><span>✕</span></span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="field-l" style="margin-top:12px">Additional notes</div><div class="input area"></div>
+        <div class="btn-row" style="margin-top:8px"><span class="btn ghost sm">Generate PDF</span><span class="btn sm">Save Prescription</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 18 — APPROVAL PENDING ============ -->
+  <section class="sec" id="s18">
+    <div class="screen-h"><span class="tag">SCREEN 18</span><h3>Doctor Approval Pending</h3><span class="sub">/dr/approval-pending · gate state</span></div>
+    <div class="device" style="width:440px;max-width:100%">
+      <div class="dvc-bar"><span class="lbl">APPROVAL PENDING</span></div>
+      <div class="authpage" style="min-height:auto;padding:34px">
+        <div style="text-align:center">
+          <div class="ph-img" style="width:140px;min-height:120px;margin:0 auto 16px">REVIEW ILLUSTRATION</div>
+          <span class="badge dk" style="margin-bottom:12px">Status · Pending review</span>
+          <h4 style="margin:6px 0">Your account is under review</h4>
+          <p class="muted">An administrator is verifying your medical license. You'll be notified by email once approved — usually within 1–2 business days.</p>
+          <div class="btn-row" style="justify-content:center;margin-top:8px"><span class="btn ghost sm">Refresh status</span><span class="btn sm">Contact support</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 19 — ADMIN DASHBOARD ============ -->
+  <section class="sec" id="s19">
+    <div class="sec-h"><span class="num">ADMIN</span><h2>Admin Module</h2><a class="toplink" href="#cover">↑ top</a></div>
+
+    <div class="screen-h"><span class="tag">SCREEN 19</span><h3>Admin Dashboard</h3><span class="sub">/admin/dashboard</span></div>
+    <div class="device desktop">
+      <div class="dvc-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="lbl">DESKTOP · 1440</span></div>
+      <div class="topbar"><div class="logo"><span class="mark">◎</span> Aarogyam</div><nav><span class="on">Dashboard</span><span>Approvals</span><span>Users</span><span>Audit</span></nav><div class="right"><span class="badge">Admin</span><div class="bell">◔<span class="pip">9</span></div><div class="avatar"></div></div></div>
+      <div class="appbody">
+        <div class="side"><div class="role">Admin module</div><div class="item on"><span class="ic"></span>Dashboard</div><div class="item"><span class="ic"></span>Doctor Approvals</div><div class="item"><span class="ic"></span>User Management</div><div class="item"><span class="ic"></span>Audit Logs</div></div>
+        <div class="main">
+          <div class="page-title">Platform overview</div><div class="page-sub">System-wide health at a glance.</div>
+          <div class="grid-5">
+            <div class="stat"><div class="k">Total users</div><div class="v">48.2k</div><div class="d">+312 / wk</div></div>
+            <div class="stat"><div class="k">Patients</div><div class="v">46.1k</div></div>
+            <div class="stat"><div class="k">Doctors</div><div class="v">1,940</div></div>
+            <div class="stat"><div class="k">Pending approvals</div><div class="v">23</div><div class="d">action needed</div></div>
+            <div class="stat"><div class="k">Reports uploaded</div><div class="v">312k</div></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:14px;margin-top:14px">
+            <div class="card"><b style="font-size:13px">Registrations &amp; uploads (chart)</b>
+              <div class="ph-img" style="min-height:160px;margin-top:10px">BAR / LINE CHART PLACEHOLDER</div>
+            </div>
+            <div class="card"><b style="font-size:13px">User mix (chart)</b><div class="ph-img" style="min-height:160px;margin-top:10px">DONUT PLACEHOLDER</div></div>
+          </div>
+          <div class="card" style="margin-top:14px"><b style="font-size:13px">Recent activity</b>
+            <table class="wf" style="margin-top:10px"><thead><tr><th>User</th><th>Action</th><th>Entity</th><th>Time</th></tr></thead>
+            <tbody>
+              <tr><td>admin@aarogyam</td><td>Approved doctor</td><td>Dr. N. Shah</td><td>2m ago</td></tr>
+              <tr><td>patient · jane</td><td>Uploaded report</td><td>Lipid panel</td><td>14m ago</td></tr>
+              <tr><td>dr · a.rao</td><td>Created prescription</td><td>#PRS-3391</td><td>1h ago</td></tr>
+            </tbody></table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 20 — DOCTOR APPROVALS ============ -->
+  <section class="sec" id="s20">
+    <div class="screen-h"><span class="tag">SCREEN 20</span><h3>Doctor Approval Management</h3><span class="sub">/admin/approvals</span></div>
+    <div class="device desktop">
+      <div class="dvc-bar"><span class="lbl">DESKTOP · 1440</span></div>
+      <div class="topbar"><div class="logo"><span class="mark">◎</span> Aarogyam</div><nav><span>Dashboard</span><span class="on">Approvals</span><span>Users</span><span>Audit</span></nav><div class="right"><div class="bell">◔<span class="pip">9</span></div><div class="avatar"></div></div></div>
+      <div class="appbody">
+        <div class="side"><div class="role">Admin module</div><div class="item"><span class="ic"></span>Dashboard</div><div class="item on"><span class="ic"></span>Doctor Approvals</div><div class="item"><span class="ic"></span>User Management</div><div class="item"><span class="ic"></span>Audit Logs</div></div>
+        <div class="main">
+          <div class="page-title">Pending doctor approvals</div><div class="page-sub">Verify license details before granting access.</div>
+          <div class="input" style="margin-bottom:12px">🔍 Search by name or license…</div>
+          <table class="wf"><thead><tr><th>Doctor name</th><th>License number</th><th>Specialization</th><th>Submitted</th><th style="width:180px">Actions</th></tr></thead>
+          <tbody>
+            <tr><td>Dr. N. Shah</td><td>MCI-99213</td><td>Dermatology</td><td>12 Jun</td><td><span class="tact"><span>View docs</span><span>Approve</span><span>Reject</span></span></td></tr>
+            <tr><td>Dr. P. Menon</td><td>MCI-77410</td><td>Pediatrics</td><td>11 Jun</td><td><span class="tact"><span>View docs</span><span>Approve</span><span>Reject</span></span></td></tr>
+            <tr><td>Dr. K. Bose</td><td>MCI-30887</td><td>Orthopedics</td><td>10 Jun</td><td><span class="tact"><span>View docs</span><span>Approve</span><span>Reject</span></span></td></tr>
+          </tbody></table>
+        </div>
+      </div>
+    </div>
+    <p class="cap">Reject modal (triggered by "Reject")</p>
+    <div class="modal-wrap">
+      <div class="modal">
+        <div class="mh"><b>Reject doctor application</b><span class="x">✕</span></div>
+        <div class="mb">
+          <p class="muted" style="margin:0 0 10px">Dr. N. Shah · MCI-99213 · Dermatology</p>
+          <div class="field-l">Rejection reason</div><div class="input area"></div>
+          <div class="callout" style="margin:6px 0 0">The applicant will receive this reason by email and may re-apply with corrected documents.</div>
+        </div>
+        <div class="mf"><span class="btn ghost sm">Cancel</span><span class="btn sm">Confirm rejection</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 21 — USER MANAGEMENT ============ -->
+  <section class="sec" id="s21">
+    <div class="screen-h"><span class="tag">SCREEN 21</span><h3>User Management</h3><span class="sub">/admin/users · tabbed</span></div>
+    <div class="device desktop">
+      <div class="dvc-bar"><span class="lbl">DESKTOP · 1440</span></div>
+      <div class="topbar"><div class="logo"><span class="mark">◎</span> Aarogyam</div><nav><span>Dashboard</span><span>Approvals</span><span class="on">Users</span><span>Audit</span></nav><div class="right"><div class="bell">◔<span class="pip">9</span></div><div class="avatar"></div></div></div>
+      <div class="appbody">
+        <div class="side"><div class="role">Admin module</div><div class="item"><span class="ic"></span>Dashboard</div><div class="item"><span class="ic"></span>Doctor Approvals</div><div class="item on"><span class="ic"></span>User Management</div><div class="item"><span class="ic"></span>Audit Logs</div></div>
+        <div class="main">
+          <div class="page-title">User management</div><div class="page-sub">View, disable, or reactivate any account.</div>
+          <div class="chips"><span class="chip on">Patients</span><span class="chip">Doctors</span><span class="chip">Admins</span></div>
+          <div style="display:flex;gap:10px;margin-bottom:12px"><div class="input" style="flex:1;margin:0">🔍 Search users…</div><div class="select" style="width:140px;margin:0">Status: All</div><div class="select" style="width:140px;margin:0">Sort: Newest</div></div>
+          <table class="wf"><thead><tr><th>Name</th><th>Aarogyam ID</th><th>Email</th><th>Status</th><th style="width:160px">Actions</th></tr></thead>
+          <tbody>
+            <tr><td>Jane Mehta</td><td>2291 ••• 1123</td><td>jane@mail.com</td><td><span class="badge">Active</span></td><td><span class="tact"><span>View</span><span>Disable</span></span></td></tr>
+            <tr><td>R. Kapoor</td><td>2291 ••• 9087</td><td>rk@mail.com</td><td><span class="badge">Active</span></td><td><span class="tact"><span>View</span><span>Disable</span></span></td></tr>
+            <tr><td>S. Verma</td><td>8841 ••• 2210</td><td>sv@mail.com</td><td><span class="badge dk">Disabled</span></td><td><span class="tact"><span>View</span><span>Activate</span></span></td></tr>
+          </tbody></table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 22 — NOTIFICATIONS ============ -->
+  <section class="sec" id="s22">
+    <div class="screen-h"><span class="tag">SCREEN 22</span><h3>Notifications</h3><span class="sub">/notifications · shared across roles</span></div>
+    <div class="device" style="width:560px;max-width:100%">
+      <div class="dvc-bar"><span class="lbl">NOTIFICATIONS</span></div>
+      <div class="main">
+        <div style="display:flex;align-items:center"><div><div class="page-title">Notifications</div><div class="page-sub">Stay on top of approvals, reports, and reminders.</div></div><span class="btn sm ghost" style="margin-left:auto">Mark all read</span></div>
+        <div class="chips"><span class="chip on">All</span><span class="chip">Unread</span><span class="chip">Read</span></div>
+        <div class="stack">
+          <div class="note unread"><div class="nic">℞</div><div class="nt"><b style="font-size:12.5px">New prescription added</b><div class="ph-line w90"></div><div class="cap" style="margin:4px 0 0">2m ago</div></div></div>
+          <div class="note unread"><div class="nic">⤒</div><div class="nt"><b style="font-size:12.5px">Report uploaded by Dr. A. Rao</b><div class="ph-line w70"></div><div class="cap" style="margin:4px 0 0">1h ago</div></div></div>
+          <div class="note"><div class="nic">✓</div><div class="nt"><b style="font-size:12.5px">Profile updated</b><div class="ph-line w60"></div><div class="cap" style="margin:4px 0 0">Yesterday</div></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 23 — AUDIT LOGS ============ -->
+  <section class="sec" id="s23">
+    <div class="screen-h"><span class="tag">SCREEN 23</span><h3>Audit Logs</h3><span class="sub">/admin/audit-logs</span></div>
+    <div class="device desktop">
+      <div class="dvc-bar"><span class="lbl">DESKTOP · 1440</span></div>
+      <div class="topbar"><div class="logo"><span class="mark">◎</span> Aarogyam</div><nav><span>Dashboard</span><span>Approvals</span><span>Users</span><span class="on">Audit</span></nav><div class="right"><div class="bell">◔<span class="pip">9</span></div><div class="avatar"></div></div></div>
+      <div class="appbody">
+        <div class="side"><div class="role">Admin module</div><div class="item"><span class="ic"></span>Dashboard</div><div class="item"><span class="ic"></span>Doctor Approvals</div><div class="item"><span class="ic"></span>User Management</div><div class="item on"><span class="ic"></span>Audit Logs</div></div>
+        <div class="main">
+          <div class="page-title">Audit logs</div><div class="page-sub">Immutable trail of every sensitive action.</div>
+          <div style="display:flex;gap:10px;margin-bottom:12px"><div class="input" style="flex:1;margin:0">🔍 Search by user, entity, or IP…</div><div class="select" style="width:150px;margin:0">Action: All</div><div class="select" style="width:160px;margin:0">Date: Last 7 days</div></div>
+          <table class="wf"><thead><tr><th>User</th><th>Action</th><th>Entity</th><th>Date</th><th>IP address</th></tr></thead>
+          <tbody>
+            <tr><td>admin@aarogyam</td><td>APPROVE_DOCTOR</td><td>Dr. N. Shah</td><td>14 Jun 09:12</td><td>10.4.22.118</td></tr>
+            <tr><td>dr · a.rao</td><td>CREATE_PRESCRIPTION</td><td>#PRS-3391</td><td>14 Jun 08:40</td><td>10.4.30.7</td></tr>
+            <tr><td>patient · jane</td><td>UPLOAD_REPORT</td><td>Lipid panel</td><td>14 Jun 08:05</td><td>49.36.7.221</td></tr>
+            <tr><td>admin@aarogyam</td><td>DISABLE_USER</td><td>S. Verma</td><td>13 Jun 17:31</td><td>10.4.22.118</td></tr>
+          </tbody></table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ RESPONSIVE ============ -->
+  <section class="sec" id="responsive">
+    <div class="sec-h"><span class="num">06</span><h2>Responsive Layouts</h2><a class="toplink" href="#cover">↑ top</a></div>
+    <p class="sec-note">The same screens reflow across three breakpoints. The shell adapts predictably: the sidebar collapses to a bottom tab bar / hamburger drawer, multi-column grids stack, and tables switch to stacked cards on mobile.</p>
+
+    <p class="cap">Breakpoint rules</p>
+    <table class="wf" style="margin-bottom:22px">
+      <thead><tr><th>Breakpoint</th><th>Width</th><th>Grid</th><th>Navigation</th><th>Tables</th></tr></thead>
+      <tbody>
+        <tr><td>Desktop</td><td>≥ 1024px</td><td>12-col</td><td>Top bar + persistent left sidebar</td><td>Full table</td></tr>
+        <tr><td>Tablet</td><td>768–1023px</td><td>8-col</td><td>Top bar + collapsible icon sidebar</td><td>Full table, horizontal scroll</td></tr>
+        <tr><td>Mobile</td><td>≤ 767px</td><td>4-col / stacked</td><td>Top bar + hamburger drawer + bottom tabs</td><td>Stacked record cards</td></tr>
+      </tbody>
+    </table>
+
+    <p class="cap">Patient dashboard across breakpoints</p>
+    <div class="frames">
+      <!-- tablet -->
+      <div class="device tablet">
+        <div class="dvc-bar"><span class="lbl">TABLET · 834</span></div>
+        <div class="topbar" style="height:44px"><div class="logo" style="font-size:12px"><span class="mark" style="width:20px;height:20px">≡</span>Aarogyam</div><div class="right"><div class="bell" style="width:22px;height:22px">◔</div><div class="avatar" style="width:22px;height:22px"></div></div></div>
+        <div class="appbody" style="grid-template-columns:54px 1fr">
+          <div class="side" style="padding:10px 6px;min-height:auto"><div class="item on" style="justify-content:center;padding:8px 0"><span class="ic"></span></div><div class="item" style="justify-content:center;padding:8px 0"><span class="ic"></span></div><div class="item" style="justify-content:center;padding:8px 0"><span class="ic"></span></div><div class="item" style="justify-content:center;padding:8px 0"><span class="ic"></span></div></div>
+          <div class="main" style="padding:12px">
+            <div class="page-title" style="font-size:13px">Good morning, Jane</div>
+            <div class="grid-2"><div class="stat"><div class="k">Visits</div><div class="v" style="font-size:18px">12</div></div><div class="stat"><div class="k">Diagnoses</div><div class="v" style="font-size:18px">5</div></div><div class="stat"><div class="k">℞</div><div class="v" style="font-size:18px">9</div></div><div class="stat"><div class="k">Reports</div><div class="v" style="font-size:18px">23</div></div></div>
+            <div class="card" style="margin-top:12px"><b style="font-size:12px">QR Health Card</b><div class="qr" style="margin:8px auto 0"></div></div>
+          </div>
+        </div>
+      </div>
+      <!-- mobile -->
+      <div class="device mobile">
+        <div class="dvc-bar"><span class="lbl">MOBILE · 390</span></div>
+        <div class="topbar" style="height:42px;padding:0 10px"><span class="mark" style="width:20px;height:20px">≡</span><div class="logo" style="font-size:12px">Aarogyam</div><div class="right"><div class="bell" style="width:22px;height:22px">◔<span class="pip">3</span></div></div></div>
+        <div class="main" style="padding:12px">
+          <div class="page-title" style="font-size:13px">Hi, Jane</div>
+          <div class="grid-2"><div class="stat"><div class="k">Visits</div><div class="v" style="font-size:18px">12</div></div><div class="stat"><div class="k">Reports</div><div class="v" style="font-size:18px">23</div></div></div>
+          <div class="card" style="margin-top:10px;text-align:center"><div class="avatar" style="width:40px;height:40px;margin:0 auto 6px"></div><b style="font-size:12px">Jane Mehta</b><div class="badge" style="margin-top:4px">AAID 2291…</div></div>
+          <div class="card" style="margin-top:10px;text-align:center"><div class="qr" style="margin:0 auto"></div><span class="btn sm ghost block" style="margin-top:8px">Download QR</span></div>
+        </div>
+        <!-- bottom tab bar -->
+        <div style="display:flex;border-top:1.4px solid var(--line);background:#fbfbfb">
+          <div style="flex:1;text-align:center;padding:8px 0"><div class="ic" style="width:16px;height:16px;margin:0 auto;border:1.4px solid var(--g600);border-radius:4px;background:var(--g500)"></div><div class="cap" style="margin:3px 0 0;font-size:8px">Home</div></div>
+          <div style="flex:1;text-align:center;padding:8px 0"><div class="ic" style="width:16px;height:16px;margin:0 auto;border:1.4px solid var(--g400);border-radius:4px"></div><div class="cap" style="margin:3px 0 0;font-size:8px">History</div></div>
+          <div style="flex:1;text-align:center;padding:8px 0"><div class="ic" style="width:16px;height:16px;margin:0 auto;border:1.4px solid var(--g400);border-radius:4px"></div><div class="cap" style="margin:3px 0 0;font-size:8px">℞</div></div>
+          <div style="flex:1;text-align:center;padding:8px 0"><div class="ic" style="width:16px;height:16px;margin:0 auto;border:1.4px solid var(--g400);border-radius:4px"></div><div class="cap" style="margin:3px 0 0;font-size:8px">Card</div></div>
+          <div style="flex:1;text-align:center;padding:8px 0"><div class="ic" style="width:16px;height:16px;margin:0 auto;border:1.4px solid var(--g400);border-radius:4px"></div><div class="cap" style="margin:3px 0 0;font-size:8px">Me</div></div>
+        </div>
+      </div>
+      <!-- mobile table-as-cards -->
+      <div class="device mobile">
+        <div class="dvc-bar"><span class="lbl">MOBILE · TABLE → CARDS</span></div>
+        <div class="main" style="padding:12px">
+          <div class="page-title" style="font-size:13px">Reports</div>
+          <div class="input" style="height:30px">🔍 Search…</div>
+          <div class="card" style="padding:10px;margin-bottom:8px"><div style="display:flex;justify-content:space-between"><b style="font-size:12px">Lipid panel</b><span class="badge">Lab</span></div><div class="cap" style="margin:4px 0">14 Jun · Self</div><div class="tact"><span>View</span><span>Download</span><span>Delete</span></div></div>
+          <div class="card" style="padding:10px"><div style="display:flex;justify-content:space-between"><b style="font-size:12px">Chest X-Ray</b><span class="badge">Imaging</span></div><div class="cap" style="margin:4px 0">14 Jun · Dr. Rao</div><div class="tact"><span>View</span><span>Download</span><span>Delete</span></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ COMPONENT LIBRARY ============ -->
+  <section class="sec" id="components">
+    <div class="sec-h"><span class="num">07</span><h2>Component Library &amp; Reusable UI</h2><a class="toplink" href="#cover">↑ top</a></div>
+    <p class="sec-note">The atomic building blocks every screen reuses. Each maps to a single React component with documented props, ready for a Storybook / Figma component set.</p>
+
+    <div class="grid-3">
+      <div class="card"><p class="cap">Buttons · &lt;Button variant size&gt;</p><div class="btn-row"><span class="btn sm">Primary</span><span class="btn sm ghost">Secondary</span><span class="btn sm sub">Subtle</span></div></div>
+      <div class="card"><p class="cap">Badges · &lt;Badge tone&gt;</p><span class="badge">Active</span> <span class="badge dk">Pending</span> <span class="chip on">Selected</span> <span class="chip">Filter</span></div>
+      <div class="card"><p class="cap">Inputs · &lt;Field&gt;</p><div class="input" style="margin:0 0 8px">Text input</div><div class="select" style="margin:0">Select / dropdown</div></div>
+
+      <div class="card"><p class="cap">Stat card · &lt;StatCard&gt;</p><div class="stat"><div class="k">Total visits</div><div class="v">12</div><div class="d">last: 14 Jun</div></div></div>
+      <div class="card"><p class="cap">Profile card · &lt;ProfileCard&gt;</p><div style="display:flex;gap:10px;align-items:center"><div class="avatar" style="width:40px;height:40px"></div><div><b style="font-size:12px">Jane Mehta</b><div class="badge" style="margin-top:3px">AAID 2291…</div></div></div></div>
+      <div class="card"><p class="cap">QR card · &lt;QRCard&gt;</p><div style="display:flex;gap:10px;align-items:center"><div class="qr" style="width:64px;height:64px;background-size:9px 9px"></div><span class="btn sm ghost">Download</span></div></div>
+
+      <div class="card"><p class="cap">Search · &lt;SearchBar&gt;</p><div class="input" style="margin:0">🔍 Search…</div></div>
+      <div class="card"><p class="cap">Filter chips · &lt;FilterChips&gt;</p><div class="chips" style="margin:0"><span class="chip on">All</span><span class="chip">Disease</span><span class="chip">Surgery</span></div></div>
+      <div class="card"><p class="cap">Notification · &lt;NotiItem&gt;</p><div class="note" style="padding:8px"><div class="nic" style="width:26px;height:26px">℞</div><div class="nt"><div class="ph-line dk w60" style="margin-top:0"></div><div class="ph-line w90"></div></div></div></div>
+
+      <div class="card"><p class="cap">Timeline node · &lt;TimelineNode&gt;</p><div class="tl" style="padding-left:18px"><div class="tl-node" style="margin:0"><div class="ph-line dk w50" style="margin-top:0"></div><div class="ph-line w80"></div></div></div></div>
+      <div class="card"><p class="cap">Avatar · &lt;Avatar size&gt;</p><div style="display:flex;gap:8px;align-items:center"><div class="avatar" style="width:24px;height:24px"></div><div class="avatar" style="width:32px;height:32px"></div><div class="avatar" style="width:44px;height:44px"></div></div></div>
+      <div class="card"><p class="cap">Dropzone · &lt;FileDrop&gt;</p><div class="drop" style="padding:12px"><div class="ic" style="width:26px;height:26px;font-size:13px">⤒</div>Drop file</div></div>
+    </div>
+
+    <p class="cap" style="margin-top:18px">Table component · &lt;DataTable columns rows actions&gt;</p>
+    <table class="wf"><thead><tr><th>Column A</th><th>Column B</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+      <tr><td>Row value</td><td>Row value</td><td><span class="badge">Active</span></td><td><span class="tact"><span>View</span><span>Edit</span></span></td></tr>
+      <tr><td>Row value</td><td>Row value</td><td><span class="badge dk">Disabled</span></td><td><span class="tact"><span>View</span><span>Edit</span></span></td></tr>
+    </tbody></table>
+
+    <p class="cap" style="margin-top:18px">Dashboard layout system</p>
+    <div class="card soft" style="font-family:var(--mono);font-size:11.5px;color:var(--g600);line-height:1.7">
+      [ TopBar ]<br>
+      [ Sidebar | &nbsp;Header (title + actions) &nbsp;]<br>
+      [ Sidebar | &nbsp;StatCard ×4 (responsive grid) &nbsp;]<br>
+      [ Sidebar | &nbsp;Primary panel (2fr) &nbsp;·&nbsp; Aside (1fr) &nbsp;]<br>
+      [ Sidebar | &nbsp;DataTable / Timeline (full width) &nbsp;]
+    </div>
+  </section>
+
+  <!-- ============ STATES ============ -->
+  <section class="sec" id="states">
+    <div class="sec-h"><span class="num">08</span><h2>Empty · Error · Loading States</h2><a class="toplink" href="#cover">↑ top</a></div>
+    <p class="sec-note">Every data surface ships with three companion states. Copy is action-oriented: empty states invite, errors explain and recover, loaders reassure.</p>
+
+    <div class="grid-3">
+      <!-- empty -->
+      <div class="device"><div class="dvc-bar"><span class="lbl">EMPTY STATE</span></div>
+        <div class="main" style="text-align:center;display:grid;place-items:center;min-height:300px">
+          <div>
+            <div class="ph-img" style="width:90px;min-height:80px;margin:0 auto 14px">∅</div>
+            <b style="font-size:13px;display:block">No reports yet</b>
+            <p class="muted" style="max-width:220px;margin:6px auto 12px">Upload your first medical report to start building your health timeline.</p>
+            <span class="btn sm">＋ Upload Report</span>
+          </div>
+        </div>
+      </div>
+      <!-- error -->
+      <div class="device"><div class="dvc-bar"><span class="lbl">ERROR STATE</span></div>
+        <div class="main" style="text-align:center;display:grid;place-items:center;min-height:300px">
+          <div>
+            <div class="ph-img" style="width:90px;min-height:80px;margin:0 auto 14px">!</div>
+            <b style="font-size:13px;display:block">Couldn't load your records</b>
+            <p class="muted" style="max-width:220px;margin:6px auto 12px">Something went wrong on our side. Your data is safe — try again in a moment.</p>
+            <div class="btn-row" style="justify-content:center"><span class="btn sm">Retry</span><span class="btn sm ghost">Contact support</span></div>
+          </div>
+        </div>
+      </div>
+      <!-- loading -->
+      <div class="device"><div class="dvc-bar"><span class="lbl">LOADING / SKELETON</span></div>
+        <div class="main" style="min-height:300px">
+          <div class="ph-head" style="width:50%"></div>
+          <div class="grid-2"><div class="stat"><div class="ph-line w50" style="margin-top:0"></div><div class="ph-line w70"></div></div><div class="stat"><div class="ph-line w50" style="margin-top:0"></div><div class="ph-line w70"></div></div></div>
+          <div class="card" style="margin-top:12px"><div class="ph-line w40" style="margin-top:0"></div><div class="ph-line w90"></div><div class="ph-line w80"></div><div class="ph-line w60"></div></div>
+          <div class="cap" style="text-align:center;margin-top:14px">◔ Loading your records…</div>
+        </div>
+      </div>
+    </div>
+
+    <p class="cap" style="margin-top:18px">Inline states</p>
+    <div class="grid-3">
+      <div class="card"><p class="cap">Empty search</p><div style="text-align:center;color:var(--g500);font-size:12px;padding:10px">No patient found for "2291 0000". <br>Check the ID and try again.</div></div>
+      <div class="card"><p class="cap">Form error</p><div class="field-l">Email</div><div class="input" style="border-color:var(--g600);margin-bottom:4px">jane@</div><div style="font-size:10.5px;color:var(--g700)">Enter a valid email address.</div></div>
+      <div class="card"><p class="cap">Button loading</p><div class="btn sm" style="opacity:.7">◌ Saving…</div></div>
+    </div>
+  </section>
+
+  <!-- ============ MODAL LIBRARY ============ -->
+  <section class="sec" id="modals">
+    <div class="sec-h"><span class="num">09</span><h2>Modal Library</h2><a class="toplink" href="#cover">↑ top</a></div>
+    <p class="sec-note">A single &lt;Modal&gt; shell with header, body, and footer slots covers every dialog. Three representative variants below; the upload and reject modals appear in-context on Screens 08 and 20.</p>
+    <div class="frames">
+      <div class="modal-wrap" style="flex:1;min-width:300px">
+        <div class="modal" style="width:320px">
+          <div class="mh"><b>Confirm download</b><span class="x">✕</span></div>
+          <div class="mb"><p class="muted" style="margin:0">Download all health records as a single encrypted PDF?</p></div>
+          <div class="mf"><span class="btn ghost sm">Cancel</span><span class="btn sm">Download</span></div>
+        </div>
+      </div>
+      <div class="modal-wrap" style="flex:1;min-width:300px">
+        <div class="modal" style="width:320px">
+          <div class="mh"><b>Disable account</b><span class="x">✕</span></div>
+          <div class="mb"><div class="callout" style="margin:0 0 10px">This user will lose access immediately. You can reactivate them later.</div><div class="field-l">Reason (optional)</div><div class="input" style="margin:0"></div></div>
+          <div class="mf"><span class="btn ghost sm">Cancel</span><span class="btn sm">Disable</span></div>
+        </div>
+      </div>
+      <div class="modal-wrap" style="flex:1;min-width:300px">
+        <div class="modal" style="width:320px">
+          <div class="mh"><b>Share QR access</b><span class="x">✕</span></div>
+          <div class="mb" style="text-align:center"><div class="qr" style="margin:0 auto 10px"></div><p class="muted" style="margin:0">Valid for 10 minutes · emergency fields only</p></div>
+          <div class="mf"><span class="btn ghost sm">Close</span><span class="btn sm">Regenerate</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CLOSING ============ -->
+  <section class="sec" style="border-top:1px solid var(--line);padding-top:20px">
+    <p class="cap">End of package</p>
+    <p style="font-size:13px;color:var(--g600);max-width:760px">This grayscale system defines layout, hierarchy, components, flows, and states for all 23 Aarogyam screens across three roles and three breakpoints. Next steps: translate tokens to Figma styles, build the component set listed in §07, then implement the React shell (TopBar + role-aware Sidebar + routed module pages) with the route map from §01 and the access rules from §04.</p>
+  </section>
+
+  </main>
+</div>
+</body>
+</html>
