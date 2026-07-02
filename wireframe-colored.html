@@ -491,11 +491,13 @@
           <div class="arrow"></div>
           <div class="node dash" style="min-width:auto">Patient Search</div>
           <div class="arrow"></div>
-          <div class="node dash" style="min-width:auto">Patient Details</div>
+          <div class="node dash" style="min-width:auto">Patient Details → Add Visit</div>
           <div class="arrow"></div>
-          <div class="node dash" style="min-width:auto">Create Visit → Diagnosis</div>
+          <div class="node dash" style="min-width:auto">① Create Visit</div>
           <div class="arrow"></div>
-          <div class="node dash" style="min-width:auto">Create Prescription → PDF</div>
+          <div class="node dash" style="min-width:auto">② Add Diagnosis</div>
+          <div class="arrow"></div>
+          <div class="node dash" style="min-width:auto">③ Create Prescription → PDF</div>
         </div>
       </div>
       <div class="card">
@@ -674,8 +676,8 @@
             <div class="row2"><div><div class="field-l">Blood group</div><div class="select">Select</div></div><div><div class="field-l">Emergency contact</div><div class="input">+91 ……</div></div></div>
             <div class="field-l">Address</div><div class="input area"></div>
             <div class="row3"><div><div class="field-l">Country</div><div class="select">India</div></div><div><div class="field-l">State</div><div class="select">Select</div></div><div><div class="field-l">City</div><div class="select">Select</div></div></div>
-            <div class="btn-row"><span class="btn ghost">Send OTP</span><span class="btn block" style="flex:1">Register</span></div>
-            <p class="muted" style="margin-top:12px">Already registered? <b>Login</b></p>
+            <div class="btn-row"><span class="btn block" style="flex:1">Register</span></div>
+            <p class="muted" style="margin-top:12px">We'll text/email you a verification code automatically. Already registered? <b>Login</b></p>
           </div>
         </div>
       </div>
@@ -695,7 +697,8 @@
               <div><div class="field-l">Degree certificate</div><div class="drop" style="padding:12px"><div class="ic" style="width:26px;height:26px;font-size:13px">⤒</div>Upload PDF/JPG</div></div>
             </div>
             <div class="callout" style="margin:8px 0">Doctor accounts require admin approval — license &amp; degree documents are verified before access is granted.</div>
-            <div class="btn-row"><span class="btn ghost">Send OTP</span><span class="btn">Register</span></div>
+            <div class="btn-row"><span class="btn block" style="flex:1">Register</span></div>
+            <p class="muted" style="margin-top:12px">We'll text/email you a verification code automatically.</p>
           </div>
         </div>
       </div>
@@ -1049,7 +1052,7 @@
               </tbody></table>
             </div>
             <div class="stack">
-              <div class="card"><b style="font-size:13px">Quick actions</b><div class="btn-row" style="margin-top:10px"><span class="btn sm">＋ Create Visit</span><span class="btn sm ghost">Add Diagnosis</span><span class="btn sm ghost">New Prescription</span></div></div>
+              <div class="card"><b style="font-size:13px">Quick actions</b><div class="btn-row" style="margin-top:10px"><span class="btn sm">＋ Create Visit</span></div><div class="cap" style="margin-top:8px">Diagnosis &amp; prescription are added as part of a visit, not standalone.</div></div>
               <div class="card"><b style="font-size:13px">Activity feed</b>
                 <div class="tl" style="margin-top:10px"><div class="tl-node"><div class="ph-line dk w50" style="margin-top:0"></div><div class="ph-line w80"></div></div><div class="tl-node"><div class="ph-line dk w40" style="margin-top:0"></div><div class="ph-line w70"></div></div></div>
               </div>
@@ -1095,7 +1098,7 @@
           <div class="card" style="display:flex;gap:14px;align-items:center">
             <div class="avatar" style="width:52px;height:52px"></div>
             <div style="flex:1"><b style="font-size:14px">R. Kapoor</b><div class="cap" style="margin:2px 0 0">AAID 2291 ••• 9087 · O+ · 41 yrs · Male</div></div>
-            <div class="btn-row"><span class="btn sm">＋ Add Visit</span><span class="btn sm ghost">Add Diagnosis</span><span class="btn sm ghost">Add Prescription</span><span class="btn sm ghost">Upload Report</span></div>
+            <div class="btn-row"><span class="btn sm">＋ Add Visit</span><span class="btn sm ghost">Upload Report</span></div>
           </div>
           <!-- tabs -->
           <div class="chips" style="margin-top:14px"><span class="chip on">History</span><span class="chip">Reports</span><span class="chip">Diagnoses</span><span class="chip">Prescriptions</span></div>
@@ -1111,41 +1114,45 @@
 
   <!-- ============ SCREEN 15 — CREATE VISIT ============ -->
   <section class="sec" id="s15">
-    <div class="screen-h"><span class="tag">SCREEN 15</span><h3>Create Visit</h3><span class="sub">/dr/visit/new</span></div>
+    <div class="screen-h"><span class="tag">SCREEN 15</span><h3>Create Visit</h3><span class="sub">/dr/visit/new · step 1 of 3</span></div>
+    <p class="sec-note" style="margin-top:-4px">Diagnosis &amp; prescription are no longer separate standalone actions — they only exist as the next steps of the visit a doctor is currently creating.</p>
     <div class="device" style="width:560px;max-width:100%">
       <div class="dvc-bar"><span class="lbl">CREATE VISIT</span></div>
       <div class="main">
+        <div class="chips" style="margin-bottom:14px"><span class="chip on">① Visit</span><span class="chip">② Diagnosis</span><span class="chip">③ Prescription</span></div>
         <div class="page-title">New visit</div><div class="page-sub">Record a consultation for this patient.</div>
         <div class="field-l">Patient</div><div class="input">R. Kapoor · AAID 2291 ••• 9087</div>
         <div class="field-l">Visit date &amp; time</div><div class="input">14 Jun 2026, 10:30 AM</div>
         <div class="field-l">Notes</div><div class="input area">Chest pain on exertion…</div>
-        <div class="btn-row" style="margin-top:8px"><span class="btn ghost sm">Cancel</span><span class="btn sm">Create Visit</span></div>
+        <div class="btn-row" style="margin-top:8px"><span class="btn ghost sm">Cancel</span><span class="btn sm">Create Visit → Continue to Diagnosis</span></div>
       </div>
     </div>
   </section>
 
   <!-- ============ SCREEN 16 — ADD DIAGNOSIS ============ -->
   <section class="sec" id="s16">
-    <div class="screen-h"><span class="tag">SCREEN 16</span><h3>Add Diagnosis</h3><span class="sub">/dr/diagnosis/new</span></div>
+    <div class="screen-h"><span class="tag">SCREEN 16</span><h3>Add Diagnosis</h3><span class="sub">/dr/diagnosis/new · step 2 of 3</span></div>
     <div class="device" style="width:560px;max-width:100%">
       <div class="dvc-bar"><span class="lbl">ADD DIAGNOSIS</span></div>
       <div class="main">
-        <div class="page-title">Add diagnosis</div><div class="page-sub">Attach a coded diagnosis to a visit.</div>
+        <div class="chips" style="margin-bottom:14px"><span class="chip">① Visit</span><span class="chip on">② Diagnosis</span><span class="chip">③ Prescription</span></div>
+        <div class="page-title">Add diagnosis</div><div class="page-sub">Attach a coded diagnosis to the visit just created.</div>
         <div class="row2"><div><div class="field-l">Visit</div><div class="select">Visit · 14 Jun 2026</div></div><div><div class="field-l">Diagnosis type</div><div class="select">Disease</div></div></div>
         <div class="cap" style="margin:2px 0 8px">Type options: Disease · Vaccination · Surgery · Allergy · Condition</div>
         <div class="row2"><div><div class="field-l">Title</div><div class="input">Stage-1 hypertension</div></div><div><div class="field-l">Diagnosis date</div><div class="input">14 Jun 2026</div></div></div>
         <div class="field-l">Description</div><div class="input area"></div>
-        <div class="btn-row" style="margin-top:8px"><span class="btn ghost sm">Cancel</span><span class="btn sm">Save Diagnosis</span></div>
+        <div class="btn-row" style="margin-top:8px"><span class="btn ghost sm">Skip this step</span><span class="btn sm">Save Diagnosis → Continue to Prescription</span></div>
       </div>
     </div>
   </section>
 
   <!-- ============ SCREEN 17 — CREATE PRESCRIPTION ============ -->
   <section class="sec" id="s17">
-    <div class="screen-h"><span class="tag">SCREEN 17</span><h3>Create Prescription</h3><span class="sub">/dr/prescription/new · dynamic medicine rows</span></div>
+    <div class="screen-h"><span class="tag">SCREEN 17</span><h3>Create Prescription</h3><span class="sub">/dr/prescription/new · step 3 of 3</span></div>
     <div class="device desktop">
       <div class="dvc-bar"><span class="lbl">DESKTOP · 1440</span></div>
       <div class="main">
+        <div class="chips" style="margin-bottom:14px"><span class="chip">① Visit</span><span class="chip">② Diagnosis</span><span class="chip on">③ Prescription</span></div>
         <div class="page-title">New prescription</div><div class="page-sub">Write the prescription as free text, then generate a PDF.</div>
         <!-- header context -->
         <div class="row3">
@@ -1160,7 +1167,7 @@
           <div class="cap" style="margin:4px 0 8px">Medicines, dosage, frequency &amp; instructions — written as a single note</div>
           <div class="input area" style="height:180px;align-items:flex-start;flex-direction:column;justify-content:flex-start">Amlodipine 5mg — once daily, after breakfast, 30 days<br>Losartan 50mg — once daily, at night, 30 days</div>
         </div>
-        <div class="btn-row" style="margin-top:8px"><span class="btn ghost sm">Generate PDF</span><span class="btn sm">Save Prescription</span></div>
+        <div class="btn-row" style="margin-top:8px"><span class="btn ghost sm">Skip — finish without prescription</span><span class="btn sm">Save Prescription → Done</span></div>
       </div>
     </div>
   </section>
