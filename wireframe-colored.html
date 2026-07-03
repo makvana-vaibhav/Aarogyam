@@ -290,6 +290,7 @@
     <a href="#s21">21 · User Management</a>
     <a href="#s22">22 · Notifications</a>
     <a href="#s23">23 · Audit Logs</a>
+    <a href="#s24">24 · Master Data</a>
     <div class="grp">Systems</div>
     <a href="#responsive">Responsive Layouts</a>
     <a href="#components">Component Library</a>
@@ -302,9 +303,9 @@
   <!-- ============ COVER ============ -->
   <section class="sec" id="cover">
     <div class="sec-h"><span class="num">DOC</span><h2>Aarogyam — Low-Fidelity Wireframe Package</h2></div>
-    <p class="sec-note"><b>"One Health Identity For Life."</b> A digital health-identity platform giving every citizen a unique Aarogyam ID that centralises medical reports, prescriptions, diagnoses, a health timeline, doctor consultations, and a QR health card. This document is a grayscale, production-oriented wireframe system covering 23 screens across three roles — Patient, Doctor, Admin — plus flows, responsive frames, a component library, and state designs. Built for direct hand-off to Figma and React.</p>
+    <p class="sec-note"><b>"One Health Identity For Life."</b> A digital health-identity platform giving every citizen a unique Aarogyam ID that centralises medical reports, prescriptions, diagnoses, a health timeline, doctor consultations, and a QR health card. This document is a grayscale, production-oriented wireframe system covering 24 screens across three roles — Patient, Doctor, Admin — plus flows, responsive frames, a component library, and state designs. Built for direct hand-off to Figma and React.</p>
     <div class="grid-4">
-      <div class="stat"><div class="k">Screens</div><div class="v">23</div><div class="d">Auth · Patient · Doctor · Admin</div></div>
+      <div class="stat"><div class="k">Screens</div><div class="v">24</div><div class="d">Auth · Patient · Doctor · Admin</div></div>
       <div class="stat"><div class="k">Roles</div><div class="v">3</div><div class="d">RBAC enforced</div></div>
       <div class="stat"><div class="k">Breakpoints</div><div class="v">3</div><div class="d">Desktop · Tablet · Mobile</div></div>
       <div class="stat"><div class="k">Fidelity</div><div class="v">Lo</div><div class="d">Grayscale, structure-first</div></div>
@@ -410,6 +411,7 @@
             <li>/admin/dashboard</li>
             <li>/admin/approvals</li>
             <li>/admin/users</li>
+            <li>/admin/master-data</li>
             <li>/admin/notifications</li>
             <li>/admin/audit-logs</li>
           </ul>
@@ -489,11 +491,13 @@
           <div class="arrow"></div>
           <div class="node dash" style="min-width:auto">Patient Search</div>
           <div class="arrow"></div>
-          <div class="node dash" style="min-width:auto">Patient Details</div>
+          <div class="node dash" style="min-width:auto">Patient Details → Add Visit</div>
           <div class="arrow"></div>
-          <div class="node dash" style="min-width:auto">Create Visit → Diagnosis</div>
+          <div class="node dash" style="min-width:auto">① Create Visit</div>
           <div class="arrow"></div>
-          <div class="node dash" style="min-width:auto">Create Prescription → PDF</div>
+          <div class="node dash" style="min-width:auto">② Add Diagnosis</div>
+          <div class="arrow"></div>
+          <div class="node dash" style="min-width:auto">③ Create Prescription → PDF</div>
         </div>
       </div>
       <div class="card">
@@ -504,6 +508,8 @@
           <div class="node dash" style="min-width:auto">Doctor Approvals → Reject modal</div>
           <div class="arrow"></div>
           <div class="node dash" style="min-width:auto">User Management (tabs)</div>
+          <div class="arrow"></div>
+          <div class="node dash" style="min-width:auto">Master Data (Country/State/City/Hospital/Degree/Specialization/Diagnosis Type)</div>
           <div class="arrow"></div>
           <div class="node dash" style="min-width:auto">Notifications</div>
           <div class="arrow"></div>
@@ -526,6 +532,7 @@
         <tr><td>Search any patient by ID</td><td>✗</td><td>✔</td><td>✔</td></tr>
         <tr><td>Approve / reject doctors</td><td>✗</td><td>✗</td><td>✔</td></tr>
         <tr><td>Manage users (disable / activate)</td><td>✗</td><td>✗</td><td>✔</td></tr>
+        <tr><td>Manage master/lookup data (country, hospital, degree, specialization…)</td><td>✗</td><td>✗</td><td>✔</td></tr>
         <tr><td>View audit logs</td><td>✗</td><td>✗</td><td>✔</td></tr>
         <tr><td>Generate QR health card</td><td>✔</td><td>✗</td><td>✗</td></tr>
       </tbody>
@@ -583,6 +590,7 @@
           <div class="item on"><span class="ic"></span>Dashboard</div>
           <div class="item"><span class="ic"></span>Doctor Approvals</div>
           <div class="item"><span class="ic"></span>User Management</div>
+          <div class="item"><span class="ic"></span>Master Data</div>
           <div class="item"><span class="ic"></span>Audit Logs</div>
           <hr><div class="item"><span class="ic"></span>Notifications</div>
           <div class="item"><span class="ic"></span>Log out</div>
@@ -660,29 +668,37 @@
             <p class="muted">It takes about two minutes.</p>
             <div class="field-l">Account type</div>
             <div class="chips"><span class="chip on">Patient</span><span class="chip">Doctor</span></div>
-            <div class="field-l">Full name</div><div class="input">Jane Mehta</div>
+            <div class="row3"><div><div class="field-l">First name</div><div class="input">Jane</div></div><div><div class="field-l">Middle name</div><div class="input"></div></div><div><div class="field-l">Last name</div><div class="input">Mehta</div></div></div>
             <div class="row2"><div><div class="field-l">Email</div><div class="input">jane@mail.com</div></div><div><div class="field-l">Phone</div><div class="input">+91 ……</div></div></div>
             <div class="row2"><div><div class="field-l">Password</div><div class="input">••••••••</div></div><div><div class="field-l">Confirm password</div><div class="input">••••••••</div></div></div>
             <div class="cap" style="margin:6px 0 10px">— Patient details —</div>
             <div class="row2"><div><div class="field-l">Date of birth</div><div class="input">dd / mm / yyyy</div></div><div><div class="field-l">Gender</div><div class="select">Select</div></div></div>
             <div class="row2"><div><div class="field-l">Blood group</div><div class="select">Select</div></div><div><div class="field-l">Emergency contact</div><div class="input">+91 ……</div></div></div>
             <div class="field-l">Address</div><div class="input area"></div>
-            <div class="btn-row"><span class="btn ghost">Send OTP</span><span class="btn block" style="flex:1">Register</span></div>
-            <p class="muted" style="margin-top:12px">Already registered? <b>Login</b></p>
+            <div class="row3"><div><div class="field-l">Country</div><div class="select">India</div></div><div><div class="field-l">State</div><div class="select">Select</div></div><div><div class="field-l">City</div><div class="select">Select</div></div></div>
+            <div class="btn-row"><span class="btn block" style="flex:1">Register</span></div>
+            <p class="muted" style="margin-top:12px">We'll text/email you a verification code automatically. Already registered? <b>Login</b></p>
           </div>
         </div>
       </div>
-      <div class="device" style="width:360px;max-width:100%">
+      <div class="device" style="width:460px;max-width:100%">
         <div class="dvc-bar"><span class="lbl">DOCTOR FIELDS VARIANT</span></div>
         <div class="authpage" style="min-height:auto;padding:22px">
           <div class="authcard" style="width:100%">
             <div class="chips"><span class="chip">Patient</span><span class="chip on">Doctor</span></div>
+            <div class="row3"><div><div class="field-l">First name</div><div class="input">Anil</div></div><div><div class="field-l">Middle name</div><div class="input"></div></div><div><div class="field-l">Last name</div><div class="input">Rao</div></div></div>
             <div class="cap" style="margin:0 0 10px">— Doctor details —</div>
-            <div class="field-l">License number</div><div class="input">MCI-……</div>
-            <div class="field-l">Specialization</div><div class="select">Select</div>
-            <div class="field-l">Hospital / clinic name</div><div class="input"></div>
-            <div class="callout" style="margin:8px 0">Doctor accounts require admin approval before access is granted.</div>
-            <div class="btn-row"><span class="btn ghost">Send OTP</span><span class="btn">Register</span></div>
+            <div class="row2"><div><div class="field-l">License number</div><div class="input">MCI-……</div></div><div><div class="field-l">Specialization</div><div class="select">Select</div></div></div>
+            <div class="row2"><div><div class="field-l">Degree</div><div class="select">Select (e.g. MBBS)</div></div><div><div class="field-l">Hospital / clinic</div><div class="select">Select</div></div></div>
+            <div class="field-l">Practice address</div><div class="input area"></div>
+            <div class="row3"><div><div class="field-l">Country</div><div class="select">India</div></div><div><div class="field-l">State</div><div class="select">Select</div></div><div><div class="field-l">City</div><div class="select">Select</div></div></div>
+            <div class="row2">
+              <div><div class="field-l">License document</div><div class="drop" style="padding:12px"><div class="ic" style="width:26px;height:26px;font-size:13px">⤒</div>Upload PDF/JPG</div></div>
+              <div><div class="field-l">Degree certificate</div><div class="drop" style="padding:12px"><div class="ic" style="width:26px;height:26px;font-size:13px">⤒</div>Upload PDF/JPG</div></div>
+            </div>
+            <div class="callout" style="margin:8px 0">Doctor accounts require admin approval — license &amp; degree documents are verified before access is granted.</div>
+            <div class="btn-row"><span class="btn block" style="flex:1">Register</span></div>
+            <p class="muted" style="margin-top:12px">We'll text/email you a verification code automatically.</p>
           </div>
         </div>
       </div>
@@ -828,15 +844,18 @@
           </div>
           <div class="grid-2">
             <div class="card"><b style="font-size:13px">Personal information</b>
-              <div class="row2" style="margin-top:10px"><div><div class="field-l">Full name</div><div class="input">Jane Mehta</div></div><div><div class="field-l">DOB</div><div class="input">12 / 04 / 1991</div></div></div>
-              <div class="row2"><div><div class="field-l">Gender</div><div class="input">Female</div></div><div><div class="field-l">Phone</div><div class="input">+91 ……</div></div></div>
+              <div class="cap" style="margin:8px 0 0">Aarogyam ID</div><div style="font-family:var(--mono);font-size:13px;letter-spacing:.06em">2291 4480 1123</div>
+              <div class="row3" style="margin-top:10px"><div><div class="field-l">First name</div><div class="input">Jane</div></div><div><div class="field-l">Middle name</div><div class="input"></div></div><div><div class="field-l">Last name</div><div class="input">Mehta</div></div></div>
+              <div class="row2"><div><div class="field-l">DOB</div><div class="input">12 / 04 / 1991</div></div><div><div class="field-l">Gender</div><div class="input">Female</div></div></div>
+              <div class="row2"><div><div class="field-l">Phone</div><div class="input">+91 ……</div></div><div><div class="field-l">Blood group</div><div class="input">O+</div></div></div>
             </div>
-            <div class="card"><b style="font-size:13px">Medical information</b>
-              <div class="row2" style="margin-top:10px"><div><div class="field-l">Blood group</div><div class="input">O+</div></div><div><div class="field-l">Allergies</div><div class="input">Penicillin</div></div></div>
-              <div class="field-l">Chronic conditions</div><div class="input">Hypertension</div>
+            <div class="card"><b style="font-size:13px">Address</b>
+              <div class="field-l" style="margin-top:10px">Address</div><div class="input area"></div>
+              <div class="row3"><div><div class="field-l">Country</div><div class="input">India</div></div><div><div class="field-l">State</div><div class="input">Maharashtra</div></div><div><div class="field-l">City</div><div class="input">Pune</div></div></div>
             </div>
             <div class="card"><b style="font-size:13px">Emergency contact</b>
               <div class="row2" style="margin-top:10px"><div><div class="field-l">Name</div><div class="input">R. Mehta</div></div><div><div class="field-l">Phone</div><div class="input">+91 ……</div></div></div>
+              <div class="callout" style="margin-top:10px">Allergies, chronic conditions, vaccinations &amp; surgeries are recorded by your doctor as diagnoses — see <b>Medical History</b>.</div>
             </div>
             <div class="card"><b style="font-size:13px">Account settings</b>
               <div class="field-l" style="margin-top:10px">Change password</div><div class="input">••••••••</div>
@@ -898,12 +917,12 @@
           <div style="display:flex;align-items:center"><div><div class="page-title">Medical Reports</div><div class="page-sub">All lab results and scans in one place.</div></div><span class="btn sm" style="margin-left:auto">＋ Upload Report</span></div>
           <div class="drop" style="margin-bottom:14px"><div class="ic">⤒</div>Drag files here or click to upload · PDF, JPG, PNG up to 25 MB</div>
           <table class="wf">
-            <thead><tr><th>Title</th><th>Type</th><th>Date</th><th>Uploaded by</th><th style="width:130px">Actions</th></tr></thead>
+            <thead><tr><th>Title</th><th>Type</th><th>Date</th><th>Linked visit</th><th>Uploaded by</th><th style="width:130px">Actions</th></tr></thead>
             <tbody>
-              <tr><td>Lipid panel</td><td>Lab</td><td>14 Jun 2026</td><td>Self</td><td><span class="tact"><span>View</span><span>Download</span><span>Delete</span></span></td></tr>
-              <tr><td>Chest X-Ray</td><td>Imaging</td><td>14 Jun 2026</td><td>Dr. A. Rao</td><td><span class="tact"><span>View</span><span>Download</span><span>Delete</span></span></td></tr>
-              <tr><td>CBC report</td><td>Lab</td><td>02 Mar 2026</td><td>City Clinic</td><td><span class="tact"><span>View</span><span>Download</span><span>Delete</span></span></td></tr>
-              <tr><td>ECG</td><td>Cardiac</td><td>19 Nov 2025</td><td>Self</td><td><span class="tact"><span>View</span><span>Download</span><span>Delete</span></span></td></tr>
+              <tr><td>Lipid panel</td><td>Lab</td><td>14 Jun 2026</td><td>14 Jun 2026</td><td>Self</td><td><span class="tact"><span>View</span><span>Download</span><span>Delete</span></span></td></tr>
+              <tr><td>Chest X-Ray</td><td>Imaging</td><td>14 Jun 2026</td><td>14 Jun 2026</td><td>Dr. A. Rao</td><td><span class="tact"><span>View</span><span>Download</span><span>Delete</span></span></td></tr>
+              <tr><td>CBC report</td><td>Lab</td><td>02 Mar 2026</td><td>02 Mar 2026</td><td>City Clinic</td><td><span class="tact"><span>View</span><span>Download</span><span>Delete</span></span></td></tr>
+              <tr><td>ECG</td><td>Cardiac</td><td>19 Nov 2025</td><td>— not linked —</td><td>Self</td><td><span class="tact"><span>View</span><span>Download</span><span>Delete</span></span></td></tr>
             </tbody>
           </table>
         </div>
@@ -916,6 +935,7 @@
         <div class="mb">
           <div class="field-l">Report title</div><div class="input"></div>
           <div class="row2"><div><div class="field-l">Type</div><div class="select">Lab</div></div><div><div class="field-l">Date</div><div class="input">dd / mm / yyyy</div></div></div>
+          <div class="field-l">Link to visit <span class="cap" style="margin:0;text-transform:none">(optional)</span></div><div class="select">None</div>
           <div class="drop"><div class="ic">⤒</div>Choose a file or drag it here</div>
         </div>
         <div class="mf"><span class="btn ghost sm">Cancel</span><span class="btn sm">Upload</span></div>
@@ -935,11 +955,11 @@
           <div class="page-title">Prescriptions</div><div class="page-sub">Every prescription issued to you.</div>
           <div class="input" style="margin-bottom:12px">🔍 Search by doctor or diagnosis…</div>
           <table class="wf">
-            <thead><tr><th>Date</th><th>Doctor</th><th>Diagnosis</th><th>Medicines</th><th style="width:150px">Actions</th></tr></thead>
+            <thead><tr><th>Date</th><th>Doctor</th><th>Diagnosis</th><th>Prescription</th><th style="width:150px">Actions</th></tr></thead>
             <tbody>
-              <tr><td>14 Jun 2026</td><td>Dr. A. Rao</td><td>Hypertension</td><td>3 items</td><td><span class="tact"><span>View</span><span>Download PDF</span></span></td></tr>
-              <tr><td>02 Mar 2026</td><td>City Clinic</td><td>Influenza</td><td>2 items</td><td><span class="tact"><span>View</span><span>Download PDF</span></span></td></tr>
-              <tr><td>19 Nov 2025</td><td>Dr. S. Iyer</td><td>Gastritis</td><td>4 items</td><td><span class="tact"><span>View</span><span>Download PDF</span></span></td></tr>
+              <tr><td>14 Jun 2026</td><td>Dr. A. Rao</td><td>Hypertension</td><td>Amlodipine 5mg OD, Losartan 50mg OD…</td><td><span class="tact"><span>View</span><span>Download PDF</span></span></td></tr>
+              <tr><td>02 Mar 2026</td><td>City Clinic</td><td>Influenza</td><td>Paracetamol 650mg SOS, Cetirizine 10mg HS…</td><td><span class="tact"><span>View</span><span>Download PDF</span></span></td></tr>
+              <tr><td>19 Nov 2025</td><td>Dr. S. Iyer</td><td>Gastritis</td><td>Pantoprazole 40mg OD, antacid syrup…</td><td><span class="tact"><span>View</span><span>Download PDF</span></span></td></tr>
             </tbody>
           </table>
         </div>
@@ -962,14 +982,11 @@
             <div class="card"><b style="font-size:12px">Patient</b><div style="display:flex;gap:10px;margin-top:8px"><div class="avatar"></div><div><div class="ph-line dk w70" style="margin-top:2px"></div><div class="ph-line w50"></div></div></div></div>
           </div>
           <div class="card" style="margin-top:14px"><b style="font-size:12px">Diagnosis</b><div style="margin-top:6px;font-size:12.5px;color:var(--g700)">Stage-1 hypertension · advised lifestyle change &amp; medication.</div></div>
-          <div class="card" style="margin-top:14px"><b style="font-size:12px">Medicines</b>
-            <table class="wf" style="margin-top:8px"><thead><tr><th>Name</th><th>Dosage</th><th>Frequency</th><th>Duration</th><th>Instructions</th></tr></thead>
-            <tbody>
-              <tr><td>Amlodipine</td><td>5 mg</td><td>Once daily</td><td>30 days</td><td>After breakfast</td></tr>
-              <tr><td>Losartan</td><td>50 mg</td><td>Once daily</td><td>30 days</td><td>At night</td></tr>
-            </tbody></table>
+          <div class="card" style="margin-top:14px">
+            <div style="display:flex;align-items:center"><b style="font-size:12px">Prescription</b><span class="cap" style="margin:0;margin-left:auto">Prescribed 14 Jun 2026</span></div>
+            <div class="ph-line w90" style="margin-top:10px"></div><div class="ph-line w80"></div><div class="ph-line w85"></div><div class="ph-line w60"></div><div class="ph-line w70"></div>
+            <div class="cap" style="margin-top:10px">Free-text prescription — medicines, dosage, frequency &amp; instructions entered by the doctor as a single note; downloadable as PDF above.</div>
           </div>
-          <div class="card" style="margin-top:14px"><b style="font-size:12px">Notes</b><div class="ph-line w90"></div><div class="ph-line w70"></div></div>
         </div>
       </div>
     </div>
@@ -1035,7 +1052,7 @@
               </tbody></table>
             </div>
             <div class="stack">
-              <div class="card"><b style="font-size:13px">Quick actions</b><div class="btn-row" style="margin-top:10px"><span class="btn sm">＋ Create Visit</span><span class="btn sm ghost">Add Diagnosis</span><span class="btn sm ghost">New Prescription</span></div></div>
+              <div class="card"><b style="font-size:13px">Quick actions</b><div class="btn-row" style="margin-top:10px"><span class="btn sm">＋ Create Visit</span></div><div class="cap" style="margin-top:8px">Diagnosis &amp; prescription are added as part of a visit, not standalone.</div></div>
               <div class="card"><b style="font-size:13px">Activity feed</b>
                 <div class="tl" style="margin-top:10px"><div class="tl-node"><div class="ph-line dk w50" style="margin-top:0"></div><div class="ph-line w80"></div></div><div class="tl-node"><div class="ph-line dk w40" style="margin-top:0"></div><div class="ph-line w70"></div></div></div>
               </div>
@@ -1081,7 +1098,7 @@
           <div class="card" style="display:flex;gap:14px;align-items:center">
             <div class="avatar" style="width:52px;height:52px"></div>
             <div style="flex:1"><b style="font-size:14px">R. Kapoor</b><div class="cap" style="margin:2px 0 0">AAID 2291 ••• 9087 · O+ · 41 yrs · Male</div></div>
-            <div class="btn-row"><span class="btn sm">＋ Add Visit</span><span class="btn sm ghost">Add Diagnosis</span><span class="btn sm ghost">Add Prescription</span><span class="btn sm ghost">Upload Report</span></div>
+            <div class="btn-row"><span class="btn sm">＋ Add Visit</span><span class="btn sm ghost">Upload Report</span></div>
           </div>
           <!-- tabs -->
           <div class="chips" style="margin-top:14px"><span class="chip on">History</span><span class="chip">Reports</span><span class="chip">Diagnoses</span><span class="chip">Prescriptions</span></div>
@@ -1097,61 +1114,60 @@
 
   <!-- ============ SCREEN 15 — CREATE VISIT ============ -->
   <section class="sec" id="s15">
-    <div class="screen-h"><span class="tag">SCREEN 15</span><h3>Create Visit</h3><span class="sub">/dr/visit/new</span></div>
+    <div class="screen-h"><span class="tag">SCREEN 15</span><h3>Create Visit</h3><span class="sub">/dr/visit/new · step 1 of 3</span></div>
+    <p class="sec-note" style="margin-top:-4px">Diagnosis &amp; prescription are no longer separate standalone actions — they only exist as the next steps of the visit a doctor is currently creating.</p>
     <div class="device" style="width:560px;max-width:100%">
       <div class="dvc-bar"><span class="lbl">CREATE VISIT</span></div>
       <div class="main">
+        <div class="chips" style="margin-bottom:14px"><span class="chip on">① Visit</span><span class="chip">② Diagnosis</span><span class="chip">③ Prescription</span></div>
         <div class="page-title">New visit</div><div class="page-sub">Record a consultation for this patient.</div>
         <div class="field-l">Patient</div><div class="input">R. Kapoor · AAID 2291 ••• 9087</div>
-        <div class="field-l">Chief complaint</div><div class="input">Chest pain on exertion</div>
-        <div class="field-l">Notes</div><div class="input area"></div>
-        <div class="btn-row" style="margin-top:8px"><span class="btn ghost sm">Cancel</span><span class="btn sm">Create Visit</span></div>
+        <div class="field-l">Visit date &amp; time</div><div class="input">14 Jun 2026, 10:30 AM</div>
+        <div class="field-l">Notes</div><div class="input area">Chest pain on exertion…</div>
+        <div class="btn-row" style="margin-top:8px"><span class="btn ghost sm">Cancel</span><span class="btn sm">Create Visit → Continue to Diagnosis</span></div>
       </div>
     </div>
   </section>
 
   <!-- ============ SCREEN 16 — ADD DIAGNOSIS ============ -->
   <section class="sec" id="s16">
-    <div class="screen-h"><span class="tag">SCREEN 16</span><h3>Add Diagnosis</h3><span class="sub">/dr/diagnosis/new</span></div>
+    <div class="screen-h"><span class="tag">SCREEN 16</span><h3>Add Diagnosis</h3><span class="sub">/dr/diagnosis/new · step 2 of 3</span></div>
     <div class="device" style="width:560px;max-width:100%">
       <div class="dvc-bar"><span class="lbl">ADD DIAGNOSIS</span></div>
       <div class="main">
-        <div class="page-title">Add diagnosis</div><div class="page-sub">Attach a coded diagnosis to a visit.</div>
+        <div class="chips" style="margin-bottom:14px"><span class="chip">① Visit</span><span class="chip on">② Diagnosis</span><span class="chip">③ Prescription</span></div>
+        <div class="page-title">Add diagnosis</div><div class="page-sub">Attach a coded diagnosis to the visit just created.</div>
         <div class="row2"><div><div class="field-l">Visit</div><div class="select">Visit · 14 Jun 2026</div></div><div><div class="field-l">Diagnosis type</div><div class="select">Disease</div></div></div>
         <div class="cap" style="margin:2px 0 8px">Type options: Disease · Vaccination · Surgery · Allergy · Condition</div>
-        <div class="field-l">Title</div><div class="input">Stage-1 hypertension</div>
+        <div class="row2"><div><div class="field-l">Title</div><div class="input">Stage-1 hypertension</div></div><div><div class="field-l">Diagnosis date</div><div class="input">14 Jun 2026</div></div></div>
         <div class="field-l">Description</div><div class="input area"></div>
-        <div class="btn-row" style="margin-top:8px"><span class="btn ghost sm">Cancel</span><span class="btn sm">Save Diagnosis</span></div>
+        <div class="btn-row" style="margin-top:8px"><span class="btn ghost sm">Skip this step</span><span class="btn sm">Save Diagnosis → Continue to Prescription</span></div>
       </div>
     </div>
   </section>
 
   <!-- ============ SCREEN 17 — CREATE PRESCRIPTION ============ -->
   <section class="sec" id="s17">
-    <div class="screen-h"><span class="tag">SCREEN 17</span><h3>Create Prescription</h3><span class="sub">/dr/prescription/new · dynamic medicine rows</span></div>
+    <div class="screen-h"><span class="tag">SCREEN 17</span><h3>Create Prescription</h3><span class="sub">/dr/prescription/new · step 3 of 3</span></div>
     <div class="device desktop">
       <div class="dvc-bar"><span class="lbl">DESKTOP · 1440</span></div>
       <div class="main">
-        <div class="page-title">New prescription</div><div class="page-sub">Build and issue a prescription, then generate a PDF.</div>
+        <div class="chips" style="margin-bottom:14px"><span class="chip">① Visit</span><span class="chip">② Diagnosis</span><span class="chip on">③ Prescription</span></div>
+        <div class="page-title">New prescription</div><div class="page-sub">Write the prescription as free text, then generate a PDF.</div>
         <!-- header context -->
         <div class="row3">
           <div><div class="field-l">Patient</div><div class="input">R. Kapoor</div></div>
           <div><div class="field-l">Visit</div><div class="select">14 Jun 2026</div></div>
-          <div><div class="field-l">Diagnosis</div><div class="select">Hypertension</div></div>
+          <div><div class="field-l">Diagnosis <span class="cap" style="margin:0;text-transform:none">(optional)</span></div><div class="select">Hypertension</div></div>
         </div>
-        <!-- dynamic medicine section -->
+        <div class="field-l">Prescription date</div><div class="input" style="width:220px">14 Jun 2026</div>
+        <!-- single free-text prescription block -->
         <div class="card" style="margin-top:8px">
-          <div style="display:flex;align-items:center"><b style="font-size:13px">Medicines</b><span class="btn sm ghost" style="margin-left:auto">＋ Add medicine</span></div>
-          <table class="wf" style="margin-top:10px">
-            <thead><tr><th>Name</th><th>Dosage</th><th>Frequency</th><th>Duration</th><th>Instructions</th><th></th></tr></thead>
-            <tbody>
-              <tr><td><div class="input" style="margin:0;height:28px">Amlodipine</div></td><td><div class="input" style="margin:0;height:28px">5 mg</div></td><td><div class="input" style="margin:0;height:28px">1× daily</div></td><td><div class="input" style="margin:0;height:28px">30 d</div></td><td><div class="input" style="margin:0;height:28px">After food</div></td><td><span class="tact"><span>✕</span></span></td></tr>
-              <tr><td><div class="input" style="margin:0;height:28px">Losartan</div></td><td><div class="input" style="margin:0;height:28px">50 mg</div></td><td><div class="input" style="margin:0;height:28px">1× daily</div></td><td><div class="input" style="margin:0;height:28px">30 d</div></td><td><div class="input" style="margin:0;height:28px">At night</div></td><td><span class="tact"><span>✕</span></span></td></tr>
-            </tbody>
-          </table>
+          <b style="font-size:13px">Prescription</b>
+          <div class="cap" style="margin:4px 0 8px">Medicines, dosage, frequency &amp; instructions — written as a single note</div>
+          <div class="input area" style="height:180px;align-items:flex-start;flex-direction:column;justify-content:flex-start">Amlodipine 5mg — once daily, after breakfast, 30 days<br>Losartan 50mg — once daily, at night, 30 days</div>
         </div>
-        <div class="field-l" style="margin-top:12px">Additional notes</div><div class="input area"></div>
-        <div class="btn-row" style="margin-top:8px"><span class="btn ghost sm">Generate PDF</span><span class="btn sm">Save Prescription</span></div>
+        <div class="btn-row" style="margin-top:8px"><span class="btn ghost sm">Skip — finish without prescription</span><span class="btn sm">Save Prescription → Done</span></div>
       </div>
     </div>
   </section>
@@ -1180,9 +1196,9 @@
     <div class="screen-h"><span class="tag">SCREEN 19</span><h3>Admin Dashboard</h3><span class="sub">/admin/dashboard</span></div>
     <div class="device desktop">
       <div class="dvc-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="lbl">DESKTOP · 1440</span></div>
-      <div class="topbar"><div class="logo"><span class="mark">◎</span> Aarogyam</div><nav><span class="on">Dashboard</span><span>Approvals</span><span>Users</span><span>Audit</span></nav><div class="right"><span class="badge">Admin</span><div class="bell">◔<span class="pip">9</span></div><div class="avatar"></div></div></div>
+      <div class="topbar"><div class="logo"><span class="mark">◎</span> Aarogyam</div><nav><span class="on">Dashboard</span><span>Approvals</span><span>Users</span><span>Master Data</span><span>Audit</span></nav><div class="right"><span class="badge">Admin</span><div class="bell">◔<span class="pip">9</span></div><div class="avatar"></div></div></div>
       <div class="appbody">
-        <div class="side"><div class="role">Admin module</div><div class="item on"><span class="ic"></span>Dashboard</div><div class="item"><span class="ic"></span>Doctor Approvals</div><div class="item"><span class="ic"></span>User Management</div><div class="item"><span class="ic"></span>Audit Logs</div></div>
+        <div class="side"><div class="role">Admin module</div><div class="item on"><span class="ic"></span>Dashboard</div><div class="item"><span class="ic"></span>Doctor Approvals</div><div class="item"><span class="ic"></span>User Management</div><div class="item"><span class="ic"></span>Master Data</div><div class="item"><span class="ic"></span>Audit Logs</div></div>
         <div class="main">
           <div class="page-title">Platform overview</div><div class="page-sub">System-wide health at a glance.</div>
           <div class="grid-5">
@@ -1216,17 +1232,17 @@
     <div class="screen-h"><span class="tag">SCREEN 20</span><h3>Doctor Approval Management</h3><span class="sub">/admin/approvals</span></div>
     <div class="device desktop">
       <div class="dvc-bar"><span class="lbl">DESKTOP · 1440</span></div>
-      <div class="topbar"><div class="logo"><span class="mark">◎</span> Aarogyam</div><nav><span>Dashboard</span><span class="on">Approvals</span><span>Users</span><span>Audit</span></nav><div class="right"><div class="bell">◔<span class="pip">9</span></div><div class="avatar"></div></div></div>
+      <div class="topbar"><div class="logo"><span class="mark">◎</span> Aarogyam</div><nav><span>Dashboard</span><span class="on">Approvals</span><span>Users</span><span>Master Data</span><span>Audit</span></nav><div class="right"><div class="bell">◔<span class="pip">9</span></div><div class="avatar"></div></div></div>
       <div class="appbody">
-        <div class="side"><div class="role">Admin module</div><div class="item"><span class="ic"></span>Dashboard</div><div class="item on"><span class="ic"></span>Doctor Approvals</div><div class="item"><span class="ic"></span>User Management</div><div class="item"><span class="ic"></span>Audit Logs</div></div>
+        <div class="side"><div class="role">Admin module</div><div class="item"><span class="ic"></span>Dashboard</div><div class="item on"><span class="ic"></span>Doctor Approvals</div><div class="item"><span class="ic"></span>User Management</div><div class="item"><span class="ic"></span>Master Data</div><div class="item"><span class="ic"></span>Audit Logs</div></div>
         <div class="main">
           <div class="page-title">Pending doctor approvals</div><div class="page-sub">Verify license details before granting access.</div>
           <div class="input" style="margin-bottom:12px">🔍 Search by name or license…</div>
-          <table class="wf"><thead><tr><th>Doctor name</th><th>License number</th><th>Specialization</th><th>Submitted</th><th style="width:180px">Actions</th></tr></thead>
+          <table class="wf"><thead><tr><th>Doctor name</th><th>License number</th><th>Degree</th><th>Specialization</th><th>Hospital</th><th>Submitted</th><th style="width:210px">Actions</th></tr></thead>
           <tbody>
-            <tr><td>Dr. N. Shah</td><td>MCI-99213</td><td>Dermatology</td><td>12 Jun</td><td><span class="tact"><span>View docs</span><span>Approve</span><span>Reject</span></span></td></tr>
-            <tr><td>Dr. P. Menon</td><td>MCI-77410</td><td>Pediatrics</td><td>11 Jun</td><td><span class="tact"><span>View docs</span><span>Approve</span><span>Reject</span></span></td></tr>
-            <tr><td>Dr. K. Bose</td><td>MCI-30887</td><td>Orthopedics</td><td>10 Jun</td><td><span class="tact"><span>View docs</span><span>Approve</span><span>Reject</span></span></td></tr>
+            <tr><td>Dr. N. Shah</td><td>MCI-99213</td><td>MD</td><td>Dermatology</td><td>City Care Hospital</td><td>12 Jun</td><td><span class="tact"><span>License</span><span>Degree</span><span>Approve</span><span>Reject</span></span></td></tr>
+            <tr><td>Dr. P. Menon</td><td>MCI-77410</td><td>MBBS</td><td>Pediatrics</td><td>Sunrise Clinic</td><td>11 Jun</td><td><span class="tact"><span>License</span><span>Degree</span><span>Approve</span><span>Reject</span></span></td></tr>
+            <tr><td>Dr. K. Bose</td><td>MCI-30887</td><td>MS</td><td>Orthopedics</td><td>Metro Hospital</td><td>10 Jun</td><td><span class="tact"><span>License</span><span>Degree</span><span>Approve</span><span>Reject</span></span></td></tr>
           </tbody></table>
         </div>
       </div>
@@ -1250,9 +1266,9 @@
     <div class="screen-h"><span class="tag">SCREEN 21</span><h3>User Management</h3><span class="sub">/admin/users · tabbed</span></div>
     <div class="device desktop">
       <div class="dvc-bar"><span class="lbl">DESKTOP · 1440</span></div>
-      <div class="topbar"><div class="logo"><span class="mark">◎</span> Aarogyam</div><nav><span>Dashboard</span><span>Approvals</span><span class="on">Users</span><span>Audit</span></nav><div class="right"><div class="bell">◔<span class="pip">9</span></div><div class="avatar"></div></div></div>
+      <div class="topbar"><div class="logo"><span class="mark">◎</span> Aarogyam</div><nav><span>Dashboard</span><span>Approvals</span><span class="on">Users</span><span>Master Data</span><span>Audit</span></nav><div class="right"><div class="bell">◔<span class="pip">9</span></div><div class="avatar"></div></div></div>
       <div class="appbody">
-        <div class="side"><div class="role">Admin module</div><div class="item"><span class="ic"></span>Dashboard</div><div class="item"><span class="ic"></span>Doctor Approvals</div><div class="item on"><span class="ic"></span>User Management</div><div class="item"><span class="ic"></span>Audit Logs</div></div>
+        <div class="side"><div class="role">Admin module</div><div class="item"><span class="ic"></span>Dashboard</div><div class="item"><span class="ic"></span>Doctor Approvals</div><div class="item on"><span class="ic"></span>User Management</div><div class="item"><span class="ic"></span>Master Data</div><div class="item"><span class="ic"></span>Audit Logs</div></div>
         <div class="main">
           <div class="page-title">User management</div><div class="page-sub">View, disable, or reactivate any account.</div>
           <div class="chips"><span class="chip on">Patients</span><span class="chip">Doctors</span><span class="chip">Admins</span></div>
@@ -1290,9 +1306,9 @@
     <div class="screen-h"><span class="tag">SCREEN 23</span><h3>Audit Logs</h3><span class="sub">/admin/audit-logs</span></div>
     <div class="device desktop">
       <div class="dvc-bar"><span class="lbl">DESKTOP · 1440</span></div>
-      <div class="topbar"><div class="logo"><span class="mark">◎</span> Aarogyam</div><nav><span>Dashboard</span><span>Approvals</span><span>Users</span><span class="on">Audit</span></nav><div class="right"><div class="bell">◔<span class="pip">9</span></div><div class="avatar"></div></div></div>
+      <div class="topbar"><div class="logo"><span class="mark">◎</span> Aarogyam</div><nav><span>Dashboard</span><span>Approvals</span><span>Users</span><span>Master Data</span><span class="on">Audit</span></nav><div class="right"><div class="bell">◔<span class="pip">9</span></div><div class="avatar"></div></div></div>
       <div class="appbody">
-        <div class="side"><div class="role">Admin module</div><div class="item"><span class="ic"></span>Dashboard</div><div class="item"><span class="ic"></span>Doctor Approvals</div><div class="item"><span class="ic"></span>User Management</div><div class="item on"><span class="ic"></span>Audit Logs</div></div>
+        <div class="side"><div class="role">Admin module</div><div class="item"><span class="ic"></span>Dashboard</div><div class="item"><span class="ic"></span>Doctor Approvals</div><div class="item"><span class="ic"></span>User Management</div><div class="item"><span class="ic"></span>Master Data</div><div class="item on"><span class="ic"></span>Audit Logs</div></div>
         <div class="main">
           <div class="page-title">Audit logs</div><div class="page-sub">Immutable trail of every sensitive action.</div>
           <div style="display:flex;gap:10px;margin-bottom:12px"><div class="input" style="flex:1;margin:0">🔍 Search by user, entity, or IP…</div><div class="select" style="width:150px;margin:0">Action: All</div><div class="select" style="width:160px;margin:0">Date: Last 7 days</div></div>
@@ -1306,6 +1322,42 @@
         </div>
       </div>
     </div>
+  </section>
+
+  <!-- ============ SCREEN 24 — MASTER DATA MANAGEMENT ============ -->
+  <section class="sec" id="s24">
+    <div class="screen-h"><span class="tag">SCREEN 24</span><h3>Master Data Management</h3><span class="sub">/admin/master-data · lookup tables</span></div>
+    <div class="device desktop">
+      <div class="dvc-bar"><span class="lbl">DESKTOP · 1440</span></div>
+      <div class="topbar"><div class="logo"><span class="mark">◎</span> Aarogyam</div><nav><span>Dashboard</span><span>Approvals</span><span>Users</span><span class="on">Master Data</span><span>Audit</span></nav><div class="right"><div class="bell">◔<span class="pip">9</span></div><div class="avatar"></div></div></div>
+      <div class="appbody">
+        <div class="side"><div class="role">Admin module</div><div class="item"><span class="ic"></span>Dashboard</div><div class="item"><span class="ic"></span>Doctor Approvals</div><div class="item"><span class="ic"></span>User Management</div><div class="item on"><span class="ic"></span>Master Data</div><div class="item"><span class="ic"></span>Audit Logs</div></div>
+        <div class="main">
+          <div class="page-title">Master data</div><div class="page-sub">Manage the shared lookup tables every patient, doctor &amp; record draws from.</div>
+          <div class="chips"><span class="chip on">Countries</span><span class="chip">States</span><span class="chip">Cities</span><span class="chip">Hospitals</span><span class="chip">Degrees</span><span class="chip">Specializations</span><span class="chip">Diagnosis Types</span></div>
+          <div style="display:flex;align-items:center;margin-bottom:10px"><div class="input" style="flex:1;margin:0">🔍 Search countries…</div><span class="btn sm" style="margin-left:10px">＋ Add Country</span></div>
+          <table class="wf"><thead><tr><th>Name</th><th>Code</th><th>Status</th><th style="width:150px">Actions</th></tr></thead>
+          <tbody>
+            <tr><td>India</td><td>IN</td><td><span class="badge">Active</span></td><td><span class="tact"><span>Edit</span><span>Deactivate</span></span></td></tr>
+            <tr><td>United States</td><td>US</td><td><span class="badge">Active</span></td><td><span class="tact"><span>Edit</span><span>Deactivate</span></span></td></tr>
+            <tr><td>United Kingdom</td><td>UK</td><td><span class="badge dk">Inactive</span></td><td><span class="tact"><span>Edit</span><span>Activate</span></span></td></tr>
+          </tbody></table>
+        </div>
+      </div>
+    </div>
+    <p class="cap">Add / edit modal (shared shape across every master table)</p>
+    <div class="modal-wrap">
+      <div class="modal">
+        <div class="mh"><b>Add specialization</b><span class="x">✕</span></div>
+        <div class="mb">
+          <div class="field-l">Name</div><div class="input"></div>
+          <div class="field-l">Description <span class="cap" style="margin:0;text-transform:none">(optional)</span></div><div class="input area"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--g600);margin-top:6px">Active <span class="badge">on</span></div>
+        </div>
+        <div class="mf"><span class="btn ghost sm">Cancel</span><span class="btn sm">Save</span></div>
+      </div>
+    </div>
+    <div class="callout">One shared &lt;MasterTable&gt; component drives all seven lookups (Country, State, City, Hospital, Degree, Specialization, Diagnosis Type). Rows are <b>deactivated</b>, never deleted — patient and doctor records reference these by ID and must never cascade-delete.</div>
   </section>
 
   <!-- ============ RESPONSIVE ============ -->
