@@ -1,0 +1,41 @@
+CREATE PROCEDURE dbo.spHospitalMasterManage
+    @Action NVARCHAR(10),
+    @HospitalId INT = NULL,
+    @HospitalName NVARCHAR(150) = NULL,
+    @Address NVARCHAR(200) = NULL,
+    @CityId INT = NULL,
+    @PhoneNumber NVARCHAR(20) = NULL,
+    @Email NVARCHAR(100) = NULL,
+    @IsActive BIT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    BEGIN TRY
+        IF @Action = 'INSERT'
+        BEGIN
+            INSERT INTO dbo.HospitalMaster (HospitalName, Address, CityId, PhoneNumber, Email, IsActive)
+            VALUES (@HospitalName, @Address, @CityId, @PhoneNumber, @Email, @IsActive);
+            SELECT 1 AS Success, 'Created.' AS Message, SCOPE_IDENTITY() AS HospitalId;
+        END
+        ELSE IF @Action = 'UPDATE'
+        BEGIN
+            UPDATE dbo.HospitalMaster
+            SET HospitalName = @HospitalName, Address = @Address, CityId = @CityId,
+                PhoneNumber = @PhoneNumber, Email = @Email, IsActive = @IsActive, UpdatedAt = SYSUTCDATETIME()
+            WHERE HospitalId = @HospitalId;
+            SELECT 1 AS Success, 'Updated.' AS Message;
+        END
+        ELSE IF @Action = 'DELETE'
+        BEGIN
+            DELETE FROM dbo.HospitalMaster WHERE HospitalId = @HospitalId;
+            SELECT 1 AS Success, 'Deleted.' AS Message;
+        END
+        ELSE
+        BEGIN
+            SELECT 0 AS Success, 'Invalid action.' AS Message;
+        END
+    END TRY
+    BEGIN CATCH
+        SELECT 0 AS Success, ERROR_MESSAGE() AS Message;
+    END CATCH
+END

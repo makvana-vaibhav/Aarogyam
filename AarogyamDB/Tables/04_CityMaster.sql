@@ -1,0 +1,7 @@
+CREATE TABLE dbo.CityMaster (
+    CityId INT IDENTITY(1,1) PRIMARY KEY,
+    StateId INT NOT NULL REFERENCES dbo.StateMaster(StateId),
+    CityName NVARCHAR(100) NOT NULL,
+    CreatedAt DATETIME2 NOT NULL DEFAULT (SYSUTCDATETIME()),
+    UpdatedAt DATETIME2 NULL
+);

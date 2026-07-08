@@ -1,0 +1,11 @@
+CREATE TABLE dbo.HospitalMaster (
+    HospitalId INT IDENTITY(1,1) PRIMARY KEY,
+    HospitalName NVARCHAR(150) NOT NULL,
+    Address NVARCHAR(200) NOT NULL,
+    CityId INT NOT NULL REFERENCES dbo.CityMaster(CityId),
+    PhoneNumber NVARCHAR(20) NULL,
+    Email NVARCHAR(100) NULL,
+    IsActive BIT NOT NULL,
+    CreatedAt DATETIME2 NOT NULL DEFAULT (SYSUTCDATETIME()),
+    UpdatedAt DATETIME2 NULL
+);

@@ -1,0 +1,23 @@
+CREATE TABLE dbo.Doctors (
+    DoctorId INT IDENTITY(1,1) PRIMARY KEY,
+    UserId INT NOT NULL UNIQUE REFERENCES dbo.Users(UserId) ON DELETE CASCADE,
+    FirstName NVARCHAR(50) NOT NULL,
+    MiddleName NVARCHAR(50) NOT NULL,
+    LastName NVARCHAR(50) NOT NULL,
+    LicenseNumber NVARCHAR(50) NOT NULL UNIQUE,
+    HospitalId INT NOT NULL REFERENCES dbo.HospitalMaster(HospitalId),
+    DegreeId INT NOT NULL REFERENCES dbo.DegreeMaster(DegreeId),
+    SpecializationId INT NOT NULL REFERENCES dbo.SpecializationMaster(SpecializationId),
+    LicenseDocumentPath NVARCHAR(200) NOT NULL,
+    DegreeDocumentPath NVARCHAR(200) NOT NULL,
+    ApprovalStatus NVARCHAR(20) NOT NULL DEFAULT ('Pending') CHECK (ApprovalStatus IN ('Pending','Approved','Rejected')),
+    ApprovedByUserId INT NULL REFERENCES dbo.Users(UserId),
+    ApprovedAt DATETIME2 NULL,
+    RejectionReason NVARCHAR(200) NULL,
+    Address NVARCHAR(200) NOT NULL,
+    CountryId INT NOT NULL REFERENCES dbo.CountryMaster(CountryId),
+    StateId INT NOT NULL REFERENCES dbo.StateMaster(StateId),
+    CityId INT NOT NULL REFERENCES dbo.CityMaster(CityId),
+    CreatedAt DATETIME2 NOT NULL DEFAULT (SYSUTCDATETIME()),
+    UpdatedAt DATETIME2 NULL
+);

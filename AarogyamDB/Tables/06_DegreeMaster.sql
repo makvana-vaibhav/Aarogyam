@@ -1,0 +1,9 @@
+-- MBBS, MD, MS...
+CREATE TABLE dbo.DegreeMaster (
+    DegreeId INT IDENTITY(1,1) PRIMARY KEY,
+    DegreeName NVARCHAR(100) NOT NULL,
+    ShortName NVARCHAR(20) NOT NULL,
+    Description NVARCHAR(200) NULL,
+    CreatedAt DATETIME2 NOT NULL DEFAULT (SYSUTCDATETIME()),
+    UpdatedAt DATETIME2 NULL
+);

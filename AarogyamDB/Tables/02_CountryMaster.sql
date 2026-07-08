@@ -1,0 +1,8 @@
+CREATE TABLE dbo.CountryMaster (
+    CountryId INT IDENTITY(1,1) PRIMARY KEY,
+    CountryName NVARCHAR(100) NOT NULL,
+    CountryCode NVARCHAR(10) NOT NULL,
+    IsActive BIT NOT NULL,
+    CreatedAt DATETIME2 NOT NULL DEFAULT (SYSUTCDATETIME()),
+    UpdatedAt DATETIME2 NULL
+);

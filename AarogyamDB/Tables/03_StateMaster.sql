@@ -1,0 +1,7 @@
+CREATE TABLE dbo.StateMaster (
+    StateId INT IDENTITY(1,1) PRIMARY KEY,
+    CountryId INT NOT NULL REFERENCES dbo.CountryMaster(CountryId),
+    StateName NVARCHAR(100) NOT NULL,
+    CreatedAt DATETIME2 NOT NULL DEFAULT (SYSUTCDATETIME()),
+    UpdatedAt DATETIME2 NULL
+);

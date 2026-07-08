@@ -1,0 +1,9 @@
+CREATE TABLE dbo.Visits (
+    VisitId INT IDENTITY(1,1) PRIMARY KEY,
+    PatientId INT NOT NULL REFERENCES dbo.Patients(PatientId) ON DELETE CASCADE,
+    DoctorId INT NOT NULL REFERENCES dbo.Doctors(DoctorId),
+    VisitDate DATETIME2 NOT NULL,
+    Notes NVARCHAR(MAX) NULL,
+    CreatedAt DATETIME2 NOT NULL DEFAULT (SYSUTCDATETIME()),
+    UpdatedAt DATETIME2 NULL
+);
