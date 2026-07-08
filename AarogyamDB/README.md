@@ -84,7 +84,15 @@ AarogyamDB/
     ├── 29_spPrescriptionsManage.sql    (+ 30_spPrescriptionsGet.sql)
     ├── 31_spMedicalReportsManage.sql   (+ 32_spMedicalReportsGet.sql)
     ├── 33_spNotificationsManage.sql    (+ 34_spNotificationsGet.sql)
-    └── 35_spAuditLogsManage.sql        (+ 36_spAuditLogsGet.sql)
+    ├── 35_spAuditLogsManage.sql        (+ 36_spAuditLogsGet.sql)
+    ├── 37_spRegisterPatient.sql
+    ├── 38_spRegisterDoctor.sql
+    ├── 39_spLogin.sql
+    ├── 40_spVerifyOtp.sql
+    ├── 41_spApproveDoctor.sql
+    ├── 42_spRejectDoctor.sql
+    ├── 43_spCreatePrescription.sql
+    └── 44_spUploadMedicalReport.sql
 ```
 
 Each file is numbered starting from 1 within its own folder, in the order it should be run. Folders themselves run in the order they appear above (Tables, then Functions, then Procedures).
@@ -203,7 +211,22 @@ The API never queries or writes to a table directly — every operation goes thr
 | Notifications | spNotificationsManage | spNotificationsGet |
 | AuditLogs | spAuditLogsManage | spAuditLogsGet |
 
-36 procedures in total. This replaces the earlier approach of writing one narrowly-named procedure per business action (`spRegisterPatient`, `spCreateVisit`, etc.) — the generic pair per table gives full CRUD coverage everywhere, including the master/lookup tables the admin manages, without needing a new procedure every time a new screen needs a new operation.
+36 generic procedures in total — full CRUD coverage everywhere, including the master/lookup tables the admin manages, without needing a new procedure every time a new screen needs a new plain insert/update/delete/lookup.
+
+On top of those, 8 business-flow procedures handle the operations that are more than a single-table CRUD action — either because they touch more than one table together, or because something real (a notification, an audit log entry) needs to happen alongside the data change:
+
+| Procedure | What it does |
+|---|---|
+| spRegisterPatient | Inserts `Users` + `Patients` together, looks up the Patient `RoleId` itself, and generates the `AarogyamId` |
+| spRegisterDoctor | Inserts `Users` + `Doctors` together (`ApprovalStatus` defaults to `Pending`), looks up the Doctor `RoleId` itself |
+| spLogin | Looks up a user by email, rejects if the account doesn't exist or is disabled, updates `LastLoginAt`, returns the password hash + role for the API to verify against |
+| spVerifyOtp | Checks the code against the latest unused, unexpired OTP for that user; if it matches, marks the OTP used and the user's email verified in one transaction |
+| spApproveDoctor | Sets `ApprovalStatus = 'Approved'`, notifies the doctor, and writes the audit log entry — the three things that used to happen automatically via a trigger, now explicit |
+| spRejectDoctor | Sets `ApprovalStatus = 'Rejected'` with a reason, notifies the doctor, and writes the audit log entry |
+| spCreatePrescription | Inserts the prescription and notifies the patient it belongs to (found by walking `Visit → Patient → User`) |
+| spUploadMedicalReport | Inserts the report, and notifies the patient — unless the patient uploaded it themselves, in which case there's no one to notify |
+
+These aren't duplicates of `spPatientsManage`/`spDoctorsManage`/etc. — those still exist for plain CRUD (e.g. an admin editing a patient's address, or fixing a typo in a doctor's license number) where no side effect should fire. The business-flow procedures are for the specific actions where the side effect is always supposed to happen.
 
 ## 12. Functions
 
@@ -241,7 +264,7 @@ There are no triggers in this project. Side effects that a trigger would have ha
 2. Run `CreateDatabase.sql` to create the `AarogyamDB` database.
 3. Open the `Tables` folder and run every file in order, `1` through `18` — this also creates every primary key, foreign key, unique, check, and default constraint, since they're all inline.
 4. Run all files in the `Functions` folder, `1` through `2`.
-5. Run all files in the `Procedures` folder, `1` through `36`.
+5. Run all files in the `Procedures` folder, `1` through `44`.
 
 Basically: follow the numbers in order and you can't go wrong.
 

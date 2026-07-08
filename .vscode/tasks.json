@@ -1,0 +1,21 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "sqlproj: Build Aarogyam",
+			"type": "process",
+			"command": "dotnet",
+			"args": [
+				"build",
+				"/Users/cypherops/coding/Projects/Aarogyam/Aarogyam/Aarogyam.sqlproj"
+			],
+			"problemMatcher": "$sqlproj-problem-matcher",
+			"isBackground": true,
+			"group": {
+				"kind": "build",
+				"isDefault": false
+			},
+			"detail": "Builds the Aarogyam SQL project"
+		}
+	]
+}
