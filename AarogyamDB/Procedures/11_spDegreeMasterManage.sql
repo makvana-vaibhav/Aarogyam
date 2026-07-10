@@ -6,7 +6,6 @@ CREATE PROCEDURE dbo.spDegreeMasterManage
     @Description NVARCHAR(200) = NULL
 AS
 BEGIN
-    SET NOCOUNT ON;
     BEGIN TRY
         IF @Action = 'INSERT'
         BEGIN

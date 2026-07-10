@@ -5,7 +5,6 @@ CREATE PROCEDURE dbo.spPatientsGet
     @SearchName NVARCHAR(100) = NULL
 AS
 BEGIN
-    SET NOCOUNT ON;
     IF @PatientId IS NOT NULL
         SELECT * FROM dbo.Patients WHERE PatientId = @PatientId;
     ELSE IF @UserId IS NOT NULL

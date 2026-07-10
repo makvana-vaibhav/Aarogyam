@@ -3,7 +3,6 @@ CREATE PROCEDURE dbo.spVerifyOtp
     @OtpCode NVARCHAR(10)
 AS
 BEGIN
-    SET NOCOUNT ON;
     BEGIN TRY
         DECLARE @OtpId INT;
         SELECT @OtpId = OtpId FROM dbo.OTPMaster

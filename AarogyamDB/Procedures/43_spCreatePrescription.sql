@@ -6,7 +6,6 @@ CREATE PROCEDURE dbo.spCreatePrescription
     @PrescriptionDate DATE
 AS
 BEGIN
-    SET NOCOUNT ON;
     BEGIN TRY
         DECLARE @PatientUserId INT;
         SELECT @PatientUserId = p.UserId

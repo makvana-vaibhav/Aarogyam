@@ -3,7 +3,6 @@ CREATE PROCEDURE dbo.spOTPMasterGet
     @UserId INT = NULL
 AS
 BEGIN
-    SET NOCOUNT ON;
     IF @OtpId IS NOT NULL
         SELECT * FROM dbo.OTPMaster WHERE OtpId = @OtpId;
     ELSE IF @UserId IS NOT NULL

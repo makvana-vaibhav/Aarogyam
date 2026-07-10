@@ -4,7 +4,6 @@ CREATE PROCEDURE dbo.spPrescriptionsGet
     @PatientId INT = NULL
 AS
 BEGIN
-    SET NOCOUNT ON;
     IF @PrescriptionId IS NOT NULL
         SELECT * FROM dbo.Prescriptions WHERE PrescriptionId = @PrescriptionId;
     ELSE IF @VisitId IS NOT NULL

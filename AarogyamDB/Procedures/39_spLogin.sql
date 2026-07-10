@@ -2,7 +2,6 @@ CREATE PROCEDURE dbo.spLogin
     @Email NVARCHAR(100)
 AS
 BEGIN
-    SET NOCOUNT ON;
     BEGIN TRY
         IF NOT EXISTS (SELECT 1 FROM dbo.Users WHERE Email = @Email)
         BEGIN

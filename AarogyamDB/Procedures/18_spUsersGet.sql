@@ -3,7 +3,6 @@ CREATE PROCEDURE dbo.spUsersGet
     @Email NVARCHAR(100) = NULL
 AS
 BEGIN
-    SET NOCOUNT ON;
     IF @UserId IS NOT NULL
         SELECT * FROM dbo.Users WHERE UserId = @UserId;
     ELSE IF @Email IS NOT NULL

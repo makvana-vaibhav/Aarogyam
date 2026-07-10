@@ -3,7 +3,6 @@ CREATE PROCEDURE dbo.spStateMasterGet
     @CountryId INT = NULL
 AS
 BEGIN
-    SET NOCOUNT ON;
     IF @StateId IS NOT NULL
         SELECT * FROM dbo.StateMaster WHERE StateId = @StateId;
     ELSE IF @CountryId IS NOT NULL

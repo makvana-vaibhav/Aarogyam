@@ -17,7 +17,6 @@ CREATE PROCEDURE dbo.spRegisterDoctor
     @CityId INT
 AS
 BEGIN
-    SET NOCOUNT ON;
     BEGIN TRY
         DECLARE @RoleId INT;
         SELECT @RoleId = RoleId FROM dbo.RoleMaster WHERE RoleName = 'Doctor';

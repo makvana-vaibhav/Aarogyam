@@ -7,7 +7,6 @@ CREATE PROCEDURE dbo.spAuditLogsManage
     @EntityId INT = NULL
 AS
 BEGIN
-    SET NOCOUNT ON;
     BEGIN TRY
         IF @Action = 'INSERT'
         BEGIN

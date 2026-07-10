@@ -4,7 +4,6 @@ CREATE PROCEDURE dbo.spRejectDoctor
     @RejectionReason NVARCHAR(200)
 AS
 BEGIN
-    SET NOCOUNT ON;
     BEGIN TRY
         DECLARE @UserId INT;
         SELECT @UserId = UserId FROM dbo.Doctors WHERE DoctorId = @DoctorId;

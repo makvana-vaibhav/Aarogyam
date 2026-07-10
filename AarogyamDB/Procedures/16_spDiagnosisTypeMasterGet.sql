@@ -2,7 +2,6 @@ CREATE PROCEDURE dbo.spDiagnosisTypeMasterGet
     @DiagnosisTypeId INT = NULL
 AS
 BEGIN
-    SET NOCOUNT ON;
     IF @DiagnosisTypeId IS NULL
         SELECT * FROM dbo.DiagnosisTypeMaster;
     ELSE

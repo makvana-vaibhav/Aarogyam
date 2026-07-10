@@ -6,7 +6,6 @@ CREATE PROCEDURE dbo.spDiagnosisTypeMasterManage
     @IsActive BIT = NULL
 AS
 BEGIN
-    SET NOCOUNT ON;
     BEGIN TRY
         IF @Action = 'INSERT'
         BEGIN

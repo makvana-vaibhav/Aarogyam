@@ -11,7 +11,6 @@ CREATE PROCEDURE dbo.spUploadMedicalReport
     @DiagnosisId INT = NULL
 AS
 BEGIN
-    SET NOCOUNT ON;
     BEGIN TRY
         DECLARE @PatientUserId INT;
         SELECT @PatientUserId = UserId FROM dbo.Patients WHERE PatientId = @PatientId;

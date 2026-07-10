@@ -15,7 +15,6 @@ CREATE PROCEDURE dbo.spRegisterPatient
     @EmergencyContact NVARCHAR(20) = NULL
 AS
 BEGIN
-    SET NOCOUNT ON;
     BEGIN TRY
         DECLARE @RoleId INT;
         SELECT @RoleId = RoleId FROM dbo.RoleMaster WHERE RoleName = 'Patient';

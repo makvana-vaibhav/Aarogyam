@@ -13,7 +13,6 @@ CREATE PROCEDURE dbo.spMedicalReportsManage
     @ReportDate DATE = NULL
 AS
 BEGIN
-    SET NOCOUNT ON;
     BEGIN TRY
         IF @Action = 'INSERT'
         BEGIN

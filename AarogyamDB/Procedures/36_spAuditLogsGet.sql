@@ -3,7 +3,6 @@ CREATE PROCEDURE dbo.spAuditLogsGet
     @UserId INT = NULL
 AS
 BEGIN
-    SET NOCOUNT ON;
     IF @AuditLogId IS NOT NULL
         SELECT * FROM dbo.AuditLogs WHERE AuditLogId = @AuditLogId;
     ELSE IF @UserId IS NOT NULL

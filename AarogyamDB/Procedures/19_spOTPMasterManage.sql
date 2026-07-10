@@ -7,7 +7,6 @@ CREATE PROCEDURE dbo.spOTPMasterManage
     @IsUsed BIT = NULL
 AS
 BEGIN
-    SET NOCOUNT ON;
     BEGIN TRY
         IF @Action = 'INSERT'
         BEGIN

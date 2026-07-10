@@ -4,7 +4,6 @@ CREATE PROCEDURE dbo.spDoctorsGet
     @ApprovalStatus NVARCHAR(20) = NULL
 AS
 BEGIN
-    SET NOCOUNT ON;
     IF @DoctorId IS NOT NULL
         SELECT * FROM dbo.Doctors WHERE DoctorId = @DoctorId;
     ELSE IF @UserId IS NOT NULL

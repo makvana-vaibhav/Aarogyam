@@ -4,7 +4,6 @@ CREATE PROCEDURE dbo.spRoleMasterManage
     @RoleName NVARCHAR(20) = NULL
 AS
 BEGIN
-    SET NOCOUNT ON;
     BEGIN TRY
         IF @Action = 'INSERT'
         BEGIN

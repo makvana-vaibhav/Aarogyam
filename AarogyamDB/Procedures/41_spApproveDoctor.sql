@@ -3,7 +3,6 @@ CREATE PROCEDURE dbo.spApproveDoctor
     @ApprovedByUserId INT
 AS
 BEGIN
-    SET NOCOUNT ON;
     BEGIN TRY
         DECLARE @UserId INT;
         SELECT @UserId = UserId FROM dbo.Doctors WHERE DoctorId = @DoctorId;

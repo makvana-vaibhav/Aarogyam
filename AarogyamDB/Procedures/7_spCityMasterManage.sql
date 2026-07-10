@@ -5,7 +5,6 @@ CREATE PROCEDURE dbo.spCityMasterManage
     @CityName NVARCHAR(100) = NULL
 AS
 BEGIN
-    SET NOCOUNT ON;
     BEGIN TRY
         IF @Action = 'INSERT'
         BEGIN

@@ -3,7 +3,6 @@ CREATE PROCEDURE dbo.spNotificationsGet
     @UserId INT = NULL
 AS
 BEGIN
-    SET NOCOUNT ON;
     IF @NotificationId IS NOT NULL
         SELECT * FROM dbo.Notifications WHERE NotificationId = @NotificationId;
     ELSE IF @UserId IS NOT NULL

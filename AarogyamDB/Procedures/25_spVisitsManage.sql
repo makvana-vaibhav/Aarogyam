@@ -7,7 +7,6 @@ CREATE PROCEDURE dbo.spVisitsManage
     @Notes NVARCHAR(MAX) = NULL
 AS
 BEGIN
-    SET NOCOUNT ON;
     BEGIN TRY
         IF @Action = 'INSERT'
         BEGIN
