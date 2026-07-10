@@ -1,4 +1,4 @@
-CREATE PROCEDURE dbo.spDiagnosesGet
+CREATE OR ALTER PROCEDURE dbo.spDiagnosesGet
     @DiagnosisId INT = NULL,
     @VisitId INT = NULL
 AS

@@ -1,4 +1,4 @@
-CREATE PROCEDURE dbo.spRoleMasterManage
+CREATE OR ALTER PROCEDURE dbo.spRoleMasterManage
     @Action NVARCHAR(10),
     @RoleId INT = NULL,
     @RoleName NVARCHAR(20) = NULL

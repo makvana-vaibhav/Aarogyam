@@ -1,4 +1,4 @@
-CREATE PROCEDURE dbo.spNotificationsGet
+CREATE OR ALTER PROCEDURE dbo.spNotificationsGet
     @NotificationId INT = NULL,
     @UserId INT = NULL
 AS

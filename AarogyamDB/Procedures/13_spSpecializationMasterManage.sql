@@ -1,4 +1,4 @@
-CREATE PROCEDURE dbo.spSpecializationMasterManage
+CREATE OR ALTER PROCEDURE dbo.spSpecializationMasterManage
     @Action NVARCHAR(10),
     @SpecializationId INT = NULL,
     @SpecializationName NVARCHAR(100) = NULL,

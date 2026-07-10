@@ -1,4 +1,4 @@
-CREATE PROCEDURE dbo.spUsersGet
+CREATE OR ALTER PROCEDURE dbo.spUsersGet
     @UserId INT = NULL,
     @Email NVARCHAR(100) = NULL
 AS

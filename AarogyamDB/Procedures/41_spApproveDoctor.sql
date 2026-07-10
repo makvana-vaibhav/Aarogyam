@@ -1,4 +1,4 @@
-CREATE PROCEDURE dbo.spApproveDoctor
+CREATE OR ALTER PROCEDURE dbo.spApproveDoctor
     @DoctorId INT,
     @ApprovedByUserId INT
 AS

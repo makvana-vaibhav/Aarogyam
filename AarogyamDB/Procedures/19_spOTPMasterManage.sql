@@ -1,4 +1,4 @@
-CREATE PROCEDURE dbo.spOTPMasterManage
+CREATE OR ALTER PROCEDURE dbo.spOTPMasterManage
     @Action NVARCHAR(10),
     @OtpId INT = NULL,
     @UserId INT = NULL,

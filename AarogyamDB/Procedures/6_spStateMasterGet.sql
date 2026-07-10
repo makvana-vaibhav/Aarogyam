@@ -1,4 +1,4 @@
-CREATE PROCEDURE dbo.spStateMasterGet
+CREATE OR ALTER PROCEDURE dbo.spStateMasterGet
     @StateId INT = NULL,
     @CountryId INT = NULL
 AS

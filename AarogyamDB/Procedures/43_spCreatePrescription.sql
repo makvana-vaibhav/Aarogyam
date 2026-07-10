@@ -1,4 +1,4 @@
-CREATE PROCEDURE dbo.spCreatePrescription
+CREATE OR ALTER PROCEDURE dbo.spCreatePrescription
     @VisitId INT,
     @DiagnosisId INT = NULL,
     @PrescriptionText NVARCHAR(MAX),

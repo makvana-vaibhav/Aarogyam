@@ -1,4 +1,4 @@
-CREATE PROCEDURE dbo.spRegisterPatient
+CREATE OR ALTER PROCEDURE dbo.spRegisterPatient
     @Email NVARCHAR(100),
     @PhoneNumber NVARCHAR(20),
     @PasswordHash NVARCHAR(200),

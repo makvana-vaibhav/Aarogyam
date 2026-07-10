@@ -1,4 +1,4 @@
-CREATE PROCEDURE dbo.spUsersManage
+CREATE OR ALTER PROCEDURE dbo.spUsersManage
     @Action NVARCHAR(10),
     @UserId INT = NULL,
     @RoleId INT = NULL,

@@ -1,4 +1,4 @@
-CREATE PROCEDURE dbo.spDoctorsGet
+CREATE OR ALTER PROCEDURE dbo.spDoctorsGet
     @DoctorId INT = NULL,
     @UserId INT = NULL,
     @ApprovalStatus NVARCHAR(20) = NULL

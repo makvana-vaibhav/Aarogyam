@@ -1,4 +1,4 @@
-CREATE PROCEDURE dbo.spDegreeMasterGet
+CREATE OR ALTER PROCEDURE dbo.spDegreeMasterGet
     @DegreeId INT = NULL
 AS
 BEGIN

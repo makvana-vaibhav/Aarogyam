@@ -1,4 +1,4 @@
-CREATE PROCEDURE dbo.spDegreeMasterManage
+CREATE OR ALTER PROCEDURE dbo.spDegreeMasterManage
     @Action NVARCHAR(10),
     @DegreeId INT = NULL,
     @DegreeName NVARCHAR(100) = NULL,

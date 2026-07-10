@@ -1,4 +1,4 @@
-CREATE PROCEDURE dbo.spHospitalMasterManage
+CREATE OR ALTER PROCEDURE dbo.spHospitalMasterManage
     @Action NVARCHAR(10),
     @HospitalId INT = NULL,
     @HospitalName NVARCHAR(150) = NULL,

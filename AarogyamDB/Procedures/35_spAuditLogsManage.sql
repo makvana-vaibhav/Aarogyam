@@ -1,4 +1,4 @@
-CREATE PROCEDURE dbo.spAuditLogsManage
+CREATE OR ALTER PROCEDURE dbo.spAuditLogsManage
     @Action NVARCHAR(10),
     @AuditLogId BIGINT = NULL,
     @UserId INT = NULL,

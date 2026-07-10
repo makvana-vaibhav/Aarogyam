@@ -1,4 +1,4 @@
-CREATE PROCEDURE dbo.spDoctorsManage
+CREATE OR ALTER PROCEDURE dbo.spDoctorsManage
     @Action NVARCHAR(10),
     @DoctorId INT = NULL,
     @UserId INT = NULL,

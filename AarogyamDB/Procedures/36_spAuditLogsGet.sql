@@ -1,4 +1,4 @@
-CREATE PROCEDURE dbo.spAuditLogsGet
+CREATE OR ALTER PROCEDURE dbo.spAuditLogsGet
     @AuditLogId BIGINT = NULL,
     @UserId INT = NULL
 AS

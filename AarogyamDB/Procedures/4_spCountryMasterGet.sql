@@ -1,4 +1,4 @@
-CREATE PROCEDURE dbo.spCountryMasterGet
+CREATE OR ALTER PROCEDURE dbo.spCountryMasterGet
     @CountryId INT = NULL
 AS
 BEGIN

@@ -1,4 +1,4 @@
-CREATE PROCEDURE dbo.spCityMasterManage
+CREATE OR ALTER PROCEDURE dbo.spCityMasterManage
     @Action NVARCHAR(10),
     @CityId INT = NULL,
     @StateId INT = NULL,

@@ -1,4 +1,4 @@
-CREATE PROCEDURE dbo.spCityMasterGet
+CREATE OR ALTER PROCEDURE dbo.spCityMasterGet
     @CityId INT = NULL,
     @StateId INT = NULL
 AS

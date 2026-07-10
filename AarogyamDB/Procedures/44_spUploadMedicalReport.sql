@@ -1,4 +1,4 @@
-CREATE PROCEDURE dbo.spUploadMedicalReport
+CREATE OR ALTER PROCEDURE dbo.spUploadMedicalReport
     @PatientId INT,
     @DoctorId INT,
     @UploadedByUserId INT,

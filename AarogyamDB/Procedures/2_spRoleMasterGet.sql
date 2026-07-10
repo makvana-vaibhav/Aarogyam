@@ -1,4 +1,4 @@
-CREATE PROCEDURE dbo.spRoleMasterGet
+CREATE OR ALTER PROCEDURE dbo.spRoleMasterGet
     @RoleId INT = NULL
 AS
 BEGIN

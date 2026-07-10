@@ -1,4 +1,4 @@
-CREATE PROCEDURE dbo.spStateMasterManage
+CREATE OR ALTER PROCEDURE dbo.spStateMasterManage
     @Action NVARCHAR(10),
     @StateId INT = NULL,
     @CountryId INT = NULL,

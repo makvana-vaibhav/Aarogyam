@@ -1,4 +1,4 @@
-CREATE PROCEDURE dbo.spHospitalMasterGet
+CREATE OR ALTER PROCEDURE dbo.spHospitalMasterGet
     @HospitalId INT = NULL
 AS
 BEGIN

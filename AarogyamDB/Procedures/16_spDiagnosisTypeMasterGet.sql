@@ -1,4 +1,4 @@
-CREATE PROCEDURE dbo.spDiagnosisTypeMasterGet
+CREATE OR ALTER PROCEDURE dbo.spDiagnosisTypeMasterGet
     @DiagnosisTypeId INT = NULL
 AS
 BEGIN

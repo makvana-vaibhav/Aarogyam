@@ -1,4 +1,4 @@
-CREATE PROCEDURE dbo.spNotificationsManage
+CREATE OR ALTER PROCEDURE dbo.spNotificationsManage
     @Action NVARCHAR(10),
     @NotificationId INT = NULL,
     @UserId INT = NULL,

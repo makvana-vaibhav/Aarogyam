@@ -1,4 +1,4 @@
-CREATE PROCEDURE dbo.spOTPMasterGet
+CREATE OR ALTER PROCEDURE dbo.spOTPMasterGet
     @OtpId INT = NULL,
     @UserId INT = NULL
 AS

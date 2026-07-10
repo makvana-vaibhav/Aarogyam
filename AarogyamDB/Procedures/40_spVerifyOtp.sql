@@ -1,4 +1,4 @@
-CREATE PROCEDURE dbo.spVerifyOtp
+CREATE OR ALTER PROCEDURE dbo.spVerifyOtp
     @UserId INT,
     @OtpCode NVARCHAR(10)
 AS

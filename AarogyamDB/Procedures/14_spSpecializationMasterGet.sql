@@ -1,4 +1,4 @@
-CREATE PROCEDURE dbo.spSpecializationMasterGet
+CREATE OR ALTER PROCEDURE dbo.spSpecializationMasterGet
     @SpecializationId INT = NULL
 AS
 BEGIN

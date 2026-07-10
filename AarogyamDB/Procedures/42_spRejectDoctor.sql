@@ -1,4 +1,4 @@
-CREATE PROCEDURE dbo.spRejectDoctor
+CREATE OR ALTER PROCEDURE dbo.spRejectDoctor
     @DoctorId INT,
     @ApprovedByUserId INT,
     @RejectionReason NVARCHAR(200)
