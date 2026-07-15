@@ -1,0 +1,40 @@
+# ===== .NET / ASP.NET Core (backend/, Aarogyam/) =====
+bin/
+obj/
+*.user
+*.userosscache
+*.suo
+*.dbmdl
+*.jfm
+.vs/
+
+# ===== Node / frontend (safety net; nested projects have their own .gitignore) =====
+node_modules/
+dist/
+dist-ssr/
+build/
+*.local
+
+# ===== Environment & secrets =====
+.env
+.env.*
+!.env.example
+appsettings.*.local.json
+secrets.json
+*.pfx
+*.pem
+
+# ===== Logs =====
+*.log
+logs/
+
+# ===== OS files =====
+.DS_Store
+Thumbs.db
+
+# ===== Editor/IDE =====
+.idea/
+*.swp
+
+# ===== Misc =====
+*.zip
