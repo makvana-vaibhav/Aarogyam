@@ -24,6 +24,10 @@ secrets.json
 *.pfx
 *.pem
 
+# appsettings here holds a real DB connection string/password - keep only the .example templates tracked
+backend/Aarogyam.API/appsettings.json
+backend/Aarogyam.API/appsettings.*.json
+
 # ===== Logs =====
 *.log
 logs/

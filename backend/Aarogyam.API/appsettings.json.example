@@ -1,0 +1,14 @@
+{
+  "ConnectionStrings": {
+    "AarogyamDb": "Server=localhost;Database=AarogyamDB;User Id=SA;Password=YOUR_PASSWORD_HERE;TrustServerCertificate=True;"
+  },
+
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+
+  "AllowedHosts": "*"
+}
