@@ -11,8 +11,6 @@ public class AarogyamDbContext : DbContext
     {
     }
 
-    public DbSet<User> Users { get; set; }
-
     public DbSet<RegisterPatientResult> RegisterPatientResults { get; set; }
 
     public DbSet<RegisterDoctorResult> RegisterDoctorResults { get; set; }
