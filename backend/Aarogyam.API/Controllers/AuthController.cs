@@ -37,4 +37,26 @@ public class AuthController : ControllerBase
 
         return Ok(result);
     }
+
+    [HttpPost("register/doctor")]
+    public async Task<ActionResult<RegisterDoctorResult>> RegisterDoctor([FromBody] RegisterDoctorRequest request)
+    {
+        var result = await _authService.RegisterDoctorAsync(request);
+
+        if (result is null)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, new RegisterDoctorResult
+            {
+                Success = 0,
+                Message = "Unable to register doctor."
+            });
+        }
+
+        if (result.Success == 0)
+        {
+            return BadRequest(result);
+        }
+
+        return Ok(result);
+    }
 }

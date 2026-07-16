@@ -43,4 +43,35 @@ public class AuthRepository : IAuthRepository
 
         return results.FirstOrDefault();
     }
+
+    public async Task<RegisterDoctorResult?> RegisterDoctorAsync(RegisterDoctorRequest request)
+    {
+        var parameters = new[]
+        {
+            new SqlParameter("@Email", request.Email),
+            new SqlParameter("@PhoneNumber", request.PhoneNumber),
+            new SqlParameter("@PasswordHash", request.PasswordHash),
+            new SqlParameter("@FirstName", request.FirstName),
+            new SqlParameter("@MiddleName", request.MiddleName),
+            new SqlParameter("@LastName", request.LastName),
+            new SqlParameter("@LicenseNumber", request.LicenseNumber),
+            new SqlParameter("@HospitalId", request.HospitalId),
+            new SqlParameter("@DegreeId", request.DegreeId),
+            new SqlParameter("@SpecializationId", request.SpecializationId),
+            new SqlParameter("@LicenseDocumentPath", request.LicenseDocumentPath),
+            new SqlParameter("@DegreeDocumentPath", request.DegreeDocumentPath),
+            new SqlParameter("@Address", request.Address),
+            new SqlParameter("@CountryId", request.CountryId),
+            new SqlParameter("@StateId", request.StateId),
+            new SqlParameter("@CityId", request.CityId)
+        };
+
+        var results = await _context.RegisterDoctorResults
+            .FromSqlRaw(
+                "EXEC dbo.spRegisterDoctor @Email, @PhoneNumber, @PasswordHash, @FirstName, @MiddleName, @LastName, @LicenseNumber, @HospitalId, @DegreeId, @SpecializationId, @LicenseDocumentPath, @DegreeDocumentPath, @Address, @CountryId, @StateId, @CityId",
+                parameters)
+            .ToListAsync();
+
+        return results.FirstOrDefault();
+    }
 }

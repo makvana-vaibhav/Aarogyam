@@ -17,4 +17,9 @@ public class AuthService : IAuthService
     {
         return _authRepository.RegisterPatientAsync(request);
     }
+
+    public Task<RegisterDoctorResult?> RegisterDoctorAsync(RegisterDoctorRequest request)
+    {
+        return _authRepository.RegisterDoctorAsync(request);
+    }
 }

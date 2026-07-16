@@ -6,4 +6,6 @@ namespace Aarogyam.API.Services;
 public interface IAuthService
 {
     Task<RegisterPatientResult?> RegisterPatientAsync(RegisterPatientRequest request);
+
+    Task<RegisterDoctorResult?> RegisterDoctorAsync(RegisterDoctorRequest request);
 }
