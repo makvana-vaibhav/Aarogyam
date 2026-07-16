@@ -6,3 +6,5 @@ CREATE TABLE dbo.CountryMaster (
     CreatedAt DATETIME2 NOT NULL DEFAULT (SYSUTCDATETIME()),
     UpdatedAt DATETIME2 NULL
 );
+
+insert into dbo.CountryMaster (CountryName, CountryCode, IsActive) values ('India', 'IN', 1);

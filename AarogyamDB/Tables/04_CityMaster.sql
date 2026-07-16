@@ -5,3 +5,4 @@ CREATE TABLE dbo.CityMaster (
     CreatedAt DATETIME2 NOT NULL DEFAULT (SYSUTCDATETIME()),
     UpdatedAt DATETIME2 NULL
 );
+insert into dbo.CityMaster (StateId, CityName) values (1, 'Rajkot'); 

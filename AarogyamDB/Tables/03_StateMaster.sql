@@ -5,3 +5,5 @@ CREATE TABLE dbo.StateMaster (
     CreatedAt DATETIME2 NOT NULL DEFAULT (SYSUTCDATETIME()),
     UpdatedAt DATETIME2 NULL
 );
+
+insert into dbo.StateMaster (CountryId, StateName) values (1, 'Gujarat');

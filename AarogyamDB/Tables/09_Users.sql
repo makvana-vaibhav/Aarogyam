@@ -10,3 +10,4 @@ CREATE TABLE dbo.Users (
     CreatedAt DATETIME2 NOT NULL DEFAULT (SYSUTCDATETIME()),
     UpdatedAt DATETIME2 NULL
 );
+select * from dbo.Users;

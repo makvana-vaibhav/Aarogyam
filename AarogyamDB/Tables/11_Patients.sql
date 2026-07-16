@@ -17,3 +17,4 @@ CREATE TABLE dbo.Patients (
     CreatedAt DATETIME2 NOT NULL DEFAULT (SYSUTCDATETIME()),
     UpdatedAt DATETIME2 NULL
 );
+select * from dbo.Patients;
