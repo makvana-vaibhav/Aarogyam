@@ -74,4 +74,137 @@ public class AuthRepository : IAuthRepository
 
         return results.FirstOrDefault();
     }
+
+    public async Task<VerifyOtpResult?> VerifyOtpAsync(VerifyOtpRequest request)
+    {
+        var parameters = new[]
+        {
+            new SqlParameter("@UserId", request.UserId),
+            new SqlParameter("@OtpCode", request.OtpCode)
+        };
+
+        var results = await _context.VerifyOtpResults
+            .FromSqlRaw("EXEC dbo.spVerifyOtp @UserId, @OtpCode", parameters)
+            .ToListAsync();
+
+        return results.FirstOrDefault();
+    }
+
+    public async Task<LoginResult?> LoginAsync(LoginRequest request)
+    {
+        var loginParameters = new[]
+        {
+            new SqlParameter("@Email", request.Email)
+        };
+
+        var loginResults = await _context.LoginResults
+            .FromSqlRaw("EXEC dbo.spLogin @Email", loginParameters)
+            .ToListAsync();
+
+        var loginResult = loginResults.FirstOrDefault();
+
+        if (loginResult is null || loginResult.Success == 0)
+        {
+            return loginResult;
+        }
+
+        if (!string.Equals(loginResult.PasswordHash, request.PasswordHash, StringComparison.Ordinal))
+        {
+            return new LoginResult
+            {
+                Success = 0,
+                Message = "Invalid password."
+            };
+        }
+
+        if (!loginResult.IsEmailVerified)
+        {
+            return new LoginResult
+            {
+                Success = 0,
+                Message = "Email is not verified yet."
+            };
+        }
+
+        if (string.Equals(loginResult.RoleName, "Doctor", StringComparison.OrdinalIgnoreCase))
+        {
+            var doctorResults = await _context.DoctorApprovalResults
+                .FromSqlRaw("EXEC dbo.spDoctorsGet @UserId = {0}", loginResult.UserId)
+                .ToListAsync();
+
+            var doctor = doctorResults.FirstOrDefault();
+            if (doctor is null)
+            {
+                return new LoginResult
+                {
+                    Success = 0,
+                    Message = "Doctor profile not found."
+                };
+            }
+
+            if (!string.Equals(doctor.ApprovalStatus, "Approved", StringComparison.OrdinalIgnoreCase))
+            {
+                return new LoginResult
+                {
+                    Success = 0,
+                    Message = "Doctor account is waiting for approval.",
+                    UserId = loginResult.UserId,
+                    Email = loginResult.Email,
+                    RoleName = loginResult.RoleName,
+                    IsEmailVerified = loginResult.IsEmailVerified,
+                    ApprovalStatus = doctor.ApprovalStatus
+                };
+            }
+
+            loginResult.ApprovalStatus = doctor.ApprovalStatus;
+        }
+
+        loginResult.PasswordHash = null;
+        return loginResult;
+    }
+
+    public async Task<ResendOtpResult?> ResendOtpAsync(ResendOtpRequest request)
+    {
+        var users = await _context.Users
+            .FromSqlRaw("EXEC dbo.spUsersGet @Email = {0}", request.Email)
+            .ToListAsync();
+
+        var user = users.FirstOrDefault();
+        if (user is null)
+        {
+            return new ResendOtpResult
+            {
+                Success = 0,
+                Message = "No account found with this email."
+            };
+        }
+
+        var otpCode = Random.Shared.Next(100000, 1000000).ToString();
+        var expiresAt = DateTime.UtcNow.AddMinutes(10);
+
+        var otpParameters = new[]
+        {
+            new SqlParameter("@Action", "INSERT"),
+            new SqlParameter("@UserId", user.UserId ?? 0),
+            new SqlParameter("@OtpCode", otpCode),
+            new SqlParameter("@ExpiresAt", expiresAt),
+            new SqlParameter("@IsUsed", false)
+        };
+
+        var results = await _context.OtpManageResults
+            .FromSqlRaw(
+                "EXEC dbo.spOTPMasterManage @Action, NULL, @UserId, @OtpCode, @ExpiresAt, @IsUsed",
+                otpParameters)
+            .ToListAsync();
+
+        var result = results.FirstOrDefault();
+        return new ResendOtpResult
+        {
+            Success = result?.Success ?? 0,
+            Message = result?.Message ?? "Unable to resend OTP.",
+            OtpId = result?.OtpId,
+            OtpCode = otpCode,
+            ExpiresAt = expiresAt
+        };
+    }
 }

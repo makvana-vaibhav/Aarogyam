@@ -15,6 +15,16 @@ public class AarogyamDbContext : DbContext
 
     public DbSet<RegisterDoctorResult> RegisterDoctorResults { get; set; }
 
+    public DbSet<VerifyOtpResult> VerifyOtpResults { get; set; }
+
+    public DbSet<LoginResult> LoginResults { get; set; }
+
+    public DbSet<ResendOtpResult> ResendOtpResults { get; set; }
+
+    public DbSet<OtpManageResult> OtpManageResults { get; set; }
+
+    public DbSet<DoctorApprovalResult> DoctorApprovalResults { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -26,6 +36,36 @@ public class AarogyamDbContext : DbContext
         });
 
         modelBuilder.Entity<RegisterDoctorResult>(entity =>
+        {
+            entity.HasNoKey();
+            entity.ToView(null);
+        });
+
+        modelBuilder.Entity<VerifyOtpResult>(entity =>
+        {
+            entity.HasNoKey();
+            entity.ToView(null);
+        });
+
+        modelBuilder.Entity<LoginResult>(entity =>
+        {
+            entity.HasNoKey();
+            entity.ToView(null);
+        });
+
+        modelBuilder.Entity<ResendOtpResult>(entity =>
+        {
+            entity.HasNoKey();
+            entity.ToView(null);
+        });
+
+        modelBuilder.Entity<OtpManageResult>(entity =>
+        {
+            entity.HasNoKey();
+            entity.ToView(null);
+        });
+
+        modelBuilder.Entity<DoctorApprovalResult>(entity =>
         {
             entity.HasNoKey();
             entity.ToView(null);

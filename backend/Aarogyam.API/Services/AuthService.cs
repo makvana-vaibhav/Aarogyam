@@ -22,4 +22,19 @@ public class AuthService : IAuthService
     {
         return _authRepository.RegisterDoctorAsync(request);
     }
+
+    public Task<VerifyOtpResult?> VerifyOtpAsync(VerifyOtpRequest request)
+    {
+        return _authRepository.VerifyOtpAsync(request);
+    }
+
+    public Task<LoginResult?> LoginAsync(LoginRequest request)
+    {
+        return _authRepository.LoginAsync(request);
+    }
+
+    public Task<ResendOtpResult?> ResendOtpAsync(ResendOtpRequest request)
+    {
+        return _authRepository.ResendOtpAsync(request);
+    }
 }

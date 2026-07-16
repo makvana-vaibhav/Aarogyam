@@ -59,4 +59,70 @@ public class AuthController : ControllerBase
 
         return Ok(result);
     }
+
+    [HttpPost("verify-otp")]
+    public async Task<ActionResult<VerifyOtpResult>> VerifyOtp([FromBody] VerifyOtpRequest request)
+    {
+        var result = await _authService.VerifyOtpAsync(request);
+
+        if (result is null)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, new VerifyOtpResult
+            {
+                Success = 0,
+                Message = "Unable to verify OTP."
+            });
+        }
+
+        if (result.Success == 0)
+        {
+            return BadRequest(result);
+        }
+
+        return Ok(result);
+    }
+
+    [HttpPost("login")]
+    public async Task<ActionResult<LoginResult>> Login([FromBody] LoginRequest request)
+    {
+        var result = await _authService.LoginAsync(request);
+
+        if (result is null)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, new LoginResult
+            {
+                Success = 0,
+                Message = "Unable to login."
+            });
+        }
+
+        if (result.Success == 0)
+        {
+            return Unauthorized(result);
+        }
+
+        return Ok(result);
+    }
+
+    [HttpPost("resend-otp")]
+    public async Task<ActionResult<ResendOtpResult>> ResendOtp([FromBody] ResendOtpRequest request)
+    {
+        var result = await _authService.ResendOtpAsync(request);
+
+        if (result is null)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, new ResendOtpResult
+            {
+                Success = 0,
+                Message = "Unable to resend OTP."
+            });
+        }
+
+        if (result.Success == 0)
+        {
+            return BadRequest(result);
+        }
+
+        return Ok(result);
+    }
 }
