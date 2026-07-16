@@ -1,4 +1,3 @@
-using Aarogyam.API.Models;
 using Aarogyam.API.Models.Responses;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,6 +23,8 @@ public class AarogyamDbContext : DbContext
     public DbSet<OtpManageResult> OtpManageResults { get; set; }
 
     public DbSet<DoctorApprovalResult> DoctorApprovalResults { get; set; }
+
+    public DbSet<UserLookupResult> UserLookupResults { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -66,6 +67,12 @@ public class AarogyamDbContext : DbContext
         });
 
         modelBuilder.Entity<DoctorApprovalResult>(entity =>
+        {
+            entity.HasNoKey();
+            entity.ToView(null);
+        });
+
+        modelBuilder.Entity<UserLookupResult>(entity =>
         {
             entity.HasNoKey();
             entity.ToView(null);

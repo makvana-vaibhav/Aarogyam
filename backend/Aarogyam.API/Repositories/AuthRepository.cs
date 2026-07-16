@@ -165,7 +165,7 @@ public class AuthRepository : IAuthRepository
 
     public async Task<ResendOtpResult?> ResendOtpAsync(ResendOtpRequest request)
     {
-        var users = await _context.Users
+        var users = await _context.UserLookupResults
             .FromSqlRaw("EXEC dbo.spUsersGet @Email = {0}", request.Email)
             .ToListAsync();
 
