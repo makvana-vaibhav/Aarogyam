@@ -3,6 +3,14 @@
     "AarogyamDb": "Server=localhost;Database=AarogyamDB;User Id=SA;Password=YOUR_PASSWORD_HERE;TrustServerCertificate=True;"
   },
 
+  "Email": {
+    "SmtpHost": "smtp.gmail.com",
+    "SmtpPort": 587,
+    "SenderEmail": "your-email@gmail.com",
+    "SenderPassword": "your-app-password",
+    "SenderName": "Aarogyam"
+  },
+
   "Logging": {
     "LogLevel": {
       "Default": "Information",

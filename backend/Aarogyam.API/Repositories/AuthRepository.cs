@@ -1,6 +1,7 @@
 using Aarogyam.API.Data;
 using Aarogyam.API.Models.Requests;
 using Aarogyam.API.Models.Responses;
+using Aarogyam.API.Services;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,10 +10,14 @@ namespace Aarogyam.API.Repositories;
 public class AuthRepository : IAuthRepository
 {
     private readonly AarogyamDbContext _context;
+    private readonly IEmailService _emailService;
+    private readonly ILogger<AuthRepository> _logger;
 
-    public AuthRepository(AarogyamDbContext context)
+    public AuthRepository(AarogyamDbContext context, IEmailService emailService, ILogger<AuthRepository> logger)
     {
         _context = context;
+        _emailService = emailService;
+        _logger = logger;
     }
 
     public async Task<RegisterPatientResult?> RegisterPatientAsync(RegisterPatientRequest request)
@@ -41,7 +46,14 @@ public class AuthRepository : IAuthRepository
                 parameters)
             .ToListAsync();
 
-        return results.FirstOrDefault();
+        var result = results.FirstOrDefault();
+
+        if (result?.Success == 1 && result.UserId.HasValue)
+        {
+            await CreateAndSendOtpAsync(result.UserId.Value, request.Email);
+        }
+
+        return result;
     }
 
     public async Task<RegisterDoctorResult?> RegisterDoctorAsync(RegisterDoctorRequest request)
@@ -72,7 +84,14 @@ public class AuthRepository : IAuthRepository
                 parameters)
             .ToListAsync();
 
-        return results.FirstOrDefault();
+        var result = results.FirstOrDefault();
+
+        if (result?.Success == 1 && result.UserId.HasValue)
+        {
+            await CreateAndSendOtpAsync(result.UserId.Value, request.Email);
+        }
+
+        return result;
     }
 
     public async Task<VerifyOtpResult?> VerifyOtpAsync(VerifyOtpRequest request)
@@ -179,13 +198,28 @@ public class AuthRepository : IAuthRepository
             };
         }
 
+        var otp = await CreateAndSendOtpAsync(user.UserId, request.Email);
+
+        return new ResendOtpResult
+        {
+            Success = otp.Success ? 1 : 0,
+            Message = otp.Message,
+            OtpId = otp.OtpId,
+            OtpCode = otp.OtpCode,
+            ExpiresAt = otp.ExpiresAt
+        };
+    }
+
+    private async Task<(bool Success, string Message, int? OtpId, string OtpCode, DateTime ExpiresAt)> CreateAndSendOtpAsync(
+        int userId, string email)
+    {
         var otpCode = Random.Shared.Next(100000, 1000000).ToString();
         var expiresAt = DateTime.UtcNow.AddMinutes(10);
 
         var otpParameters = new[]
         {
             new SqlParameter("@Action", "INSERT"),
-            new SqlParameter("@UserId", user.UserId),
+            new SqlParameter("@UserId", userId),
             new SqlParameter("@OtpCode", otpCode),
             new SqlParameter("@ExpiresAt", expiresAt),
             new SqlParameter("@IsUsed", false)
@@ -198,13 +232,20 @@ public class AuthRepository : IAuthRepository
             .ToListAsync();
 
         var result = results.FirstOrDefault();
-        return new ResendOtpResult
+        var success = result?.Success == 1;
+
+        if (success)
         {
-            Success = result?.Success ?? 0,
-            Message = result?.Message ?? "Unable to resend OTP.",
-            OtpId = result?.OtpId,
-            OtpCode = otpCode,
-            ExpiresAt = expiresAt
-        };
+            try
+            {
+                await _emailService.SendOtpEmailAsync(email, otpCode);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to send OTP email to {Email}", email);
+            }
+        }
+
+        return (success, result?.Message ?? "Unable to generate OTP.", result?.OtpId, otpCode, expiresAt);
     }
 }

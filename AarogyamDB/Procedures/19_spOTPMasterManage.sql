@@ -11,7 +11,9 @@ BEGIN
         IF @Action = 'INSERT'
         BEGIN
             INSERT INTO dbo.OTPMaster (UserId, OtpCode, ExpiresAt, IsUsed) VALUES (@UserId, @OtpCode, @ExpiresAt, @IsUsed);
-            SELECT 1 AS Success, 'Created.' AS Message, SCOPE_IDENTITY() AS OtpId;
+            -- SCOPE_IDENTITY() is returned as decimal(38,0); cast it to match
+            -- the API result model's nullable int OtpId property.
+            SELECT 1 AS Success, 'Created.' AS Message, CAST(SCOPE_IDENTITY() AS INT) AS OtpId;
         END
         ELSE IF @Action = 'UPDATE'
         BEGIN

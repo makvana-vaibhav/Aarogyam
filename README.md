@@ -1,5 +1,250 @@
 # Aarogyam
 
+# Aarogyam Backend - Initial Project Setup
+
+This document covers the initial setup of the ASP.NET Core Web API project before implementing any modules.
+
+---
+
+# Step 1: Create Solution
+
+## Command
+
+```bash
+dotnet new sln -n Aarogyam
+```
+
+## What is a Solution?
+
+A Solution (`.sln`) is a container that holds one or more .NET projects.
+
+Example:
+
+```text
+Aarogyam.sln
+│
+├── Aarogyam.API
+├── Aarogyam.Admin
+├── Aarogyam.Tests
+```
+
+Currently our solution contains only one project:
+
+```text
+Aarogyam.sln
+│
+└── Aarogyam.API
+```
+
+## Why do we need it?
+
+- Organizes multiple projects
+- Opens the complete application in Visual Studio or VS Code
+- Manages project references
+
+---
+
+# Step 2: Create ASP.NET Core Web API Project
+
+## Command
+
+```bash
+dotnet new webapi -n Aarogyam.API
+```
+
+## What does this command do?
+
+Creates a new ASP.NET Core Web API project.
+
+Generated structure:
+
+```text
+Aarogyam.API
+│
+├── Program.cs
+├── appsettings.json
+├── appsettings.Development.json
+├── Controllers
+├── Properties
+├── Aarogyam.API.csproj
+```
+
+## Why do we use Web API?
+
+ASP.NET Core Web API acts as the backend of the application.
+
+Flow:
+
+```text
+React
+    ↓
+ASP.NET Core Web API
+    ↓
+SQL Server
+```
+
+The Web API receives HTTP requests, processes business logic, accesses the database, and returns JSON responses.
+
+---
+
+# Step 3: Add Project to Solution
+
+## Command
+
+```bash
+dotnet sln add Aarogyam.API/Aarogyam.API.csproj
+```
+
+## What does this do?
+
+Registers the Web API project inside the Solution.
+
+Project structure becomes:
+
+```text
+Aarogyam.sln
+│
+└── Aarogyam.API
+```
+
+## Why is this required?
+
+Without adding the project, the solution does not know that the project exists.
+
+---
+
+# Step 4: Install Required NuGet Packages
+
+## Entity Framework Core SQL Server
+
+```bash
+dotnet add package Microsoft.EntityFrameworkCore.SqlServer
+```
+
+### Purpose
+
+Installs Entity Framework Core SQL Server provider.
+
+Allows EF Core to communicate with SQL Server.
+
+Without this package:
+
+```csharp
+options.UseSqlServer(...)
+```
+
+will not work.
+
+---
+
+## Swagger
+
+```bash
+dotnet add package Swashbuckle.AspNetCore
+```
+
+### Purpose
+
+Installs Swagger/OpenAPI support.
+
+Swagger automatically generates API documentation and provides a UI to test APIs.
+
+Available at:
+
+```text
+http://localhost:5000/swagger
+```
+
+---
+
+## MailKit
+
+```bash
+dotnet add package MailKit
+```
+
+### Purpose
+
+Installs MailKit, an SMTP email client library.
+
+Used to send the OTP verification code by email after a patient or doctor registers. Pulls in `MimeKit` (message building) and `BouncyCastle.Cryptography` (TLS) as dependencies automatically.
+
+Configured via the `Email` section in `appsettings.json` (SMTP host, port, sender email/password) and consumed through `IEmailService` / `EmailService`.
+
+---
+
+# Step 5: Verify Installation
+
+## Restore Packages
+
+```bash
+dotnet restore
+```
+
+Downloads all packages listed in the `.csproj` file.
+
+---
+
+## Run the Project
+
+```bash
+dotnet run
+```
+
+If successful, the output will be similar to:
+
+```text
+Now listening on:
+http://localhost:5000
+```
+
+Open:
+
+```text
+http://localhost:5000/swagger
+```
+
+Swagger UI should load successfully.
+
+---
+
+# Packages Installed
+
+| Package | Purpose |
+|----------|----------|
+| Microsoft.EntityFrameworkCore.SqlServer | Connects EF Core with SQL Server |
+| Swashbuckle.AspNetCore | Generates Swagger API documentation |
+| MailKit | Sends OTP verification emails over SMTP |
+
+---
+
+# Project Created
+
+```text
+Aarogyam.sln
+│
+└── Aarogyam.API
+    │
+    ├── Program.cs
+    ├── appsettings.json
+    ├── appsettings.Development.json
+    ├── Controllers
+    ├── Properties
+    └── Aarogyam.API.csproj
+```
+
+---
+
+# Summary
+
+1. Created a Solution (`Aarogyam.sln`) to organize the application.
+2. Created an ASP.NET Core Web API project (`Aarogyam.API`).
+3. Added the project to the solution.
+4. Installed Entity Framework Core SQL Server package for database connectivity.
+5. Installed Swagger for API documentation and testing.
+6. Installed MailKit for sending OTP verification emails.
+7. Restored packages and verified the project by running the application.
+
 ## Digital Health Identity
 
 Aarogyam is a Digital Health Identity platform that provides every patient with a unique Aarogyam ID for maintaining lifelong medical records in a secure and centralized system.
