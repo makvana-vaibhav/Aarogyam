@@ -3,6 +3,18 @@
 (function () {
   "use strict";
 
+  // Theme toggle (light is default; persisted in localStorage)
+  var THEME_KEY = "aarogyam-theme";
+  var themeToggle = document.getElementById("themeToggle");
+  if (themeToggle) {
+    themeToggle.addEventListener("click", function () {
+      var current = document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+      var next = current === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", next);
+      try { localStorage.setItem(THEME_KEY, next); } catch (e) {}
+    });
+  }
+
   // Header background once the page is scrolled
   var header = document.querySelector(".site-header");
   function onScroll() {

@@ -5,6 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Terms of Use — Aarogyam</title>
 <meta name="description" content="The terms that govern use of the Aarogyam platform.">
+<script>
+  (function () {
+    try {
+      if (localStorage.getItem("aarogyam-theme") === "dark") {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+    } catch (e) {}
+  })();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -24,6 +33,7 @@
     </a>
 
     <nav class="site-nav" id="siteNav">
+      <a href="index.html">Home</a>
       <a href="index.html#features">Features</a>
       <a href="index.html#how">How it works</a>
       <a href="index.html#roles">Who it's for</a>
@@ -34,6 +44,10 @@
     <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false"><span></span></button>
 
     <div class="header-actions">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M4.4 4.4l1.7 1.7M17.9 17.9l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.4 19.6l1.7-1.7M17.9 6.1l1.7-1.7"/></svg>
+      </button>
       <a class="btn btn-ghost" href="#">Login</a>
       <a class="btn btn-solid" href="#">Register</a>
     </div>
