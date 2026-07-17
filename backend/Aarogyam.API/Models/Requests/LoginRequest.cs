@@ -7,7 +7,7 @@ public class LoginRequest
     [Required]
     [EmailAddress]
     [MaxLength(100)]
-    public string Email { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;//email address of the user trying to log in because it cant be null so defaulting to empty string
 
     [Required]
     [MaxLength(200)]

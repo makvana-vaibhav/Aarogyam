@@ -6,17 +6,21 @@ using Microsoft.AspNetCore.Mvc;
 namespace Aarogyam.API.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/[controller]")] // attribute routing, the route is set to "api/auth" for this controller
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
 
+
+// Initializes a new instance of the <see cref="AuthController"/> class. create custom constructor to inject the IAuthService dependency into the controller
     public AuthController(IAuthService authService)
     {
         _authService = authService;
     }
 
     [HttpPost("register/patient")]
+    // Handles patient registration by receiving request data from the request body
+    // and returns an HTTP response containing the registration result.
     public async Task<ActionResult<RegisterPatientResult>> RegisterPatient([FromBody] RegisterPatientRequest request)
     {
         var result = await _authService.RegisterPatientAsync(request);

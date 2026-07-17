@@ -5,6 +5,7 @@ namespace Aarogyam.API.Services;
 
 public interface IAuthService
 {
+    // task = asynchronous operation that returns a result of type RegisterPatientResult or null if the operation fails
     Task<RegisterPatientResult?> RegisterPatientAsync(RegisterPatientRequest request);
 
     Task<RegisterDoctorResult?> RegisterDoctorAsync(RegisterDoctorRequest request);

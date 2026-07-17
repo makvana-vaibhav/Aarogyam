@@ -185,7 +185,7 @@ public class AuthRepository : IAuthRepository
         var otpParameters = new[]
         {
             new SqlParameter("@Action", "INSERT"),
-            new SqlParameter("@UserId", user.UserId ?? 0),
+            new SqlParameter("@UserId", user.UserId),
             new SqlParameter("@OtpCode", otpCode),
             new SqlParameter("@ExpiresAt", expiresAt),
             new SqlParameter("@IsUsed", false)

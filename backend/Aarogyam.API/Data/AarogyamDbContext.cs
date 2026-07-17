@@ -11,7 +11,7 @@ public class AarogyamDbContext : DbContext
     }
 
     public DbSet<RegisterPatientResult> RegisterPatientResults { get; set; }
-
+// This represents a view that returns the result of registering a patient
     public DbSet<RegisterDoctorResult> RegisterDoctorResults { get; set; }
 
     public DbSet<VerifyOtpResult> VerifyOtpResults { get; set; }
@@ -32,13 +32,13 @@ public class AarogyamDbContext : DbContext
 
         modelBuilder.Entity<RegisterPatientResult>(entity =>
         {
-            entity.HasNoKey();
+            entity.HasNoKey(); //because this is a result set, not a table so no primary key is defined
             entity.ToView(null);
         });
 
         modelBuilder.Entity<RegisterDoctorResult>(entity =>
         {
-            entity.HasNoKey();
+            entity.HasNoKey(); //because this is a result set, not a table so no primary key is defined
             entity.ToView(null);
         });
 

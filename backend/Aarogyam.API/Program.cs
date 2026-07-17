@@ -12,8 +12,6 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AarogyamDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("AarogyamDb")));
 
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
