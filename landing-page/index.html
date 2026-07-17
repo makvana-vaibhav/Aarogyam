@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aarogyam — One health identity, for life</title>
+<meta name="description" content="Aarogyam gives every patient a single digital health identity — lifelong medical records, prescriptions and reports in one secure place, accessible by QR code.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='2' y='2' width='28' height='28' rx='8' fill='%23081c15'/%3E%3Cpath d='M7 17h5l2.5-6 3.5 10 2.5-6.5L22 17h3' stroke='%2374c69d' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="Aarogyam home">
+      <svg class="mark" width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <rect x="1.5" y="1.5" width="29" height="29" rx="8.5" stroke="#52b788" stroke-width="1.5"/>
+        <path d="M7 17h5l2.5-6 3.5 10 2.5-6.5L22 17h3" stroke="#74c69d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Aarogyam <small>Health ID</small>
+    </a>
+
+    <nav class="site-nav" id="siteNav">
+      <a href="#features">Features</a>
+      <a href="#how">How it works</a>
+      <a href="#roles">Who it's for</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+
+    <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false"><span></span></button>
+
+    <div class="header-actions">
+      <a class="btn btn-ghost" href="#">Login</a>
+      <a class="btn btn-solid" href="#">Register</a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- ================= HERO ================= -->
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-copy">
+        <span class="eyebrow">Digital health identity</span>
+        <h1>Your medical history, <em>finally</em> in one place.</h1>
+        <p class="lede">Aarogyam gives every patient a single lifelong health ID. Reports, prescriptions and diagnoses stay attached to you — not to the hospital that filed them, the clinic that lost them, or the folder at home.</p>
+        <div class="hero-ctas">
+          <a class="btn btn-solid btn-lg" href="#">Create your Aarogyam ID <span class="arr">→</span></a>
+          <a class="btn btn-ghost btn-lg" href="#how">See how it works</a>
+        </div>
+        <p class="hero-note">Free for patients · OTP-verified sign-up · Doctors verified by licence, e.g. <code>MCI-44210</code></p>
+      </div>
+
+      <div class="hero-visual">
+        <!-- floating record chips -->
+        <div class="float-chip c1" aria-hidden="true">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#74c69d" stroke-width="1.8" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+          blood_report_march.pdf
+        </div>
+        <div class="float-chip c2" aria-hidden="true">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#74c69d" stroke-width="1.8" stroke-linecap="round"><path d="M12 2v20M2 12h20"/></svg>
+          Rx · Amoxicillin 500mg
+        </div>
+        <div class="float-chip c3" aria-hidden="true">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#74c69d" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          Visit · Dr. Rao · 12 Jun
+        </div>
+
+        <!-- health ID card -->
+        <div class="id-card" aria-label="Sample Aarogyam health ID card">
+          <div class="id-card-top">
+            <div>
+              <div class="label">Republic of good health</div>
+              <div class="brand-line">Aarogyam</div>
+            </div>
+            <div class="id-chip" aria-hidden="true"></div>
+          </div>
+
+          <div class="id-card-body">
+            <svg class="id-qr" viewBox="0 0 25 25" aria-hidden="true" shape-rendering="crispEdges">
+              <rect width="25" height="25" fill="#d8f3dc"/>
+              <g fill="#081c15">
+                <path d="M1 1h7v7H1zM2 2v5h5V2z"/><rect x="3" y="3" width="3" height="3"/>
+                <path d="M17 1h7v7h-7zM18 2v5h5V2z"/><rect x="19" y="3" width="3" height="3"/>
+                <path d="M1 17h7v7H1zM2 18v5h5v-5z"/><rect x="3" y="19" width="3" height="3"/>
+                <rect x="10" y="1" width="1" height="1"/><rect x="12" y="1" width="2" height="1"/><rect x="15" y="1" width="1" height="1"/>
+                <rect x="9" y="2" width="1" height="2"/><rect x="11" y="3" width="1" height="1"/><rect x="13" y="2" width="1" height="2"/>
+                <rect x="10" y="4" width="2" height="1"/><rect x="14" y="4" width="2" height="1"/><rect x="9" y="5" width="1" height="1"/>
+                <rect x="12" y="5" width="1" height="2"/><rect x="14" y="6" width="1" height="1"/><rect x="10" y="7" width="1" height="1"/>
+                <rect x="15" y="7" width="1" height="1"/><rect x="1" y="9" width="1" height="1"/><rect x="3" y="9" width="2" height="1"/>
+                <rect x="6" y="9" width="1" height="1"/><rect x="8" y="9" width="1" height="2"/><rect x="10" y="9" width="2" height="1"/>
+                <rect x="13" y="9" width="1" height="1"/><rect x="16" y="9" width="2" height="1"/><rect x="19" y="9" width="1" height="1"/>
+                <rect x="21" y="9" width="2" height="1"/><rect x="2" y="10" width="1" height="1"/><rect x="5" y="10" width="1" height="1"/>
+                <rect x="11" y="10" width="1" height="2"/><rect x="14" y="10" width="2" height="1"/><rect x="18" y="10" width="1" height="1"/>
+                <rect x="20" y="10" width="1" height="1"/><rect x="23" y="10" width="1" height="1"/><rect x="1" y="11" width="2" height="1"/>
+                <rect x="4" y="11" width="1" height="1"/><rect x="7" y="11" width="1" height="1"/><rect x="9" y="11" width="1" height="1"/>
+                <rect x="13" y="11" width="2" height="1"/><rect x="16" y="11" width="1" height="1"/><rect x="19" y="11" width="2" height="1"/>
+                <rect x="22" y="11" width="1" height="1"/><rect x="3" y="12" width="1" height="1"/><rect x="5" y="12" width="2" height="1"/>
+                <rect x="8" y="12" width="1" height="1"/><rect x="10" y="12" width="1" height="1"/><rect x="12" y="12" width="1" height="1"/>
+                <rect x="15" y="12" width="1" height="1"/><rect x="17" y="12" width="2" height="1"/><rect x="21" y="12" width="1" height="1"/>
+                <rect x="23" y="12" width="1" height="1"/><rect x="1" y="13" width="1" height="1"/><rect x="4" y="13" width="1" height="1"/>
+                <rect x="6" y="13" width="1" height="1"/><rect x="9" y="13" width="2" height="1"/><rect x="13" y="13" width="1" height="1"/>
+                <rect x="16" y="13" width="2" height="1"/><rect x="20" y="13" width="1" height="1"/><rect x="22" y="13" width="1" height="1"/>
+                <rect x="2" y="14" width="2" height="1"/><rect x="5" y="14" width="1" height="1"/><rect x="8" y="14" width="1" height="1"/>
+                <rect x="11" y="14" width="2" height="1"/><rect x="14" y="14" width="1" height="1"/><rect x="18" y="14" width="1" height="1"/>
+                <rect x="21" y="14" width="2" height="1"/><rect x="1" y="15" width="1" height="1"/><rect x="3" y="15" width="1" height="1"/>
+                <rect x="6" y="15" width="2" height="1"/><rect x="10" y="15" width="1" height="1"/><rect x="13" y="15" width="1" height="1"/>
+                <rect x="15" y="15" width="2" height="1"/><rect x="19" y="15" width="1" height="1"/><rect x="22" y="15" width="1" height="1"/>
+                <rect x="9" y="17" width="1" height="1"/><rect x="11" y="17" width="2" height="1"/><rect x="14" y="17" width="1" height="1"/>
+                <rect x="17" y="17" width="1" height="1"/><rect x="19" y="17" width="2" height="1"/><rect x="22" y="17" width="2" height="1"/>
+                <rect x="10" y="18" width="1" height="1"/><rect x="13" y="18" width="1" height="1"/><rect x="15" y="18" width="1" height="2"/>
+                <rect x="18" y="18" width="1" height="1"/><rect x="21" y="18" width="1" height="1"/><rect x="9" y="19" width="2" height="1"/>
+                <rect x="12" y="19" width="1" height="1"/><rect x="17" y="19" width="1" height="1"/><rect x="19" y="19" width="1" height="1"/>
+                <rect x="22" y="19" width="1" height="1"/><rect x="10" y="20" width="1" height="1"/><rect x="13" y="20" width="2" height="1"/>
+                <rect x="16" y="20" width="1" height="1"/><rect x="18" y="20" width="2" height="1"/><rect x="21" y="20" width="1" height="1"/>
+                <rect x="23" y="20" width="1" height="1"/><rect x="9" y="21" width="1" height="1"/><rect x="11" y="21" width="1" height="1"/>
+                <rect x="14" y="21" width="1" height="1"/><rect x="17" y="21" width="2" height="1"/><rect x="20" y="21" width="1" height="1"/>
+                <rect x="10" y="22" width="2" height="1"/><rect x="13" y="22" width="1" height="1"/><rect x="15" y="22" width="1" height="1"/>
+                <rect x="18" y="22" width="1" height="1"/><rect x="21" y="22" width="2" height="1"/><rect x="9" y="23" width="1" height="1"/>
+                <rect x="12" y="23" width="2" height="1"/><rect x="16" y="23" width="2" height="1"/><rect x="20" y="23" width="1" height="1"/>
+                <rect x="23" y="23" width="1" height="1"/>
+              </g>
+            </svg>
+
+            <div class="id-fields">
+              <div class="f-label">Aarogyam ID</div>
+              <div class="f-value mono">AYM-2419-8841</div>
+              <div class="f-label">Name</div>
+              <div class="f-value">Jane R. Mehta</div>
+              <div class="f-label">Blood group</div>
+              <div class="f-value" style="margin-bottom:0">B&nbsp;positive</div>
+            </div>
+          </div>
+
+          <div class="id-card-foot">
+            <span>Member since 2024</span>
+            <span class="pulse-dot"><i></i>Record active</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- stats -->
+    <div class="hero-stats">
+      <div class="wrap">
+        <div class="stat reveal"><b>1</b><span>ID for every patient, for life</span></div>
+        <div class="stat reveal d1"><b>0</b><span>reports lost to a drawer or a move</span></div>
+        <div class="stat reveal d2"><b>~2 min</b><span>from registration to a working ID</span></div>
+        <div class="stat reveal d3"><b>3 roles</b><span>patient, doctor and admin — each sees only what they should</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PROBLEM ================= -->
+  <section class="section problem" id="problem">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="section-num">01</span>
+        <h2>Records are scattered.<br>Patients are not.</h2>
+      </div>
+
+      <div class="problem-grid">
+        <div class="problem-copy reveal">
+          <p>A lifetime of healthcare produces a paper trail across hospitals, clinics, labs and pharmacies — and none of them talk to each other. The person who ends up responsible for assembling that history is usually the one least equipped to do it: <strong>the patient, mid-illness</strong>.</p>
+          <p>Aarogyam replaces the paper trail with a single record that follows the patient. Every visit, diagnosis, prescription and uploaded report lands on one timeline, under one ID, retrievable in seconds by scanning a QR code.</p>
+        </div>
+        <ul class="problem-list reveal d1">
+          <li><span class="n">a.</span>Reports go missing between appointments, so diagnostic tests get repeated — at the patient's cost.</li>
+          <li><span class="n">b.</span>Doctors work from incomplete histories and whatever the patient happens to remember.</li>
+          <li><span class="n">c.</span>Old prescriptions are unreadable, unfindable, or both.</li>
+          <li><span class="n">d.</span>Switching cities or hospitals means starting the record from zero.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FEATURES ================= -->
+  <section class="section features" id="features">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="section-num">02</span>
+        <h2>What you get</h2>
+        <p class="lede">Everything hangs off the Aarogyam ID — a permanent identifier issued once, at registration.</p>
+      </div>
+
+      <div class="feature-grid">
+        <div class="feature reveal">
+          <span class="tag">Identity</span>
+          <svg class="icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="32" height="22" rx="3"/><path d="M10 17h8M10 21h6M10 25h7"/><circle cx="28" cy="19" r="3.5"/><path d="M23 27c1-2.4 2.8-3.5 5-3.5s4 1.1 5 3.5"/></svg>
+          <h3>One lifelong health ID</h3>
+          <p>Registration issues a unique Aarogyam ID that stays with the patient permanently. Every future record — from any doctor, in any city — attaches to it.</p>
+        </div>
+
+        <div class="feature reveal d1">
+          <span class="tag">Access</span>
+          <svg class="icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="10" height="10" rx="1.5"/><rect x="24" y="6" width="10" height="10" rx="1.5"/><rect x="6" y="24" width="10" height="10" rx="1.5"/><path d="M24 24h4v4h-4zM30 24h4M34 28v6M24 30v4h6M28 34h2"/></svg>
+          <h3>QR health card</h3>
+          <p>A scannable card that opens the patient's record instantly at the front desk — no forms, no spelling out names, no "do you have your file with you?"</p>
+        </div>
+
+        <div class="feature reveal d2">
+          <span class="tag">Records</span>
+          <svg class="icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4H10a2 2 0 0 0-2 2v28a2 2 0 0 0 2 2h20a2 2 0 0 0 2-2V13z"/><path d="M23 4v9h9"/><path d="M14 22l3 0 2-4 3 8 2-4h4"/></svg>
+          <h3>Report uploads</h3>
+          <p>Lab results, scans and discharge summaries live as files on the record — uploaded by the patient or their doctor, and never photocopied again.</p>
+        </div>
+
+        <div class="feature reveal">
+          <span class="tag">Treatment</span>
+          <svg class="icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4h16v7H12z"/><path d="M9 11h22v23a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2z"/><path d="M20 19v10M15 24h10"/></svg>
+          <h3>Digital prescriptions</h3>
+          <p>Doctors issue structured prescriptions with dosage and duration, downloadable as a clean PDF — legible by pharmacists and future doctors alike.</p>
+        </div>
+
+        <div class="feature reveal d1">
+          <span class="tag">History</span>
+          <svg class="icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4v32"/><circle cx="8" cy="10" r="2.5" fill="currentColor" stroke="none"/><circle cx="8" cy="20" r="2.5"/><circle cx="8" cy="30" r="2.5"/><path d="M14 10h18M14 20h14M14 30h16"/></svg>
+          <h3>Health timeline</h3>
+          <p>Visits, diagnoses, prescriptions and reports arranged chronologically — the whole medical story readable top to bottom in one scroll.</p>
+        </div>
+
+        <div class="feature reveal d2">
+          <span class="tag">Trust</span>
+          <svg class="icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4l13 5v9c0 8.4-5.5 14.6-13 18-7.5-3.4-13-9.6-13-18V9z"/><path d="M14.5 20l4 4 7-8"/></svg>
+          <h3>Verified doctors only</h3>
+          <p>Doctors submit licence and degree documents at registration and are approved by an admin before they can touch a single patient record.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= HOW IT WORKS ================= -->
+  <section class="section" id="how">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="section-num">03</span>
+        <h2>How it works</h2>
+        <p class="lede">Five steps from a blank form to a living medical record.</p>
+      </div>
+
+      <div class="steps">
+        <div class="step reveal">
+          <div class="step-num">STEP 01</div>
+          <h3>Register</h3>
+          <p>Sign up as a patient with basic details. An OTP sent to your email verifies it's really you.</p>
+        </div>
+        <div class="step reveal d1">
+          <div class="step-num">STEP 02</div>
+          <h3>Get your ID</h3>
+          <p>Your permanent Aarogyam ID and QR health card are generated on the spot.</p>
+        </div>
+        <div class="step reveal d2">
+          <div class="step-num">STEP 03</div>
+          <h3>Add your history</h3>
+          <p>Upload existing reports and prescriptions so your record starts complete, not empty.</p>
+        </div>
+        <div class="step reveal d3">
+          <div class="step-num">STEP 04</div>
+          <h3>Visit any doctor</h3>
+          <p>They scan your QR card, see your history, and add diagnoses and prescriptions directly.</p>
+        </div>
+        <div class="step reveal d4">
+          <div class="step-num">STEP 05</div>
+          <h3>Watch it grow</h3>
+          <p>Every interaction lands on your timeline automatically. Download anything, anytime.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ROLES ================= -->
+  <section class="section roles" id="roles">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="section-num">04</span>
+        <h2>Built for both sides of the desk</h2>
+      </div>
+
+      <div class="role-grid">
+        <div class="role-card reveal">
+          <div class="role-kind">For patients</div>
+          <h3>Own your record</h3>
+          <p>Your history stops depending on which hospital filed it.</p>
+          <ul>
+            <li>Lifelong Aarogyam ID &amp; QR card</li>
+            <li>Upload and download reports</li>
+            <li>Full prescription history</li>
+            <li>Chronological health timeline</li>
+          </ul>
+        </div>
+
+        <div class="role-card reveal d1">
+          <div class="role-kind">For doctors</div>
+          <h3>Treat with context</h3>
+          <p>The patient's full history before the consultation starts.</p>
+          <ul>
+            <li>Find patients by ID or QR scan</li>
+            <li>Review complete medical history</li>
+            <li>Record diagnoses per visit</li>
+            <li>Issue prescriptions as PDF</li>
+          </ul>
+        </div>
+
+        <div class="role-card reveal d2">
+          <div class="role-kind">For admins</div>
+          <h3>Keep it trustworthy</h3>
+          <p>Verification and oversight for the whole platform.</p>
+          <ul>
+            <li>Approve doctors by licence &amp; degree</li>
+            <li>Manage patient and doctor accounts</li>
+            <li>Monitor platform activity</li>
+            <li>Platform-wide statistics</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SECURITY ================= -->
+  <section class="section security">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="section-num">05</span>
+        <h2>Guarded by design</h2>
+      </div>
+
+      <div class="sec-grid">
+        <div class="sec-item reveal">
+          <svg class="icon" viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="13" width="20" height="13" rx="2"/><path d="M10 13V9a5 5 0 0 1 10 0v4"/><circle cx="15" cy="19" r="1.6"/></svg>
+          <h3>OTP-verified accounts</h3>
+          <p>Every registration is confirmed with a one-time code before the account goes live.</p>
+        </div>
+        <div class="sec-item reveal d1">
+          <svg class="icon" viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3l10 4v7c0 6.3-4.1 11-10 13C9.1 25 5 20.3 5 14V7z"/></svg>
+          <h3>JWT-secured sessions</h3>
+          <p>Signed tokens authenticate every request between the app and the API.</p>
+        </div>
+        <div class="sec-item reveal d2">
+          <svg class="icon" viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="15" cy="10" r="4"/><path d="M7 25c1.3-4 4.3-6 8-6s6.7 2 8 6"/><path d="M22 4l4 4M26 4l-4 4"/></svg>
+          <h3>Role-based access</h3>
+          <p>Patients, doctors and admins each see strictly their own slice of the system.</p>
+        </div>
+        <div class="sec-item reveal d3">
+          <svg class="icon" viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6h20v18H5z"/><path d="M5 11h20M10 6v5"/><path d="M10 17l3 3 6-6"/></svg>
+          <h3>Approval workflow</h3>
+          <p>No doctor account is activated until an admin has verified its credentials.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CTA ================= -->
+  <section class="cta-band">
+    <div class="wrap">
+      <span class="eyebrow reveal" style="justify-content:center">Get started</span>
+      <h2 class="reveal d1">The best time to start your health record was your first checkup. The second best is now.</h2>
+      <p class="lede reveal d2">Registration takes about two minutes, and your ID lasts a lifetime.</p>
+      <div class="hero-ctas reveal d3">
+        <a class="btn btn-solid btn-lg" href="#">Create your Aarogyam ID <span class="arr">→</span></a>
+        <a class="btn btn-ghost btn-lg" href="about.html">Read about the project</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ================= FOOTER ================= -->
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href="index.html">
+          <svg class="mark" width="26" height="26" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+            <rect x="1.5" y="1.5" width="29" height="29" rx="8.5" stroke="#52b788" stroke-width="1.5"/>
+            <path d="M7 17h5l2.5-6 3.5 10 2.5-6.5L22 17h3" stroke="#74c69d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Aarogyam
+        </a>
+        <p>A digital health identity platform — one lifelong ID for every patient's complete medical record.</p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Platform</h4>
+        <a href="#features">Features</a>
+        <a href="#how">How it works</a>
+        <a href="#roles">Who it's for</a>
+      </div>
+
+      <div class="footer-col">
+        <h4>Company</h4>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </div>
+
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <a href="privacy.html">Privacy policy</a>
+        <a href="terms.html">Terms of use</a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© <span id="year">2026</span> Aarogyam. Built for educational and research purposes.</span>
+      <span class="mono">आरोग्यम् — “good health”</span>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

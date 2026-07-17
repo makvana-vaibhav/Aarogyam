@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>About — Aarogyam</title>
+<meta name="description" content="Why Aarogyam exists: a single digital health identity for lifelong medical records, and the principles and technology behind it.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='2' y='2' width='28' height='28' rx='8' fill='%23081c15'/%3E%3Cpath d='M7 17h5l2.5-6 3.5 10 2.5-6.5L22 17h3' stroke='%2374c69d' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="Aarogyam home">
+      <svg class="mark" width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <rect x="1.5" y="1.5" width="29" height="29" rx="8.5" stroke="#52b788" stroke-width="1.5"/>
+        <path d="M7 17h5l2.5-6 3.5 10 2.5-6.5L22 17h3" stroke="#74c69d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Aarogyam <small>Health ID</small>
+    </a>
+
+    <nav class="site-nav" id="siteNav">
+      <a href="index.html#features">Features</a>
+      <a href="index.html#how">How it works</a>
+      <a href="index.html#roles">Who it's for</a>
+      <a href="about.html" class="active">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+
+    <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false"><span></span></button>
+
+    <div class="header-actions">
+      <a class="btn btn-ghost" href="#">Login</a>
+      <a class="btn btn-solid" href="#">Register</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="page-head">
+    <div class="wrap">
+      <span class="eyebrow">About the project</span>
+      <h1>A record that outlives the paperwork.</h1>
+      <p class="lede">Aarogyam — from the Sanskrit <em>आरोग्यम्</em>, “good health” — is a digital health identity platform built around one idea: a patient's medical history should belong to the patient.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap prose">
+      <h2>Why it exists</h2>
+      <p>Healthcare in most places runs on fragments. A blood report from one lab, a discharge summary from a hospital two cities away, a prescription on a fading slip of paper — each institution keeps its own piece, and nobody keeps the whole. When the patient shows up somewhere new, the record effectively resets.</p>
+      <p>The consequences are mundane and expensive: <strong>repeated diagnostic tests</strong> because the last results can't be found, <strong>incomplete histories</strong> at exactly the moment a doctor needs context, and hours lost reconstructing what should have been a single scroll.</p>
+      <p>Aarogyam collapses those fragments into one place. At registration, every patient receives a unique, permanent Aarogyam ID. From then on, every visit, diagnosis, prescription and uploaded report attaches to that ID — building a chronological health timeline that any authorized doctor can read in seconds by scanning the patient's QR card.</p>
+
+      <hr class="rule">
+
+      <h2>Principles</h2>
+      <div class="principles">
+        <div class="principle">
+          <div class="n">P·01</div>
+          <h3>The patient owns the record</h3>
+          <p>Records follow the person, not the institution. Patients can view, upload and download everything on their own timeline.</p>
+        </div>
+        <div class="principle">
+          <div class="n">P·02</div>
+          <h3>Trust is earned, then granted</h3>
+          <p>Doctors register with licence and degree documents, and an admin verifies them before any access is granted. No exceptions.</p>
+        </div>
+        <div class="principle">
+          <div class="n">P·03</div>
+          <h3>Least privilege, always</h3>
+          <p>Patients, doctors and admins operate in strictly separated roles. Each sees only what their role requires.</p>
+        </div>
+        <div class="principle">
+          <div class="n">P·04</div>
+          <h3>Useful on day one</h3>
+          <p>A patient can register, receive an ID and upload their existing history in minutes — the record is never empty by design.</p>
+        </div>
+      </div>
+
+      <hr class="rule">
+
+      <h2>How it's built</h2>
+      <p>Aarogyam is a full-stack web application with a clean separation between client, API and database.</p>
+      <table class="stack-table">
+        <thead>
+          <tr><th>Layer</th><th>Technology</th><th>Role</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Frontend</td><td>React, React Router, Axios</td><td>The patient, doctor and admin dashboards in the browser.</td></tr>
+          <tr><td>Backend</td><td>ASP.NET Core Web API</td><td>Business logic, validation and role-based authorization behind a JSON API.</td></tr>
+          <tr><td>Data</td><td>SQL Server + Entity Framework Core</td><td>Patients, doctors, visits, diagnoses, prescriptions, reports and notifications.</td></tr>
+          <tr><td>Auth</td><td>JWT + email OTP</td><td>Verified sign-up and signed tokens on every request.</td></tr>
+          <tr><td>Services</td><td>QR generation, PDF generation, SMTP email</td><td>The health card, printable prescriptions and account notifications.</td></tr>
+        </tbody>
+      </table>
+
+      <hr class="rule">
+
+      <h2>Where it's heading</h2>
+      <p>The current platform is a complete records system; the roadmap builds intelligence on top of it:</p>
+      <ul>
+        <li>AI-generated medical summaries of a patient's timeline</li>
+        <li>OCR for digitizing printed and handwritten reports</li>
+        <li>A mobile application for patients on the go</li>
+        <li>ABDM / ABHA integration with India's national health stack</li>
+        <li>Health analytics dashboards and smart medical insights</li>
+      </ul>
+
+      <hr class="rule">
+
+      <h2>A note on scope</h2>
+      <p>Aarogyam is developed for <strong>educational and research purposes</strong>. It is a working demonstration of how a centralized digital health identity system can be designed and built — not a certified medical device or a substitute for professional medical infrastructure.</p>
+    </div>
+  </section>
+
+  <section class="cta-band">
+    <div class="wrap">
+      <h2 class="reveal">See it from the inside.</h2>
+      <p class="lede reveal d1">Create an ID, upload a report, watch the timeline take shape.</p>
+      <div class="hero-ctas reveal d2">
+        <a class="btn btn-solid btn-lg" href="#">Create your Aarogyam ID <span class="arr">→</span></a>
+        <a class="btn btn-ghost btn-lg" href="contact.html">Talk to us</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href="index.html">
+          <svg class="mark" width="26" height="26" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+            <rect x="1.5" y="1.5" width="29" height="29" rx="8.5" stroke="#52b788" stroke-width="1.5"/>
+            <path d="M7 17h5l2.5-6 3.5 10 2.5-6.5L22 17h3" stroke="#74c69d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Aarogyam
+        </a>
+        <p>A digital health identity platform — one lifelong ID for every patient's complete medical record.</p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Platform</h4>
+        <a href="index.html#features">Features</a>
+        <a href="index.html#how">How it works</a>
+        <a href="index.html#roles">Who it's for</a>
+      </div>
+
+      <div class="footer-col">
+        <h4>Company</h4>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </div>
+
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <a href="privacy.html">Privacy policy</a>
+        <a href="terms.html">Terms of use</a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© <span id="year">2026</span> Aarogyam. Built for educational and research purposes.</span>
+      <span class="mono">आरोग्यम् — “good health”</span>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
