@@ -3,7 +3,14 @@
 (function (global) {
   "use strict";
 
-  var API_BASE_URL = "http://localhost:5027/api";
+  var isLocalDev = window.location.protocol === "file:" ||
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1";
+
+  // In production the frontend's own nginx container proxies /api/* to the API
+  // container, so requests stay same-origin. In local dev (no nginx in front),
+  // the API is reached directly on its dotnet-run port.
+  var API_BASE_URL = isLocalDev ? "http://localhost:5027/api" : window.location.origin + "/api";
 
   var TOKEN_KEY = "aarogyam_token";
   var USER_KEY = "aarogyam_user";
