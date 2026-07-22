@@ -20,4 +20,6 @@ public class LoginResult
     public bool IsEmailVerified { get; set; }
 
     public string? ApprovalStatus { get; set; }
+
+    public string? Token { get; set; }
 }

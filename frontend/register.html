@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Register — Aarogyam</title>
+<meta name="description" content="Create your Aarogyam digital health identity as a patient, or register as a doctor.">
+<script>
+  (function () {
+    try {
+      if (localStorage.getItem("aarogyam-theme") === "dark") {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+    } catch (e) {}
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='2' y='2' width='28' height='28' rx='8' fill='%23081c15'/%3E%3Cpath d='M7 17h5l2.5-6 3.5 10 2.5-6.5L22 17h3' stroke='%2374c69d' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="Aarogyam home">
+      <svg class="mark" width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <rect x="1.5" y="1.5" width="29" height="29" rx="8.5" stroke="#52b788" stroke-width="1.5"/>
+        <path d="M7 17h5l2.5-6 3.5 10 2.5-6.5L22 17h3" stroke="#74c69d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Aarogyam <small>Health ID</small>
+    </a>
+
+    <nav class="site-nav" id="siteNav">
+      <a href="index.html">Home</a>
+      <a href="index.html#features">Features</a>
+      <a href="index.html#how">How it works</a>
+      <a href="index.html#roles">Who it's for</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+
+    <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false"><span></span></button>
+
+    <div class="header-actions">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M4.4 4.4l1.7 1.7M17.9 17.9l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.4 19.6l1.7-1.7M17.9 6.1l1.7-1.7"/></svg>
+      </button>
+      <a class="btn btn-ghost" href="login.html">Login</a>
+      <a class="btn btn-solid" href="register.html">Register</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="auth-section wide">
+    <div class="wrap">
+      <div class="auth-head">
+        <span class="eyebrow">Get started</span>
+        <h1>Create your Aarogyam account</h1>
+        <p class="lede">Registration takes about two minutes. An OTP is emailed to you to confirm it's really you.</p>
+      </div>
+
+      <div class="auth-card">
+        <div class="auth-tabs" role="tablist">
+          <button type="button" class="tab-btn active" data-role="patient" role="tab" aria-selected="true">Patient</button>
+          <button type="button" class="tab-btn" data-role="doctor" role="tab" aria-selected="false">Doctor</button>
+        </div>
+
+        <div id="registerAlert" class="form-alert error" hidden></div>
+
+        <!-- ============ PATIENT FORM ============ -->
+        <form id="patientForm" novalidate>
+          <div class="form-row-2col">
+            <div class="form-row">
+              <label for="p-firstName">First name</label>
+              <input id="p-firstName" required maxlength="50">
+            </div>
+            <div class="form-row">
+              <label for="p-lastName">Last name</label>
+              <input id="p-lastName" required maxlength="50">
+            </div>
+          </div>
+          <div class="form-row">
+            <label for="p-middleName">Middle name (optional)</label>
+            <input id="p-middleName" maxlength="50">
+          </div>
+          <div class="form-row-2col">
+            <div class="form-row">
+              <label for="p-email">Email</label>
+              <input id="p-email" type="email" required maxlength="100">
+            </div>
+            <div class="form-row">
+              <label for="p-phone">Phone number</label>
+              <input id="p-phone" required maxlength="20">
+            </div>
+          </div>
+          <div class="form-row">
+            <label for="p-password">Password</label>
+            <input id="p-password" type="password" required minlength="6" maxlength="200">
+            <span class="hint">At least 6 characters.</span>
+          </div>
+          <div class="form-row-2col">
+            <div class="form-row">
+              <label for="p-dob">Date of birth</label>
+              <input id="p-dob" type="date" required>
+            </div>
+            <div class="form-row">
+              <label for="p-gender">Gender</label>
+              <select id="p-gender" required>
+                <option value="">Select</option>
+                <option>Male</option>
+                <option>Female</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row-2col">
+            <div class="form-row">
+              <label for="p-bloodGroup">Blood group (optional)</label>
+              <select id="p-bloodGroup">
+                <option value="">Unknown</option>
+                <option>A+</option><option>A-</option>
+                <option>B+</option><option>B-</option>
+                <option>AB+</option><option>AB-</option>
+                <option>O+</option><option>O-</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="p-emergency">Emergency contact (optional)</label>
+              <input id="p-emergency" maxlength="20">
+            </div>
+          </div>
+          <div class="form-row">
+            <label for="p-address">Address</label>
+            <input id="p-address" required maxlength="200">
+          </div>
+          <div class="form-row-2col">
+            <div class="form-row">
+              <label for="p-country">Country ID</label>
+              <input id="p-country" type="number" value="1" min="1" required>
+              <span class="hint">Seed data: 1 = India.</span>
+            </div>
+            <div class="form-row">
+              <label for="p-state">State ID</label>
+              <input id="p-state" type="number" value="1" min="1" required>
+              <span class="hint">Seed data: 1 = Gujarat.</span>
+            </div>
+          </div>
+          <div class="form-row">
+            <label for="p-city">City ID</label>
+            <input id="p-city" type="number" value="1" min="1" required>
+            <span class="hint">Seed data: 1 = Rajkot.</span>
+          </div>
+          <button id="patientSubmit" class="btn btn-solid btn-block" type="submit">Create patient account</button>
+        </form>
+
+        <!-- ============ DOCTOR FORM ============ -->
+        <form id="doctorForm" novalidate hidden>
+          <div class="form-row-2col">
+            <div class="form-row">
+              <label for="d-firstName">First name</label>
+              <input id="d-firstName" required maxlength="50">
+            </div>
+            <div class="form-row">
+              <label for="d-lastName">Last name</label>
+              <input id="d-lastName" required maxlength="50">
+            </div>
+          </div>
+          <div class="form-row">
+            <label for="d-middleName">Middle name</label>
+            <input id="d-middleName" required maxlength="50">
+          </div>
+          <div class="form-row-2col">
+            <div class="form-row">
+              <label for="d-email">Email</label>
+              <input id="d-email" type="email" required maxlength="100">
+            </div>
+            <div class="form-row">
+              <label for="d-phone">Phone number</label>
+              <input id="d-phone" required maxlength="20">
+            </div>
+          </div>
+          <div class="form-row">
+            <label for="d-password">Password</label>
+            <input id="d-password" type="password" required minlength="6" maxlength="200">
+            <span class="hint">At least 6 characters.</span>
+          </div>
+          <div class="form-row">
+            <label for="d-license">Licence number</label>
+            <input id="d-license" required maxlength="50">
+          </div>
+          <div class="form-row-2col">
+            <div class="form-row">
+              <label for="d-hospital">Hospital ID</label>
+              <input id="d-hospital" type="number" min="1" required>
+            </div>
+            <div class="form-row">
+              <label for="d-degree">Degree ID</label>
+              <input id="d-degree" type="number" min="1" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <label for="d-specialization">Specialization ID</label>
+            <input id="d-specialization" type="number" min="1" required>
+            <span class="hint">Hospital, degree and specialization must already exist in the master tables — ask an admin for the IDs if registration fails.</span>
+          </div>
+          <div class="form-row-2col">
+            <div class="form-row">
+              <label for="d-licenseDoc">Licence document path/URL</label>
+              <input id="d-licenseDoc" required maxlength="200">
+            </div>
+            <div class="form-row">
+              <label for="d-degreeDoc">Degree document path/URL</label>
+              <input id="d-degreeDoc" required maxlength="200">
+            </div>
+          </div>
+          <div class="form-row">
+            <label for="d-address">Address</label>
+            <input id="d-address" required maxlength="200">
+          </div>
+          <div class="form-row-2col">
+            <div class="form-row">
+              <label for="d-country">Country ID</label>
+              <input id="d-country" type="number" value="1" min="1" required>
+              <span class="hint">Seed data: 1 = India.</span>
+            </div>
+            <div class="form-row">
+              <label for="d-state">State ID</label>
+              <input id="d-state" type="number" value="1" min="1" required>
+              <span class="hint">Seed data: 1 = Gujarat.</span>
+            </div>
+          </div>
+          <div class="form-row">
+            <label for="d-city">City ID</label>
+            <input id="d-city" type="number" value="1" min="1" required>
+            <span class="hint">Seed data: 1 = Rajkot.</span>
+          </div>
+          <p class="form-note">Doctor accounts also need admin approval after email verification before login succeeds.</p>
+          <button id="doctorSubmit" class="btn btn-solid btn-block" type="submit">Create doctor account</button>
+        </form>
+      </div>
+
+      <p class="auth-foot">Already have an account? <a href="login.html">Log in</a></p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-bottom">
+      <span>© <span id="year">2026</span> Aarogyam. Built for educational and research purposes.</span>
+      <span class="mono">आरोग्यम् — “good health”</span>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+<script src="auth.js"></script>
+<script>
+  (function () {
+    "use strict";
+
+    if (AarogyamAuth.isLoggedIn()) {
+      window.location.href = "dashboard.html";
+      return;
+    }
+
+    var tabs = document.querySelectorAll(".tab-btn");
+    var patientForm = document.getElementById("patientForm");
+    var doctorForm = document.getElementById("doctorForm");
+    var alertBox = document.getElementById("registerAlert");
+
+    tabs.forEach(function (tab) {
+      tab.addEventListener("click", function () {
+        tabs.forEach(function (t) {
+          t.classList.remove("active");
+          t.setAttribute("aria-selected", "false");
+        });
+        tab.classList.add("active");
+        tab.setAttribute("aria-selected", "true");
+
+        var isPatient = tab.dataset.role === "patient";
+        patientForm.hidden = !isPatient;
+        doctorForm.hidden = isPatient;
+        hideAlert();
+      });
+    });
+
+    function showAlert(message) {
+      alertBox.textContent = message;
+      alertBox.hidden = false;
+    }
+
+    function hideAlert() {
+      alertBox.hidden = true;
+      alertBox.textContent = "";
+    }
+
+    function val(id) {
+      return document.getElementById(id).value.trim();
+    }
+
+    function goToVerify(userId, email) {
+      window.location.href = "verify-otp.html?userId=" + userId + "&email=" + encodeURIComponent(email);
+    }
+
+    patientForm.addEventListener("submit", async function (e) {
+      e.preventDefault();
+      hideAlert();
+      var submitBtn = document.getElementById("patientSubmit");
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Creating account…";
+
+      var email = val("p-email");
+      var payload = {
+        email: email,
+        phoneNumber: val("p-phone"),
+        password: val("p-password"),
+        firstName: val("p-firstName"),
+        middleName: val("p-middleName") || null,
+        lastName: val("p-lastName"),
+        dateOfBirth: val("p-dob"),
+        gender: val("p-gender"),
+        bloodGroup: val("p-bloodGroup") || null,
+        address: val("p-address"),
+        countryId: Number(val("p-country")),
+        stateId: Number(val("p-state")),
+        cityId: Number(val("p-city")),
+        emergencyContact: val("p-emergency") || null
+      };
+
+      try {
+        var result = await AarogyamAuth.registerPatient(payload);
+        goToVerify(result.userId, email);
+      } catch (err) {
+        showAlert(err.message);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Create patient account";
+      }
+    });
+
+    doctorForm.addEventListener("submit", async function (e) {
+      e.preventDefault();
+      hideAlert();
+      var submitBtn = document.getElementById("doctorSubmit");
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Creating account…";
+
+      var email = val("d-email");
+      var payload = {
+        email: email,
+        phoneNumber: val("d-phone"),
+        password: val("d-password"),
+        firstName: val("d-firstName"),
+        middleName: val("d-middleName"),
+        lastName: val("d-lastName"),
+        licenseNumber: val("d-license"),
+        hospitalId: Number(val("d-hospital")),
+        degreeId: Number(val("d-degree")),
+        specializationId: Number(val("d-specialization")),
+        licenseDocumentPath: val("d-licenseDoc"),
+        degreeDocumentPath: val("d-degreeDoc"),
+        address: val("d-address"),
+        countryId: Number(val("d-country")),
+        stateId: Number(val("d-state")),
+        cityId: Number(val("d-city"))
+      };
+
+      try {
+        var result = await AarogyamAuth.registerDoctor(payload);
+        goToVerify(result.userId, email);
+      } catch (err) {
+        showAlert(err.message);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Create doctor account";
+      }
+    });
+  })();
+</script>
+</body>
+</html>

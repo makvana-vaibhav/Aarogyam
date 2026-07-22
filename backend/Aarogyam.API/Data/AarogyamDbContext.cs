@@ -52,6 +52,7 @@ public class AarogyamDbContext : DbContext
         {
             entity.HasNoKey();
             entity.ToView(null);
+            entity.Ignore(e => e.Token); //generated in C# after the SP call, never part of the SQL result set
         });
 
         modelBuilder.Entity<ResendOtpResult>(entity =>

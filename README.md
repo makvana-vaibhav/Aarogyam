@@ -173,6 +173,36 @@ Configured via the `Email` section in `appsettings.json` (SMTP host, port, sende
 
 ---
 
+## BCrypt.Net-Next
+
+```bash
+dotnet add package BCrypt.Net-Next
+```
+
+### Purpose
+
+Installs BCrypt.Net-Next, a password hashing library.
+
+Used to hash a password before it is stored and to verify a login attempt against the stored hash, so plain-text passwords are never saved in the database.
+
+---
+
+## JWT Bearer Authentication
+
+```bash
+dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer
+```
+
+### Purpose
+
+Installs the JWT (JSON Web Token) authentication handler for ASP.NET Core.
+
+Used to issue a signed token when login succeeds, and to validate that token on later requests, so protected endpoints can use `[Authorize]` without needing sessions or cookies.
+
+Configured via the `Jwt` section in `appsettings.json` (issuer, audience, secret key, expiry) and consumed through `ITokenService` / `TokenService`.
+
+---
+
 # Step 5: Verify Installation
 
 ## Restore Packages
@@ -215,6 +245,8 @@ Swagger UI should load successfully.
 | Microsoft.EntityFrameworkCore.SqlServer | Connects EF Core with SQL Server |
 | Swashbuckle.AspNetCore | Generates Swagger API documentation |
 | MailKit | Sends OTP verification emails over SMTP |
+| BCrypt.Net-Next | Hashes and verifies user passwords |
+| Microsoft.AspNetCore.Authentication.JwtBearer | Issues and validates JWT login tokens |
 
 ---
 
@@ -243,7 +275,9 @@ Aarogyam.sln
 4. Installed Entity Framework Core SQL Server package for database connectivity.
 5. Installed Swagger for API documentation and testing.
 6. Installed MailKit for sending OTP verification emails.
-7. Restored packages and verified the project by running the application.
+7. Installed BCrypt.Net-Next for password hashing.
+8. Installed JWT Bearer authentication for issuing and validating login tokens.
+9. Restored packages and verified the project by running the application.
 
 ## Digital Health Identity
 

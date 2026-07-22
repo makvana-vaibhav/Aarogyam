@@ -11,5 +11,5 @@ public class LoginRequest
 
     [Required]
     [MaxLength(200)]
-    public string PasswordHash { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
 }

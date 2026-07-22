@@ -16,7 +16,7 @@ public class RegisterPatientRequest
     [Required]
     [MinLength(6)]
     [MaxLength(200)]
-    public string PasswordHash { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
 
     [Required]
     [MaxLength(50)]

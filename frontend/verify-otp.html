@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verify your email — Aarogyam</title>
+<meta name="description" content="Enter the OTP sent to your email to verify your Aarogyam account.">
+<script>
+  (function () {
+    try {
+      if (localStorage.getItem("aarogyam-theme") === "dark") {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+    } catch (e) {}
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='2' y='2' width='28' height='28' rx='8' fill='%23081c15'/%3E%3Cpath d='M7 17h5l2.5-6 3.5 10 2.5-6.5L22 17h3' stroke='%2374c69d' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="Aarogyam home">
+      <svg class="mark" width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <rect x="1.5" y="1.5" width="29" height="29" rx="8.5" stroke="#52b788" stroke-width="1.5"/>
+        <path d="M7 17h5l2.5-6 3.5 10 2.5-6.5L22 17h3" stroke="#74c69d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Aarogyam <small>Health ID</small>
+    </a>
+
+    <nav class="site-nav" id="siteNav">
+      <a href="index.html">Home</a>
+      <a href="index.html#features">Features</a>
+      <a href="index.html#how">How it works</a>
+      <a href="index.html#roles">Who it's for</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+
+    <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false"><span></span></button>
+
+    <div class="header-actions">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M4.4 4.4l1.7 1.7M17.9 17.9l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.4 19.6l1.7-1.7M17.9 6.1l1.7-1.7"/></svg>
+      </button>
+      <a class="btn btn-ghost" href="login.html">Login</a>
+      <a class="btn btn-solid" href="register.html">Register</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="auth-section">
+    <div class="wrap">
+      <div class="auth-head">
+        <span class="eyebrow">One more step</span>
+        <h1>Verify your email</h1>
+        <p class="lede">We sent a 6-digit code to <strong id="otpEmail">your email</strong>. Enter it below to activate your account.</p>
+      </div>
+
+      <div class="auth-card">
+        <div id="otpAlert" class="form-alert error" hidden></div>
+        <div id="otpSuccess" class="form-alert success" hidden></div>
+
+        <form id="otpForm" novalidate>
+          <div class="form-row">
+            <label for="otpCode">OTP code</label>
+            <input id="otpCode" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="10" placeholder="123456" required autofocus>
+          </div>
+          <button id="otpSubmit" class="btn btn-solid btn-block" type="submit">Verify</button>
+        </form>
+
+        <p class="auth-foot">
+          Didn't get a code?
+          <button id="resendBtn" type="button" class="resend-link" style="color: var(--accent)">Resend code</button>
+        </p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-bottom">
+      <span>© <span id="year">2026</span> Aarogyam. Built for educational and research purposes.</span>
+      <span class="mono">आरोग्यम् — “good health”</span>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+<script src="auth.js"></script>
+<script>
+  (function () {
+    "use strict";
+
+    var params = new URLSearchParams(window.location.search);
+    var userId = params.get("userId");
+    var email = params.get("email") || "";
+
+    document.getElementById("otpEmail").textContent = email || "your email";
+
+    if (!userId) {
+      window.location.href = "register.html";
+      return;
+    }
+
+    var form = document.getElementById("otpForm");
+    var alertBox = document.getElementById("otpAlert");
+    var successBox = document.getElementById("otpSuccess");
+    var submitBtn = document.getElementById("otpSubmit");
+    var resendBtn = document.getElementById("resendBtn");
+
+    function showAlert(message) {
+      successBox.hidden = true;
+      alertBox.textContent = message;
+      alertBox.hidden = false;
+    }
+
+    function showSuccess(message) {
+      alertBox.hidden = true;
+      successBox.textContent = message;
+      successBox.hidden = false;
+    }
+
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+      alertBox.hidden = true;
+      successBox.hidden = true;
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Verifying…";
+
+      var otpCode = document.getElementById("otpCode").value.trim();
+
+      try {
+        await AarogyamAuth.verifyOtp({ userId: Number(userId), otpCode: otpCode });
+        showSuccess("Email verified. Redirecting to login…");
+        setTimeout(function () {
+          window.location.href = "login.html";
+        }, 1200);
+      } catch (err) {
+        showAlert(err.message);
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Verify";
+      }
+    });
+
+    resendBtn.addEventListener("click", async function () {
+      if (!email) {
+        showAlert("Missing email — go back and register again.");
+        return;
+      }
+      resendBtn.disabled = true;
+      resendBtn.textContent = "Sending…";
+      try {
+        await AarogyamAuth.resendOtp({ email: email });
+        showSuccess("A new code has been sent to " + email + ".");
+      } catch (err) {
+        showAlert(err.message);
+      } finally {
+        resendBtn.disabled = false;
+        resendBtn.textContent = "Resend code";
+      }
+    });
+  })();
+</script>
+</body>
+</html>

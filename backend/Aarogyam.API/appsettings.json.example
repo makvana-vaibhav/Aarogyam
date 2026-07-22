@@ -11,6 +11,13 @@
     "SenderName": "Aarogyam"
   },
 
+  "Jwt": {
+    "Issuer": "AarogyamAPI",
+    "Audience": "AarogyamClient",
+    "SecretKey": "REPLACE_WITH_A_LONG_RANDOM_SECRET_AT_LEAST_32_CHARS",
+    "ExpiryMinutes": 60
+  },
+
   "Logging": {
     "LogLevel": {
       "Default": "Information",

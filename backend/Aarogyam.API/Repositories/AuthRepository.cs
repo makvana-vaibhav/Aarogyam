@@ -11,22 +11,30 @@ public class AuthRepository : IAuthRepository
 {
     private readonly AarogyamDbContext _context;
     private readonly IEmailService _emailService;
+    private readonly ITokenService _tokenService;
     private readonly ILogger<AuthRepository> _logger;
 
-    public AuthRepository(AarogyamDbContext context, IEmailService emailService, ILogger<AuthRepository> logger)
+    public AuthRepository(
+        AarogyamDbContext context,
+        IEmailService emailService,
+        ITokenService tokenService,
+        ILogger<AuthRepository> logger)
     {
         _context = context;
         _emailService = emailService;
+        _tokenService = tokenService;
         _logger = logger;
     }
 
     public async Task<RegisterPatientResult?> RegisterPatientAsync(RegisterPatientRequest request)
     {
+        var passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
+
         var parameters = new[]
         {
             new SqlParameter("@Email", request.Email),
             new SqlParameter("@PhoneNumber", request.PhoneNumber),
-            new SqlParameter("@PasswordHash", request.PasswordHash),
+            new SqlParameter("@PasswordHash", passwordHash),
             new SqlParameter("@FirstName", request.FirstName),
             new SqlParameter("@MiddleName", (object?)request.MiddleName ?? DBNull.Value),
             new SqlParameter("@LastName", request.LastName),
@@ -58,11 +66,13 @@ public class AuthRepository : IAuthRepository
 
     public async Task<RegisterDoctorResult?> RegisterDoctorAsync(RegisterDoctorRequest request)
     {
+        var passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
+
         var parameters = new[]
         {
             new SqlParameter("@Email", request.Email),
             new SqlParameter("@PhoneNumber", request.PhoneNumber),
-            new SqlParameter("@PasswordHash", request.PasswordHash),
+            new SqlParameter("@PasswordHash", passwordHash),
             new SqlParameter("@FirstName", request.FirstName),
             new SqlParameter("@MiddleName", request.MiddleName),
             new SqlParameter("@LastName", request.LastName),
@@ -127,7 +137,8 @@ public class AuthRepository : IAuthRepository
             return loginResult;
         }
 
-        if (!string.Equals(loginResult.PasswordHash, request.PasswordHash, StringComparison.Ordinal))
+        if (string.IsNullOrEmpty(loginResult.PasswordHash) ||
+            !BCrypt.Net.BCrypt.Verify(request.Password, loginResult.PasswordHash))
         {
             return new LoginResult
             {
@@ -178,6 +189,7 @@ public class AuthRepository : IAuthRepository
             loginResult.ApprovalStatus = doctor.ApprovalStatus;
         }
 
+        loginResult.Token = _tokenService.GenerateToken(loginResult.UserId!.Value, loginResult.Email!, loginResult.RoleName!);
         loginResult.PasswordHash = null;
         return loginResult;
     }
@@ -204,6 +216,7 @@ public class AuthRepository : IAuthRepository
         {
             Success = otp.Success ? 1 : 0,
             Message = otp.Message,
+            UserId = user.UserId,
             OtpId = otp.OtpId,
             OtpCode = otp.OtpCode,
             ExpiresAt = otp.ExpiresAt
