@@ -1,8 +1,6 @@
 services:
   api:
     image: ${API_IMAGE:-ghcr.io/OWNER/aarogyam-api:latest}
-    build:
-      context: ./backend/Aarogyam.API
     restart: unless-stopped
     ports:
       - "5027:8080"
@@ -13,7 +11,7 @@ services:
       Email__SmtpPort: ${SMTP_PORT}
       Email__SenderEmail: ${SMTP_SENDER_EMAIL}
       Email__SenderPassword: ${SMTP_SENDER_PASSWORD}
-      Email__SenderName: ${SMTP_SENDER_NAME}
+      Email__SenderName: Aarogyam
       Jwt__Issuer: AarogyamAPI
       Jwt__Audience: AarogyamClient
       Jwt__SecretKey: ${JWT_SECRET_KEY}
@@ -24,11 +22,9 @@ services:
 
   frontend:
     image: ${FRONTEND_IMAGE:-ghcr.io/OWNER/aarogyam-frontend:latest}
-    build:
-      context: ./frontend
     restart: unless-stopped
     ports:
-      - "80:80"
+      - "8081:80"
     depends_on:
       - api
     networks:
