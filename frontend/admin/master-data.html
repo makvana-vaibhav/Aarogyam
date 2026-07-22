@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Master data — Aarogyam Admin</title>
+<meta name="robots" content="noindex, nofollow">
+<script>
+  (function () {
+    try {
+      if (localStorage.getItem("aarogyam-theme") === "dark") {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+    } catch (e) {}
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='2' y='2' width='28' height='28' rx='8' fill='%23081c15'/%3E%3Cpath d='M7 17h5l2.5-6 3.5 10 2.5-6.5L22 17h3' stroke='%2374c69d' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+</head>
+<body>
+
+<div class="sidebar-scrim" id="sidebarScrim"></div>
+
+<aside class="admin-sidebar">
+  <div class="sidebar-brand">
+    <svg width="24" height="24" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+      <rect x="1.5" y="1.5" width="29" height="29" rx="8.5" stroke="#52b788" stroke-width="1.5"/>
+      <path d="M7 17h5l2.5-6 3.5 10 2.5-6.5L22 17h3" stroke="#74c69d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Aarogyam <small>Admin</small>
+  </div>
+
+  <nav class="admin-nav">
+    <div class="nav-label">General</div>
+    <a href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7.5" height="7.5" rx="1.5"/><rect x="13" y="3.5" width="7.5" height="7.5" rx="1.5"/><rect x="3.5" y="13" width="7.5" height="7.5" rx="1.5"/><rect x="13" y="13" width="7.5" height="7.5" rx="1.5"/></svg>Overview</a>
+
+    <div class="nav-label">Management</div>
+    <a href="doctors.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3v4a3 3 0 0 0 6 0V3"/><path d="M9 5H7a2 2 0 0 0-2 2v3a5 5 0 0 0 10 0V7a2 2 0 0 0-2-2h-2"/><circle cx="18" cy="16" r="3"/><path d="M5 16a3 3 0 0 1 3-3"/><path d="M5 21v-2a3 3 0 0 1 3-3"/></svg>Doctors<span class="nav-count" id="navPendingCount" hidden>0</span></a>
+    <a href="users.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17.5" cy="8.5" r="2.4"/><path d="M15 14.2c2.6.4 4.5 2.6 4.5 5.3"/></svg>Users</a>
+    <a href="patients.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="11" r="2"/><path d="M5 16c.6-1.8 2-2.8 3.5-2.8s2.9 1 3.5 2.8"/><path d="M15 10h4M15 13.5h4"/></svg>Patients</a>
+
+    <div class="nav-label">Configuration</div>
+    <a href="master-data.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5.5" rx="7.5" ry="2.5"/><path d="M4.5 5.5V12c0 1.4 3.4 2.5 7.5 2.5s7.5-1.1 7.5-2.5V5.5"/><path d="M4.5 12v6.5c0 1.4 3.4 2.5 7.5 2.5s7.5-1.1 7.5-2.5V12"/></svg>Master data</a>
+    <a href="audit-logs.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>Audit logs</a>
+  </nav>
+
+  <div class="sidebar-foot">Aarogyam Admin</div>
+</aside>
+
+<div class="admin-main">
+  <header class="admin-topbar">
+    <button class="sidebar-toggle" id="sidebarToggle" aria-label="Menu"><span></span></button>
+    <h1>Master data</h1>
+    <div class="topbar-actions">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M4.4 4.4l1.7 1.7M17.9 17.9l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.4 19.6l1.7-1.7M17.9 6.1l1.7-1.7"/></svg>
+      </button>
+      <span class="admin-user"><span class="dot"></span><span id="adminEmail">—</span></span>
+      <button class="btn btn-ghost btn-sm" id="logoutBtn" type="button">Log out</button>
+    </div>
+  </header>
+
+  <main class="admin-content">
+    <div class="page-head-row">
+      <div>
+        <h2>Reference data</h2>
+        <p>Lookup tables used across registration, addresses and clinical records.</p>
+      </div>
+    </div>
+
+    <div class="entity-tabs" id="entityTabs"></div>
+
+    <div class="toolbar">
+      <select id="filterBySelect" hidden></select>
+      <input type="search" id="rowSearch" placeholder="Search…">
+      <div class="spacer"></div>
+      <button class="btn btn-solid btn-sm" id="addBtn" type="button">Add new</button>
+    </div>
+
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead id="tableHead"></thead>
+        <tbody id="tableBody"><tr><td class="table-loading">Loading…</td></tr></tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<div class="modal-overlay" id="formModal" hidden>
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="formTitle">Add</h3>
+      <button class="modal-close" id="formClose" aria-label="Close">✕</button>
+    </div>
+    <div id="formAlert" class="form-alert error" hidden></div>
+    <form id="entityForm"></form>
+    <div class="modal-actions">
+      <button class="btn btn-ghost btn-sm" id="formCancel" type="button">Cancel</button>
+      <button class="btn btn-solid btn-sm" id="formSave" type="button">Save</button>
+    </div>
+  </div>
+</div>
+
+<div id="toastHost"></div>
+
+<script src="admin-core.js"></script>
+<script>
+  (function () {
+    "use strict";
+
+    var user = AdminSession.requireAdminAuth();
+    if (!user) return;
+    AdminShell.init(user);
+
+    var esc = AdminUtil.escapeHtml;
+    var entities = AdminAPI.masterEntities;
+    var cache = {}; // key -> rows
+    var activeKey = entities[0].key;
+    var activeFilterValue = "";
+    var editingId = null;
+
+    var entityTabs = document.getElementById("entityTabs");
+    var filterBySelect = document.getElementById("filterBySelect");
+    var rowSearch = document.getElementById("rowSearch");
+    var tableHead = document.getElementById("tableHead");
+    var tableBody = document.getElementById("tableBody");
+    var addBtn = document.getElementById("addBtn");
+
+    var formModal = document.getElementById("formModal");
+    var formTitle = document.getElementById("formTitle");
+    var formAlert = document.getElementById("formAlert");
+    var entityForm = document.getElementById("entityForm");
+
+    function toast(message, isError) {
+      var host = document.getElementById("toastHost");
+      var el = document.createElement("div");
+      el.className = "toast" + (isError ? " error" : "");
+      el.textContent = message;
+      host.appendChild(el);
+      setTimeout(function () { el.remove(); }, 4000);
+    }
+
+    function entityByKey(key) {
+      return entities.filter(function (e) { return e.key === key; })[0];
+    }
+
+    function loadAllCaches() {
+      return Promise.all(entities.map(function (e) { return AdminAPI.master(e.key).list(); }))
+        .then(function (results) {
+          entities.forEach(function (e, i) { cache[e.key] = results[i]; });
+        });
+    }
+
+    function renderTabs() {
+      entityTabs.innerHTML = entities.map(function (e) {
+        return '<button data-key="' + e.key + '" class="' + (e.key === activeKey ? "active" : "") + '">' + esc(e.label) + "</button>";
+      }).join("");
+      entityTabs.querySelectorAll("button").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          activeKey = btn.getAttribute("data-key");
+          activeFilterValue = "";
+          rowSearch.value = "";
+          renderTabs();
+          renderToolbar();
+          renderTable();
+        });
+      });
+    }
+
+    function renderToolbar() {
+      var entity = entityByKey(activeKey);
+      if (entity.filterBy) {
+        var fb = entity.filterBy;
+        var options = (cache[fb.entity] || []).map(function (r) {
+          return '<option value="' + r[fb.idField] + '">' + esc(r[fb.nameField]) + "</option>";
+        }).join("");
+        filterBySelect.innerHTML = '<option value="">All ' + esc(fb.label).toLowerCase() + "s</option>" + options;
+        filterBySelect.hidden = false;
+        filterBySelect.onchange = function () {
+          activeFilterValue = filterBySelect.value;
+          renderTable();
+        };
+      } else {
+        filterBySelect.hidden = true;
+        filterBySelect.onchange = null;
+      }
+    }
+
+    function cellValue(entity, row, col) {
+      var raw = row[col.field];
+      if (col.type === "date") return AdminUtil.formatDate(raw);
+      if (col.type === "bool") return raw ? '<span class="badge ok">Yes</span>' : '<span class="badge bad">No</span>';
+      if (col.type === "lookup") {
+        var refRows = cache[col.lookup] || [];
+        var match = refRows.filter(function (r) { return r[col.lookupId] === raw; })[0];
+        return esc(match ? match[col.lookupName] : "#" + raw);
+      }
+      return esc(raw === null || raw === undefined ? "—" : raw);
+    }
+
+    function renderTable() {
+      var entity = entityByKey(activeKey);
+      var rows = cache[entity.key] || [];
+
+      if (entity.filterBy && activeFilterValue) {
+        var param = entity.filterBy.param;
+        rows = rows.filter(function (r) { return String(r[param]) === String(activeFilterValue); });
+      }
+
+      var term = rowSearch.value.trim().toLowerCase();
+      if (term) {
+        rows = rows.filter(function (r) {
+          return entity.columns.some(function (col) {
+            return String(r[col.field] || "").toLowerCase().indexOf(term) !== -1;
+          });
+        });
+      }
+
+      tableHead.innerHTML = "<tr>" + entity.columns.map(function (c) { return "<th>" + esc(c.label) + "</th>"; }).join("") + "<th></th></tr>";
+
+      if (!rows.length) {
+        tableBody.innerHTML = '<tr><td colspan="' + (entity.columns.length + 1) + '" class="table-empty">No records.</td></tr>';
+        return;
+      }
+
+      tableBody.innerHTML = rows.map(function (row) {
+        var cells = entity.columns.map(function (c) { return "<td>" + cellValue(entity, row, c) + "</td>"; }).join("");
+        var id = row[entity.idField];
+        return "<tr>" + cells +
+          '<td class="actions">' +
+          '<button class="btn btn-ghost btn-sm" data-edit="' + id + '">Edit</button>' +
+          '<button class="btn btn-danger btn-sm" data-delete="' + id + '">Delete</button>' +
+          "</td></tr>";
+      }).join("");
+
+      tableBody.querySelectorAll("[data-edit]").forEach(function (btn) {
+        btn.addEventListener("click", function () { openForm(Number(btn.getAttribute("data-edit"))); });
+      });
+      tableBody.querySelectorAll("[data-delete]").forEach(function (btn) {
+        btn.addEventListener("click", function () { deleteRow(Number(btn.getAttribute("data-delete"))); });
+      });
+    }
+
+    function fieldControl(entity, field, existingRow) {
+      var value = existingRow ? existingRow[field.name] : "";
+      var reqAttr = field.required ? "required" : "";
+
+      if (field.type === "checkbox") {
+        var checked = existingRow ? (existingRow[field.name] ? "checked" : "") : "checked";
+        return '<div class="form-row check"><input type="checkbox" id="f_' + field.name + '" name="' + field.name + '" ' + checked + '><label for="f_' + field.name + '">' + esc(field.label) + "</label></div>";
+      }
+
+      if (field.type === "select") {
+        var options = (cache[field.entity] || []).map(function (r) {
+          var optVal = r[field.idField];
+          var selected = existingRow && existingRow[field.name] === optVal ? "selected" : "";
+          return '<option value="' + optVal + '" ' + selected + ">" + esc(r[field.nameField]) + "</option>";
+        }).join("");
+        return '<div class="form-row"><label for="f_' + field.name + '">' + esc(field.label) + '</label>' +
+          '<select id="f_' + field.name + '" name="' + field.name + '" ' + reqAttr + '><option value="">Select…</option>' + options + "</select></div>";
+      }
+
+      return '<div class="form-row"><label for="f_' + field.name + '">' + esc(field.label) + '</label>' +
+        '<input type="text" id="f_' + field.name + '" name="' + field.name + '" value="' + esc(value) + '" ' +
+        (field.maxLength ? 'maxlength="' + field.maxLength + '"' : "") + " " + reqAttr + "></div>";
+    }
+
+    function openForm(id) {
+      var entity = entityByKey(activeKey);
+      editingId = id || null;
+      var existingRow = id ? (cache[entity.key] || []).filter(function (r) { return r[entity.idField] === id; })[0] : null;
+
+      formTitle.textContent = (id ? "Edit " : "Add ") + entity.label.replace(/s$/, "");
+      formAlert.hidden = true;
+      entityForm.innerHTML = entity.fields.map(function (f) { return fieldControl(entity, f, existingRow); }).join("");
+      formModal.hidden = false;
+    }
+
+    function closeForm() {
+      formModal.hidden = true;
+      editingId = null;
+    }
+
+    function collectPayload(entity) {
+      var payload = {};
+      entity.fields.forEach(function (f) {
+        var el = document.getElementById("f_" + f.name);
+        if (f.type === "checkbox") {
+          payload[f.name] = el.checked;
+        } else if (f.type === "select") {
+          payload[f.name] = el.value ? Number(el.value) : null;
+        } else {
+          payload[f.name] = el.value.trim();
+        }
+      });
+      return payload;
+    }
+
+    function saveForm() {
+      var entity = entityByKey(activeKey);
+      var missing = entity.fields.filter(function (f) {
+        if (!f.required) return false;
+        var el = document.getElementById("f_" + f.name);
+        return !el.value;
+      });
+      if (missing.length) {
+        formAlert.textContent = "Please fill in: " + missing.map(function (f) { return f.label; }).join(", ");
+        formAlert.hidden = false;
+        return;
+      }
+
+      var payload = collectPayload(entity);
+      var client = AdminAPI.master(entity.key);
+      var request = editingId ? client.update(editingId, payload) : client.create(payload);
+
+      document.getElementById("formSave").disabled = true;
+      request.then(function () {
+        toast(entity.label.replace(/s$/, "") + (editingId ? " updated." : " created."));
+        closeForm();
+        return loadAllCaches();
+      }).then(function () {
+        renderToolbar();
+        renderTable();
+      }).catch(function (err) {
+        formAlert.textContent = (err.data && err.data.message) || err.message;
+        formAlert.hidden = false;
+      }).finally(function () {
+        document.getElementById("formSave").disabled = false;
+      });
+    }
+
+    function deleteRow(id) {
+      var entity = entityByKey(activeKey);
+      var label = entity.label.replace(/s$/, "");
+      if (!window.confirm("Delete this " + label.toLowerCase() + "? This cannot be undone.")) return;
+
+      AdminAPI.master(entity.key).remove(id).then(function () {
+        toast(label + " deleted.");
+        return loadAllCaches();
+      }).then(function () {
+        renderToolbar();
+        renderTable();
+      }).catch(function (err) {
+        toast((err.data && err.data.message) || err.message, true);
+      });
+    }
+
+    addBtn.addEventListener("click", function () { openForm(null); });
+    document.getElementById("formClose").addEventListener("click", closeForm);
+    document.getElementById("formCancel").addEventListener("click", closeForm);
+    document.getElementById("formSave").addEventListener("click", saveForm);
+    formModal.addEventListener("click", function (e) { if (e.target === formModal) closeForm(); });
+    rowSearch.addEventListener("input", renderTable);
+
+    renderTabs();
+    loadAllCaches().then(function () {
+      renderToolbar();
+      renderTable();
+    }).catch(function (err) {
+      tableBody.innerHTML = '<tr><td class="table-empty">' + esc(err.message) + "</td></tr>";
+    });
+
+    AdminAPI.dashboardStats().then(function (stats) {
+      if (stats.pendingDoctorApprovals > 0) {
+        var el = document.getElementById("navPendingCount");
+        el.textContent = stats.pendingDoctorApprovals;
+        el.hidden = false;
+      }
+    }).catch(function () {});
+  })();
+</script>
+</body>
+</html>

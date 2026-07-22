@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin login — Aarogyam</title>
+<meta name="robots" content="noindex, nofollow">
+<script>
+  (function () {
+    try {
+      if (localStorage.getItem("aarogyam-theme") === "dark") {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+    } catch (e) {}
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='2' y='2' width='28' height='28' rx='8' fill='%23081c15'/%3E%3Cpath d='M7 17h5l2.5-6 3.5 10 2.5-6.5L22 17h3' stroke='%2374c69d' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+</head>
+<body>
+
+<section class="auth-section">
+  <div class="wrap">
+    <div class="auth-brand">
+      <svg width="28" height="28" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <rect x="1.5" y="1.5" width="29" height="29" rx="8.5" stroke="#52b788" stroke-width="1.5"/>
+        <path d="M7 17h5l2.5-6 3.5 10 2.5-6.5L22 17h3" stroke="#74c69d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Aarogyam <small>Admin</small>
+    </div>
+
+    <div class="auth-head">
+      <span class="eyebrow">Administrator access</span>
+      <h1>Sign in to the admin panel</h1>
+      <p>Doctor approvals, user management and platform data.</p>
+    </div>
+
+    <div class="auth-card">
+      <div id="loginAlert" class="form-alert error" hidden></div>
+
+      <form id="loginForm" novalidate>
+        <div class="form-row">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" placeholder="admin@aarogyam.health" required autocomplete="username">
+        </div>
+        <div class="form-row">
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+        <button id="loginSubmit" class="btn btn-solid btn-block" type="submit">Log in</button>
+      </form>
+    </div>
+
+    <p class="auth-foot">Admin accounts are provisioned separately and cannot self-register.</p>
+  </div>
+</section>
+
+<script src="admin-core.js"></script>
+<script>
+  (function () {
+    "use strict";
+
+    var existingUser = AdminSession.getUser();
+    if (AdminSession.getToken() && existingUser && String(existingUser.roleName).toLowerCase() === "admin") {
+      window.location.href = "index.html";
+      return;
+    }
+
+    if (new URLSearchParams(window.location.search).get("expired") === "1") {
+      showAlert("Your session expired. Please log in again.");
+    }
+
+    var form = document.getElementById("loginForm");
+    var alertBox = document.getElementById("loginAlert");
+    var submitBtn = document.getElementById("loginSubmit");
+
+    function showAlert(message) {
+      alertBox.textContent = message;
+      alertBox.hidden = false;
+    }
+
+    function hideAlert() {
+      alertBox.hidden = true;
+      alertBox.textContent = "";
+    }
+
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+      hideAlert();
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Signing in…";
+
+      var email = document.getElementById("email").value.trim();
+      var password = document.getElementById("password").value;
+
+      try {
+        var result = await AdminAPI.login({ email: email, password: password });
+
+        if (String(result.roleName).toLowerCase() !== "admin") {
+          showAlert("This account does not have admin access.");
+          return;
+        }
+
+        AdminSession.saveSession(result.token, {
+          userId: result.userId,
+          email: result.email,
+          roleName: result.roleName
+        });
+        window.location.href = "index.html";
+      } catch (err) {
+        showAlert(err.message || "Log in failed.");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Log in";
+      }
+    });
+  })();
+</script>
+</body>
+</html>

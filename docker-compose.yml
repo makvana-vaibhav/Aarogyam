@@ -32,6 +32,16 @@ services:
     networks:
       - aarogyam-net
 
+  admin:
+    image: ${ADMIN_IMAGE:-ghcr.io/OWNER/aarogyam-admin:latest}
+    restart: unless-stopped
+    ports:
+      - "8082:80"
+    depends_on:
+      - api
+    networks:
+      - aarogyam-net
+
 networks:
   aarogyam-net:
     driver: bridge

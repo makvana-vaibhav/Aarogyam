@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Overview — Aarogyam Admin</title>
+<meta name="robots" content="noindex, nofollow">
+<script>
+  (function () {
+    try {
+      if (localStorage.getItem("aarogyam-theme") === "dark") {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+    } catch (e) {}
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='2' y='2' width='28' height='28' rx='8' fill='%23081c15'/%3E%3Cpath d='M7 17h5l2.5-6 3.5 10 2.5-6.5L22 17h3' stroke='%2374c69d' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+</head>
+<body>
+
+<div class="sidebar-scrim" id="sidebarScrim"></div>
+
+<aside class="admin-sidebar">
+  <div class="sidebar-brand">
+    <svg width="24" height="24" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+      <rect x="1.5" y="1.5" width="29" height="29" rx="8.5" stroke="#52b788" stroke-width="1.5"/>
+      <path d="M7 17h5l2.5-6 3.5 10 2.5-6.5L22 17h3" stroke="#74c69d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Aarogyam <small>Admin</small>
+  </div>
+
+  <nav class="admin-nav">
+    <div class="nav-label">General</div>
+    <a href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7.5" height="7.5" rx="1.5"/><rect x="13" y="3.5" width="7.5" height="7.5" rx="1.5"/><rect x="3.5" y="13" width="7.5" height="7.5" rx="1.5"/><rect x="13" y="13" width="7.5" height="7.5" rx="1.5"/></svg>Overview</a>
+
+    <div class="nav-label">Management</div>
+    <a href="doctors.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3v4a3 3 0 0 0 6 0V3"/><path d="M9 5H7a2 2 0 0 0-2 2v3a5 5 0 0 0 10 0V7a2 2 0 0 0-2-2h-2"/><circle cx="18" cy="16" r="3"/><path d="M5 16a3 3 0 0 1 3-3"/><path d="M5 21v-2a3 3 0 0 1 3-3"/></svg>Doctors<span class="nav-count" id="navPendingCount" hidden>0</span></a>
+    <a href="users.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17.5" cy="8.5" r="2.4"/><path d="M15 14.2c2.6.4 4.5 2.6 4.5 5.3"/></svg>Users</a>
+    <a href="patients.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="11" r="2"/><path d="M5 16c.6-1.8 2-2.8 3.5-2.8s2.9 1 3.5 2.8"/><path d="M15 10h4M15 13.5h4"/></svg>Patients</a>
+
+    <div class="nav-label">Configuration</div>
+    <a href="master-data.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5.5" rx="7.5" ry="2.5"/><path d="M4.5 5.5V12c0 1.4 3.4 2.5 7.5 2.5s7.5-1.1 7.5-2.5V5.5"/><path d="M4.5 12v6.5c0 1.4 3.4 2.5 7.5 2.5s7.5-1.1 7.5-2.5V12"/></svg>Master data</a>
+    <a href="audit-logs.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>Audit logs</a>
+  </nav>
+
+  <div class="sidebar-foot">Aarogyam Admin</div>
+</aside>
+
+<div class="admin-main">
+  <header class="admin-topbar">
+    <button class="sidebar-toggle" id="sidebarToggle" aria-label="Menu"><span></span></button>
+    <h1>Overview</h1>
+    <div class="topbar-actions">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M4.4 4.4l1.7 1.7M17.9 17.9l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.4 19.6l1.7-1.7M17.9 6.1l1.7-1.7"/></svg>
+      </button>
+      <span class="admin-user"><span class="dot"></span><span id="adminEmail">—</span></span>
+      <button class="btn btn-ghost btn-sm" id="logoutBtn" type="button">Log out</button>
+    </div>
+  </header>
+
+  <main class="admin-content">
+    <div class="page-head-row">
+      <div>
+        <h2>Platform overview</h2>
+        <p>A snapshot of accounts, approvals and activity across Aarogyam.</p>
+      </div>
+    </div>
+
+    <div class="stat-grid" id="statGrid">
+      <div class="table-loading">Loading stats…</div>
+    </div>
+
+    <div class="page-head-row">
+      <div><h2 style="font-size:17px">Doctors awaiting approval</h2></div>
+      <a class="btn btn-ghost btn-sm" href="doctors.html?status=Pending">View all</a>
+    </div>
+    <div class="table-wrap" style="margin-bottom:30px">
+      <table class="data-table">
+        <thead><tr><th>Name</th><th>License</th><th>Applied</th><th></th></tr></thead>
+        <tbody id="pendingDoctorsBody"><tr><td colspan="4" class="table-loading">Loading…</td></tr></tbody>
+      </table>
+    </div>
+
+    <div class="page-head-row">
+      <div><h2 style="font-size:17px">Recent activity</h2></div>
+      <a class="btn btn-ghost btn-sm" href="audit-logs.html">View all</a>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>When</th><th>User</th><th>Action</th><th>Entity</th></tr></thead>
+        <tbody id="recentAuditBody"><tr><td colspan="4" class="table-loading">Loading…</td></tr></tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<div id="toastHost"></div>
+
+<script src="admin-core.js"></script>
+<script>
+  (function () {
+    "use strict";
+
+    var user = AdminSession.requireAdminAuth();
+    if (!user) return;
+    AdminShell.init(user);
+
+    var statGrid = document.getElementById("statGrid");
+    var pendingBody = document.getElementById("pendingDoctorsBody");
+    var auditBody = document.getElementById("recentAuditBody");
+    var navPendingCount = document.getElementById("navPendingCount");
+
+    function esc(s) { return AdminUtil.escapeHtml(s); }
+
+    AdminAPI.dashboardStats().then(function (stats) {
+      var tiles = [
+        { label: "Total users", value: stats.totalUsers },
+        { label: "Patients", value: stats.totalPatients },
+        { label: "Doctors", value: stats.totalDoctors },
+        { label: "Pending approvals", value: stats.pendingDoctorApprovals, warn: stats.pendingDoctorApprovals > 0 },
+        { label: "Hospitals", value: stats.totalHospitals },
+        { label: "Total visits", value: stats.totalVisits }
+      ];
+      statGrid.innerHTML = tiles.map(function (t) {
+        return '<div class="stat-card' + (t.warn ? " warn" : "") + '">' +
+          '<div class="stat-label">' + esc(t.label) + '</div>' +
+          '<div class="stat-value">' + t.value + '</div>' +
+        '</div>';
+      }).join("");
+
+      if (stats.pendingDoctorApprovals > 0) {
+        navPendingCount.textContent = stats.pendingDoctorApprovals;
+        navPendingCount.hidden = false;
+      }
+    }).catch(function (err) {
+      statGrid.innerHTML = '<div class="form-alert error">' + esc(err.message) + '</div>';
+    });
+
+    AdminAPI.listDoctors("Pending").then(function (rows) {
+      var top = rows.slice(0, 5);
+      if (!top.length) {
+        pendingBody.innerHTML = '<tr><td colspan="4" class="table-empty">No doctors awaiting approval.</td></tr>';
+        return;
+      }
+      pendingBody.innerHTML = top.map(function (d) {
+        return "<tr>" +
+          "<td>" + esc([d.firstName, d.middleName, d.lastName].filter(Boolean).join(" ")) + "</td>" +
+          '<td class="mono">' + esc(d.licenseNumber) + "</td>" +
+          "<td>" + AdminUtil.formatDate(d.createdAt) + "</td>" +
+          '<td class="actions"><a class="btn btn-ghost btn-sm" href="doctors.html?doctorId=' + d.doctorId + '">Review</a></td>' +
+        "</tr>";
+      }).join("");
+    }).catch(function (err) {
+      pendingBody.innerHTML = '<tr><td colspan="4" class="table-empty">' + esc(err.message) + "</td></tr>";
+    });
+
+    AdminAPI.listAuditLogs().then(function (rows) {
+      var top = rows.slice(0, 8);
+      if (!top.length) {
+        auditBody.innerHTML = '<tr><td colspan="4" class="table-empty">No activity recorded yet.</td></tr>';
+        return;
+      }
+      auditBody.innerHTML = top.map(function (r) {
+        return "<tr>" +
+          "<td>" + AdminUtil.formatDateTime(r.createdAt) + "</td>" +
+          '<td class="mono">' + (r.userId != null ? "#" + r.userId : "—") + "</td>" +
+          "<td>" + esc(r.action) + "</td>" +
+          "<td>" + esc(r.entityName) + " #" + r.entityId + "</td>" +
+        "</tr>";
+      }).join("");
+    }).catch(function (err) {
+      auditBody.innerHTML = '<tr><td colspan="4" class="table-empty">' + esc(err.message) + "</td></tr>";
+    });
+  })();
+</script>
+</body>
+</html>

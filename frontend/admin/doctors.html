@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Doctors — Aarogyam Admin</title>
+<meta name="robots" content="noindex, nofollow">
+<script>
+  (function () {
+    try {
+      if (localStorage.getItem("aarogyam-theme") === "dark") {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+    } catch (e) {}
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='2' y='2' width='28' height='28' rx='8' fill='%23081c15'/%3E%3Cpath d='M7 17h5l2.5-6 3.5 10 2.5-6.5L22 17h3' stroke='%2374c69d' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+</head>
+<body>
+
+<div class="sidebar-scrim" id="sidebarScrim"></div>
+
+<aside class="admin-sidebar">
+  <div class="sidebar-brand">
+    <svg width="24" height="24" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+      <rect x="1.5" y="1.5" width="29" height="29" rx="8.5" stroke="#52b788" stroke-width="1.5"/>
+      <path d="M7 17h5l2.5-6 3.5 10 2.5-6.5L22 17h3" stroke="#74c69d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Aarogyam <small>Admin</small>
+  </div>
+
+  <nav class="admin-nav">
+    <div class="nav-label">General</div>
+    <a href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7.5" height="7.5" rx="1.5"/><rect x="13" y="3.5" width="7.5" height="7.5" rx="1.5"/><rect x="3.5" y="13" width="7.5" height="7.5" rx="1.5"/><rect x="13" y="13" width="7.5" height="7.5" rx="1.5"/></svg>Overview</a>
+
+    <div class="nav-label">Management</div>
+    <a href="doctors.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3v4a3 3 0 0 0 6 0V3"/><path d="M9 5H7a2 2 0 0 0-2 2v3a5 5 0 0 0 10 0V7a2 2 0 0 0-2-2h-2"/><circle cx="18" cy="16" r="3"/><path d="M5 16a3 3 0 0 1 3-3"/><path d="M5 21v-2a3 3 0 0 1 3-3"/></svg>Doctors<span class="nav-count" id="navPendingCount" hidden>0</span></a>
+    <a href="users.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17.5" cy="8.5" r="2.4"/><path d="M15 14.2c2.6.4 4.5 2.6 4.5 5.3"/></svg>Users</a>
+    <a href="patients.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="11" r="2"/><path d="M5 16c.6-1.8 2-2.8 3.5-2.8s2.9 1 3.5 2.8"/><path d="M15 10h4M15 13.5h4"/></svg>Patients</a>
+
+    <div class="nav-label">Configuration</div>
+    <a href="master-data.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5.5" rx="7.5" ry="2.5"/><path d="M4.5 5.5V12c0 1.4 3.4 2.5 7.5 2.5s7.5-1.1 7.5-2.5V5.5"/><path d="M4.5 12v6.5c0 1.4 3.4 2.5 7.5 2.5s7.5-1.1 7.5-2.5V12"/></svg>Master data</a>
+    <a href="audit-logs.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>Audit logs</a>
+  </nav>
+
+  <div class="sidebar-foot">Aarogyam Admin</div>
+</aside>
+
+<div class="admin-main">
+  <header class="admin-topbar">
+    <button class="sidebar-toggle" id="sidebarToggle" aria-label="Menu"><span></span></button>
+    <h1>Doctors</h1>
+    <div class="topbar-actions">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M4.4 4.4l1.7 1.7M17.9 17.9l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.4 19.6l1.7-1.7M17.9 6.1l1.7-1.7"/></svg>
+      </button>
+      <span class="admin-user"><span class="dot"></span><span id="adminEmail">—</span></span>
+      <button class="btn btn-ghost btn-sm" id="logoutBtn" type="button">Log out</button>
+    </div>
+  </header>
+
+  <main class="admin-content">
+    <div class="page-head-row">
+      <div>
+        <h2>Doctor verification</h2>
+        <p>Review licence and degree details, then approve or reject each application.</p>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <div class="filter-tabs" id="statusTabs">
+        <button data-status="" class="active">All</button>
+        <button data-status="Pending">Pending</button>
+        <button data-status="Approved">Approved</button>
+        <button data-status="Rejected">Rejected</button>
+      </div>
+      <div class="spacer"></div>
+      <input type="search" id="doctorSearch" placeholder="Search by name or licence…">
+    </div>
+
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr><th>Doctor</th><th>Licence</th><th>Hospital</th><th>Specialization</th><th>Status</th><th>Applied</th><th></th></tr>
+        </thead>
+        <tbody id="doctorsBody"><tr><td colspan="7" class="table-loading">Loading…</td></tr></tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<!-- Detail / approve / reject modal -->
+<div class="modal-overlay" id="doctorModal" hidden>
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="dmName">Doctor</h3>
+      <button class="modal-close" id="dmClose" aria-label="Close">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="detail-grid" id="dmGrid"></div>
+      <div id="dmRejectBox" hidden style="margin-top:16px">
+        <div class="form-row">
+          <label for="dmRejectReason">Rejection reason</label>
+          <textarea id="dmRejectReason" maxlength="200" placeholder="Explain why this application is being rejected…"></textarea>
+        </div>
+      </div>
+      <div id="dmAlert" class="form-alert error" hidden style="margin-top:16px"></div>
+    </div>
+    <div class="modal-actions" id="dmActions"></div>
+  </div>
+</div>
+
+<div id="toastHost"></div>
+
+<script src="admin-core.js"></script>
+<script>
+  (function () {
+    "use strict";
+
+    var user = AdminSession.requireAdminAuth();
+    if (!user) return;
+    AdminShell.init(user);
+
+    var esc = AdminUtil.escapeHtml;
+    var lookups = { hospitals: {}, degrees: {}, specializations: {}, countries: {}, states: {}, cities: {} };
+    var allDoctors = [];
+    var currentStatus = new URLSearchParams(window.location.search).get("status") || "";
+
+    var tbody = document.getElementById("doctorsBody");
+    var statusTabs = document.getElementById("statusTabs");
+    var searchInput = document.getElementById("doctorSearch");
+
+    var modal = document.getElementById("doctorModal");
+    var dmName = document.getElementById("dmName");
+    var dmGrid = document.getElementById("dmGrid");
+    var dmActions = document.getElementById("dmActions");
+    var dmAlert = document.getElementById("dmAlert");
+    var dmRejectBox = document.getElementById("dmRejectBox");
+    var dmRejectReason = document.getElementById("dmRejectReason");
+
+    function toast(message, isError) {
+      var host = document.getElementById("toastHost");
+      var el = document.createElement("div");
+      el.className = "toast" + (isError ? " error" : "");
+      el.textContent = message;
+      host.appendChild(el);
+      setTimeout(function () { el.remove(); }, 4000);
+    }
+
+    function buildLookup(rows, idField, nameField) {
+      var map = {};
+      rows.forEach(function (r) { map[r[idField]] = r[nameField]; });
+      return map;
+    }
+
+    function loadLookups() {
+      return Promise.all([
+        AdminAPI.master("hospitals").list(),
+        AdminAPI.master("degrees").list(),
+        AdminAPI.master("specializations").list(),
+        AdminAPI.master("countries").list(),
+        AdminAPI.master("states").list(),
+        AdminAPI.master("cities").list()
+      ]).then(function (res) {
+        lookups.hospitals = buildLookup(res[0], "hospitalId", "hospitalName");
+        lookups.degrees = buildLookup(res[1], "degreeId", "degreeName");
+        lookups.specializations = buildLookup(res[2], "specializationId", "specializationName");
+        lookups.countries = buildLookup(res[3], "countryId", "countryName");
+        lookups.states = buildLookup(res[4], "stateId", "stateName");
+        lookups.cities = buildLookup(res[5], "cityId", "cityName");
+      }).catch(function () { /* lookups are cosmetic — degrade to raw IDs on failure */ });
+    }
+
+    function fullName(d) {
+      return [d.firstName, d.middleName, d.lastName].filter(Boolean).join(" ");
+    }
+
+    function matchesSearch(d, term) {
+      if (!term) return true;
+      term = term.toLowerCase();
+      return fullName(d).toLowerCase().indexOf(term) !== -1 ||
+        String(d.licenseNumber || "").toLowerCase().indexOf(term) !== -1;
+    }
+
+    function render() {
+      var term = searchInput.value.trim();
+      var rows = allDoctors.filter(function (d) { return matchesSearch(d, term); });
+
+      if (!rows.length) {
+        tbody.innerHTML = '<tr><td colspan="7" class="table-empty">No doctors match this view.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = rows.map(function (d) {
+        return "<tr>" +
+          "<td><div class=\"row-title\">" + esc(fullName(d)) + "</div></td>" +
+          '<td class="mono">' + esc(d.licenseNumber) + "</td>" +
+          "<td>" + esc(lookups.hospitals[d.hospitalId] || ("#" + d.hospitalId)) + "</td>" +
+          "<td>" + esc(lookups.specializations[d.specializationId] || ("#" + d.specializationId)) + "</td>" +
+          '<td><span class="badge ' + AdminUtil.statusBadgeClass(d.approvalStatus) + '">' + esc(d.approvalStatus) + "</span></td>" +
+          "<td>" + AdminUtil.formatDate(d.createdAt) + "</td>" +
+          '<td class="actions"><button class="btn btn-ghost btn-sm" data-view="' + d.doctorId + '">Review</button></td>' +
+        "</tr>";
+      }).join("");
+
+      tbody.querySelectorAll("[data-view]").forEach(function (btn) {
+        btn.addEventListener("click", function () { openDoctor(Number(btn.getAttribute("data-view"))); });
+      });
+    }
+
+    function loadDoctors() {
+      tbody.innerHTML = '<tr><td colspan="7" class="table-loading">Loading…</td></tr>';
+      return AdminAPI.listDoctors(currentStatus || undefined).then(function (rows) {
+        allDoctors = rows;
+        render();
+      }).catch(function (err) {
+        tbody.innerHTML = '<tr><td colspan="7" class="table-empty">' + esc(err.message) + "</td></tr>";
+      });
+    }
+
+    statusTabs.querySelectorAll("button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        statusTabs.querySelectorAll("button").forEach(function (b) { b.classList.remove("active"); });
+        btn.classList.add("active");
+        currentStatus = btn.getAttribute("data-status");
+        var url = new URL(window.location.href);
+        if (currentStatus) url.searchParams.set("status", currentStatus); else url.searchParams.delete("status");
+        window.history.replaceState({}, "", url);
+        loadDoctors();
+      });
+      if (btn.getAttribute("data-status") === currentStatus) {
+        statusTabs.querySelectorAll("button").forEach(function (b) { b.classList.remove("active"); });
+        btn.classList.add("active");
+      }
+    });
+
+    searchInput.addEventListener("input", render);
+
+    function detailRow(label, value, full) {
+      return '<div class="' + (full ? "full" : "") + '"><div class="dl">' + esc(label) + '</div><div class="dv">' + value + "</div></div>";
+    }
+
+    function openDoctor(doctorId) {
+      dmAlert.hidden = true;
+      dmRejectBox.hidden = true;
+      dmName.textContent = "Loading…";
+      dmGrid.innerHTML = "";
+      dmActions.innerHTML = "";
+      modal.hidden = false;
+
+      AdminAPI.getDoctor(doctorId).then(function (d) {
+        dmName.textContent = fullName(d);
+
+        var addressLine = [d.address, lookups.cities[d.cityId], lookups.states[d.stateId], lookups.countries[d.countryId]]
+          .filter(Boolean).join(", ");
+
+        var html = "";
+        html += detailRow("Status", '<span class="badge ' + AdminUtil.statusBadgeClass(d.approvalStatus) + '">' + esc(d.approvalStatus) + "</span>");
+        html += detailRow("Licence number", esc(d.licenseNumber));
+        html += detailRow("Hospital", esc(lookups.hospitals[d.hospitalId] || ("#" + d.hospitalId)));
+        html += detailRow("Degree", esc(lookups.degrees[d.degreeId] || ("#" + d.degreeId)));
+        html += detailRow("Specialization", esc(lookups.specializations[d.specializationId] || ("#" + d.specializationId)));
+        html += detailRow("Applied", AdminUtil.formatDate(d.createdAt));
+        html += detailRow("Address", esc(addressLine), true);
+        html += detailRow("Licence document", '<span class="mono">' + esc(d.licenseDocumentPath || "—") + "</span>", true);
+        html += detailRow("Degree document", '<span class="mono">' + esc(d.degreeDocumentPath || "—") + "</span>", true);
+
+        if (String(d.approvalStatus).toLowerCase() === "rejected" && d.rejectionReason) {
+          html += detailRow("Rejection reason", esc(d.rejectionReason), true);
+        }
+        if (d.approvedAt) {
+          html += detailRow("Decided at", AdminUtil.formatDateTime(d.approvedAt));
+        }
+
+        dmGrid.innerHTML = html;
+
+        if (String(d.approvalStatus).toLowerCase() === "pending") {
+          renderPendingActions(doctorId);
+        } else {
+          dmActions.innerHTML = '<button class="btn btn-ghost btn-sm" id="dmCloseBtn" type="button">Close</button>';
+          document.getElementById("dmCloseBtn").addEventListener("click", closeModal);
+        }
+      }).catch(function (err) {
+        dmName.textContent = "Error";
+        dmGrid.innerHTML = "";
+        dmAlert.textContent = err.message;
+        dmAlert.hidden = false;
+      });
+    }
+
+    function renderPendingActions(doctorId) {
+      dmRejectBox.hidden = true;
+      dmAlert.hidden = true;
+      dmActions.innerHTML =
+        '<button class="btn btn-ghost btn-sm" id="dmRejectBtn" type="button">Reject</button>' +
+        '<button class="btn btn-solid btn-sm" id="dmApproveBtn" type="button">Approve</button>';
+
+      document.getElementById("dmApproveBtn").addEventListener("click", function () { approve(doctorId); });
+      document.getElementById("dmRejectBtn").addEventListener("click", function () { renderRejectActions(doctorId); });
+    }
+
+    function renderRejectActions(doctorId) {
+      dmRejectBox.hidden = false;
+      dmActions.innerHTML =
+        '<button class="btn btn-ghost btn-sm" id="dmCancelReject" type="button">Cancel</button>' +
+        '<button class="btn btn-danger btn-sm" id="dmConfirmReject" type="button">Confirm rejection</button>';
+
+      document.getElementById("dmCancelReject").addEventListener("click", function () { renderPendingActions(doctorId); });
+      document.getElementById("dmConfirmReject").addEventListener("click", function () { reject(doctorId); });
+    }
+
+    function approve(doctorId) {
+      dmAlert.hidden = true;
+      AdminAPI.approveDoctor(doctorId).then(function () {
+        toast("Doctor approved.");
+        closeModal();
+        loadDoctors();
+      }).catch(function (err) {
+        dmAlert.textContent = err.message;
+        dmAlert.hidden = false;
+      });
+    }
+
+    function reject(doctorId) {
+      var reason = dmRejectReason.value.trim();
+      if (!reason) {
+        dmAlert.textContent = "Please provide a rejection reason.";
+        dmAlert.hidden = false;
+        return;
+      }
+      dmAlert.hidden = true;
+      AdminAPI.rejectDoctor(doctorId, reason).then(function () {
+        toast("Doctor application rejected.");
+        closeModal();
+        loadDoctors();
+      }).catch(function (err) {
+        dmAlert.textContent = err.message;
+        dmAlert.hidden = false;
+      });
+    }
+
+    function closeModal() {
+      modal.hidden = true;
+      dmRejectReason.value = "";
+    }
+
+    document.getElementById("dmClose").addEventListener("click", closeModal);
+    modal.addEventListener("click", function (e) { if (e.target === modal) closeModal(); });
+
+    // Nav badge for pending count
+    var navPendingCount = document.getElementById("navPendingCount");
+    AdminAPI.dashboardStats().then(function (stats) {
+      if (stats.pendingDoctorApprovals > 0) {
+        navPendingCount.textContent = stats.pendingDoctorApprovals;
+        navPendingCount.hidden = false;
+      }
+    }).catch(function () {});
+
+    loadLookups().then(loadDoctors).then(function () {
+      var deepLinkId = new URLSearchParams(window.location.search).get("doctorId");
+      if (deepLinkId) openDoctor(Number(deepLinkId));
+    });
+  })();
+</script>
+</body>
+</html>
