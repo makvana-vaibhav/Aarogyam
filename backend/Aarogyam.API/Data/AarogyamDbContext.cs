@@ -26,6 +26,42 @@ public class AarogyamDbContext : DbContext
 
     public DbSet<UserLookupResult> UserLookupResults { get; set; }
 
+    public DbSet<RoleMasterRow> RoleMasterRows { get; set; }
+    public DbSet<RoleManageResult> RoleManageResults { get; set; }
+
+    public DbSet<CountryMasterRow> CountryMasterRows { get; set; }
+    public DbSet<CountryManageResult> CountryManageResults { get; set; }
+
+    public DbSet<StateMasterRow> StateMasterRows { get; set; }
+    public DbSet<StateManageResult> StateManageResults { get; set; }
+
+    public DbSet<CityMasterRow> CityMasterRows { get; set; }
+    public DbSet<CityManageResult> CityManageResults { get; set; }
+
+    public DbSet<HospitalMasterRow> HospitalMasterRows { get; set; }
+    public DbSet<HospitalManageResult> HospitalManageResults { get; set; }
+
+    public DbSet<DegreeMasterRow> DegreeMasterRows { get; set; }
+    public DbSet<DegreeManageResult> DegreeManageResults { get; set; }
+
+    public DbSet<SpecializationMasterRow> SpecializationMasterRows { get; set; }
+    public DbSet<SpecializationManageResult> SpecializationManageResults { get; set; }
+
+    public DbSet<DiagnosisTypeMasterRow> DiagnosisTypeMasterRows { get; set; }
+    public DbSet<DiagnosisTypeManageResult> DiagnosisTypeManageResults { get; set; }
+
+    public DbSet<UserMasterRow> UserMasterRows { get; set; }
+    public DbSet<UserManageResult> UserManageResults { get; set; }
+
+    public DbSet<DoctorMasterRow> DoctorMasterRows { get; set; }
+    public DbSet<DoctorActionResult> DoctorActionResults { get; set; }
+
+    public DbSet<PatientMasterRow> PatientMasterRows { get; set; }
+
+    public DbSet<AuditLogRow> AuditLogRows { get; set; }
+
+    public DbSet<DashboardStatsResult> DashboardStatsResults { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -78,5 +114,41 @@ public class AarogyamDbContext : DbContext
             entity.HasNoKey();
             entity.ToView(null);
         });
+
+        modelBuilder.Entity<RoleMasterRow>(entity => { entity.HasNoKey(); entity.ToView(null); });
+        modelBuilder.Entity<RoleManageResult>(entity => { entity.HasNoKey(); entity.ToView(null); });
+
+        modelBuilder.Entity<CountryMasterRow>(entity => { entity.HasNoKey(); entity.ToView(null); });
+        modelBuilder.Entity<CountryManageResult>(entity => { entity.HasNoKey(); entity.ToView(null); });
+
+        modelBuilder.Entity<StateMasterRow>(entity => { entity.HasNoKey(); entity.ToView(null); });
+        modelBuilder.Entity<StateManageResult>(entity => { entity.HasNoKey(); entity.ToView(null); });
+
+        modelBuilder.Entity<CityMasterRow>(entity => { entity.HasNoKey(); entity.ToView(null); });
+        modelBuilder.Entity<CityManageResult>(entity => { entity.HasNoKey(); entity.ToView(null); });
+
+        modelBuilder.Entity<HospitalMasterRow>(entity => { entity.HasNoKey(); entity.ToView(null); });
+        modelBuilder.Entity<HospitalManageResult>(entity => { entity.HasNoKey(); entity.ToView(null); });
+
+        modelBuilder.Entity<DegreeMasterRow>(entity => { entity.HasNoKey(); entity.ToView(null); });
+        modelBuilder.Entity<DegreeManageResult>(entity => { entity.HasNoKey(); entity.ToView(null); });
+
+        modelBuilder.Entity<SpecializationMasterRow>(entity => { entity.HasNoKey(); entity.ToView(null); });
+        modelBuilder.Entity<SpecializationManageResult>(entity => { entity.HasNoKey(); entity.ToView(null); });
+
+        modelBuilder.Entity<DiagnosisTypeMasterRow>(entity => { entity.HasNoKey(); entity.ToView(null); });
+        modelBuilder.Entity<DiagnosisTypeManageResult>(entity => { entity.HasNoKey(); entity.ToView(null); });
+
+        modelBuilder.Entity<UserMasterRow>(entity => { entity.HasNoKey(); entity.ToView(null); });
+        modelBuilder.Entity<UserManageResult>(entity => { entity.HasNoKey(); entity.ToView(null); });
+
+        modelBuilder.Entity<DoctorMasterRow>(entity => { entity.HasNoKey(); entity.ToView(null); });
+        modelBuilder.Entity<DoctorActionResult>(entity => { entity.HasNoKey(); entity.ToView(null); });
+
+        modelBuilder.Entity<PatientMasterRow>(entity => { entity.HasNoKey(); entity.ToView(null); });
+
+        modelBuilder.Entity<AuditLogRow>(entity => { entity.HasNoKey(); entity.ToView(null); });
+
+        modelBuilder.Entity<DashboardStatsResult>(entity => { entity.HasNoKey(); entity.ToView(null); });
     }
 }

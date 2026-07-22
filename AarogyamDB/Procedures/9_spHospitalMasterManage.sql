@@ -14,7 +14,7 @@ BEGIN
         BEGIN
             INSERT INTO dbo.HospitalMaster (HospitalName, Address, CityId, PhoneNumber, Email, IsActive)
             VALUES (@HospitalName, @Address, @CityId, @PhoneNumber, @Email, @IsActive);
-            SELECT 1 AS Success, 'Created.' AS Message, SCOPE_IDENTITY() AS HospitalId;
+            SELECT 1 AS Success, 'Created.' AS Message, CAST(SCOPE_IDENTITY() AS INT) AS HospitalId;
         END
         ELSE IF @Action = 'UPDATE'
         BEGIN
@@ -22,19 +22,19 @@ BEGIN
             SET HospitalName = @HospitalName, Address = @Address, CityId = @CityId,
                 PhoneNumber = @PhoneNumber, Email = @Email, IsActive = @IsActive, UpdatedAt = SYSUTCDATETIME()
             WHERE HospitalId = @HospitalId;
-            SELECT 1 AS Success, 'Updated.' AS Message;
+            SELECT 1 AS Success, 'Updated.' AS Message, NULL AS HospitalId;
         END
         ELSE IF @Action = 'DELETE'
         BEGIN
             DELETE FROM dbo.HospitalMaster WHERE HospitalId = @HospitalId;
-            SELECT 1 AS Success, 'Deleted.' AS Message;
+            SELECT 1 AS Success, 'Deleted.' AS Message, NULL AS HospitalId;
         END
         ELSE
         BEGIN
-            SELECT 0 AS Success, 'Invalid action.' AS Message;
+            SELECT 0 AS Success, 'Invalid action.' AS Message, NULL AS HospitalId;
         END
     END TRY
     BEGIN CATCH
-        SELECT 0 AS Success, ERROR_MESSAGE() AS Message;
+        SELECT 0 AS Success, ERROR_MESSAGE() AS Message, NULL AS HospitalId;
     END CATCH
 END

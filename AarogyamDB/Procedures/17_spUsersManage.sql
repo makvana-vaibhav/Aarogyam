@@ -15,7 +15,7 @@ BEGIN
         BEGIN
             INSERT INTO dbo.Users (RoleId, Email, PhoneNumber, PasswordHash, IsEmailVerified, IsActive, LastLoginAt)
             VALUES (@RoleId, @Email, @PhoneNumber, @PasswordHash, @IsEmailVerified, @IsActive, @LastLoginAt);
-            SELECT 1 AS Success, 'Created.' AS Message, SCOPE_IDENTITY() AS UserId;
+            SELECT 1 AS Success, 'Created.' AS Message, CAST(SCOPE_IDENTITY() AS INT) AS UserId;
         END
         ELSE IF @Action = 'UPDATE'
         BEGIN
@@ -23,19 +23,19 @@ BEGIN
             SET RoleId = @RoleId, Email = @Email, PhoneNumber = @PhoneNumber, PasswordHash = @PasswordHash,
                 IsEmailVerified = @IsEmailVerified, IsActive = @IsActive, LastLoginAt = @LastLoginAt, UpdatedAt = SYSUTCDATETIME()
             WHERE UserId = @UserId;
-            SELECT 1 AS Success, 'Updated.' AS Message;
+            SELECT 1 AS Success, 'Updated.' AS Message, NULL AS UserId;
         END
         ELSE IF @Action = 'DELETE'
         BEGIN
             DELETE FROM dbo.Users WHERE UserId = @UserId;
-            SELECT 1 AS Success, 'Deleted.' AS Message;
+            SELECT 1 AS Success, 'Deleted.' AS Message, NULL AS UserId;
         END
         ELSE
         BEGIN
-            SELECT 0 AS Success, 'Invalid action.' AS Message;
+            SELECT 0 AS Success, 'Invalid action.' AS Message, NULL AS UserId;
         END
     END TRY
     BEGIN CATCH
-        SELECT 0 AS Success, ERROR_MESSAGE() AS Message;
+        SELECT 0 AS Success, ERROR_MESSAGE() AS Message, NULL AS UserId;
     END CATCH
 END

@@ -11,26 +11,26 @@ BEGIN
         BEGIN
             INSERT INTO dbo.DiagnosisTypeMaster (DiagnosisTypeName, Description, IsActive)
             VALUES (@DiagnosisTypeName, @Description, @IsActive);
-            SELECT 1 AS Success, 'Created.' AS Message, SCOPE_IDENTITY() AS DiagnosisTypeId;
+            SELECT 1 AS Success, 'Created.' AS Message, CAST(SCOPE_IDENTITY() AS INT) AS DiagnosisTypeId;
         END
         ELSE IF @Action = 'UPDATE'
         BEGIN
             UPDATE dbo.DiagnosisTypeMaster
             SET DiagnosisTypeName = @DiagnosisTypeName, Description = @Description, IsActive = @IsActive, UpdatedAt = SYSUTCDATETIME()
             WHERE DiagnosisTypeId = @DiagnosisTypeId;
-            SELECT 1 AS Success, 'Updated.' AS Message;
+            SELECT 1 AS Success, 'Updated.' AS Message, NULL AS DiagnosisTypeId;
         END
         ELSE IF @Action = 'DELETE'
         BEGIN
             DELETE FROM dbo.DiagnosisTypeMaster WHERE DiagnosisTypeId = @DiagnosisTypeId;
-            SELECT 1 AS Success, 'Deleted.' AS Message;
+            SELECT 1 AS Success, 'Deleted.' AS Message, NULL AS DiagnosisTypeId;
         END
         ELSE
         BEGIN
-            SELECT 0 AS Success, 'Invalid action.' AS Message;
+            SELECT 0 AS Success, 'Invalid action.' AS Message, NULL AS DiagnosisTypeId;
         END
     END TRY
     BEGIN CATCH
-        SELECT 0 AS Success, ERROR_MESSAGE() AS Message;
+        SELECT 0 AS Success, ERROR_MESSAGE() AS Message, NULL AS DiagnosisTypeId;
     END CATCH
 END

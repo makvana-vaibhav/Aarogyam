@@ -9,26 +9,26 @@ BEGIN
         IF @Action = 'INSERT'
         BEGIN
             INSERT INTO dbo.SpecializationMaster (SpecializationName, Description) VALUES (@SpecializationName, @Description);
-            SELECT 1 AS Success, 'Created.' AS Message, SCOPE_IDENTITY() AS SpecializationId;
+            SELECT 1 AS Success, 'Created.' AS Message, CAST(SCOPE_IDENTITY() AS INT) AS SpecializationId;
         END
         ELSE IF @Action = 'UPDATE'
         BEGIN
             UPDATE dbo.SpecializationMaster
             SET SpecializationName = @SpecializationName, Description = @Description, UpdatedAt = SYSUTCDATETIME()
             WHERE SpecializationId = @SpecializationId;
-            SELECT 1 AS Success, 'Updated.' AS Message;
+            SELECT 1 AS Success, 'Updated.' AS Message, NULL AS SpecializationId;
         END
         ELSE IF @Action = 'DELETE'
         BEGIN
             DELETE FROM dbo.SpecializationMaster WHERE SpecializationId = @SpecializationId;
-            SELECT 1 AS Success, 'Deleted.' AS Message;
+            SELECT 1 AS Success, 'Deleted.' AS Message, NULL AS SpecializationId;
         END
         ELSE
         BEGIN
-            SELECT 0 AS Success, 'Invalid action.' AS Message;
+            SELECT 0 AS Success, 'Invalid action.' AS Message, NULL AS SpecializationId;
         END
     END TRY
     BEGIN CATCH
-        SELECT 0 AS Success, ERROR_MESSAGE() AS Message;
+        SELECT 0 AS Success, ERROR_MESSAGE() AS Message, NULL AS SpecializationId;
     END CATCH
 END

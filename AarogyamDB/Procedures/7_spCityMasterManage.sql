@@ -9,26 +9,26 @@ BEGIN
         IF @Action = 'INSERT'
         BEGIN
             INSERT INTO dbo.CityMaster (StateId, CityName) VALUES (@StateId, @CityName);
-            SELECT 1 AS Success, 'Created.' AS Message, SCOPE_IDENTITY() AS CityId;
+            SELECT 1 AS Success, 'Created.' AS Message, CAST(SCOPE_IDENTITY() AS INT) AS CityId;
         END
         ELSE IF @Action = 'UPDATE'
         BEGIN
             UPDATE dbo.CityMaster
             SET StateId = @StateId, CityName = @CityName, UpdatedAt = SYSUTCDATETIME()
             WHERE CityId = @CityId;
-            SELECT 1 AS Success, 'Updated.' AS Message;
+            SELECT 1 AS Success, 'Updated.' AS Message, NULL AS CityId;
         END
         ELSE IF @Action = 'DELETE'
         BEGIN
             DELETE FROM dbo.CityMaster WHERE CityId = @CityId;
-            SELECT 1 AS Success, 'Deleted.' AS Message;
+            SELECT 1 AS Success, 'Deleted.' AS Message, NULL AS CityId;
         END
         ELSE
         BEGIN
-            SELECT 0 AS Success, 'Invalid action.' AS Message;
+            SELECT 0 AS Success, 'Invalid action.' AS Message, NULL AS CityId;
         END
     END TRY
     BEGIN CATCH
-        SELECT 0 AS Success, ERROR_MESSAGE() AS Message;
+        SELECT 0 AS Success, ERROR_MESSAGE() AS Message, NULL AS CityId;
     END CATCH
 END
