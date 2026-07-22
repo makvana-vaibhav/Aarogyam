@@ -16,6 +16,8 @@ services:
       Jwt__Audience: AarogyamClient
       Jwt__SecretKey: ${JWT_SECRET_KEY}
       Jwt__ExpiryMinutes: 60
+      Swagger__Username: ${SWAGGER_USERNAME}
+      Swagger__Password: ${SWAGGER_PASSWORD}
     networks:
       - aarogyam-net
       - sqlserver-net

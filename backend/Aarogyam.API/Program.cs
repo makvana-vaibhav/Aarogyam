@@ -1,6 +1,7 @@
 using System.Text;
 using Aarogyam.API.Configuration;
 using Aarogyam.API.Data;
+using Aarogyam.API.Middleware;
 using Aarogyam.API.Repositories;
 using Aarogyam.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -45,6 +46,8 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
 builder.Services.AddScoped<ITokenService, TokenService>();
 
+builder.Services.Configure<SwaggerSettings>(builder.Configuration.GetSection("Swagger"));
+
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
@@ -74,11 +77,9 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseMiddleware<SwaggerBasicAuthMiddleware>();
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 app.UseCors("AllowFrontend");

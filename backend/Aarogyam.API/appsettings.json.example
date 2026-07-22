@@ -18,6 +18,11 @@
     "ExpiryMinutes": 60
   },
 
+  "Swagger": {
+    "Username": "REPLACE_WITH_A_SWAGGER_USERNAME",
+    "Password": "REPLACE_WITH_A_SWAGGER_PASSWORD"
+  },
+
   "Logging": {
     "LogLevel": {
       "Default": "Information",
