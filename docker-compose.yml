@@ -13,18 +13,14 @@ services:
       Email__SmtpPort: ${SMTP_PORT}
       Email__SenderEmail: ${SMTP_SENDER_EMAIL}
       Email__SenderPassword: ${SMTP_SENDER_PASSWORD}
-      Email__SenderName: Aarogyam
+      Email__SenderName: ${SMTP_SENDER_NAME}
       Jwt__Issuer: AarogyamAPI
       Jwt__Audience: AarogyamClient
       Jwt__SecretKey: ${JWT_SECRET_KEY}
       Jwt__ExpiryMinutes: 60
     networks:
       - aarogyam-net
-      # The existing SQL Server container isn't managed by this file. Either
-      # attach this service to whatever network that container is already on
-      # (uncomment sqlserver-net below and set SQLSERVER_NETWORK_NAME), or
-      # point DB_CONNECTION_STRING at a host/port this container can reach.
-      # - sqlserver-net
+      - sqlserver-net
 
   frontend:
     image: ${FRONTEND_IMAGE:-ghcr.io/OWNER/aarogyam-frontend:latest}
@@ -41,6 +37,7 @@ services:
 networks:
   aarogyam-net:
     driver: bridge
-  # sqlserver-net:
-  #   external: true
-  #   name: ${SQLSERVER_NETWORK_NAME}
+
+  sqlserver-net:
+    external: true
+    name: ${SQLSERVER_NETWORK_NAME}
