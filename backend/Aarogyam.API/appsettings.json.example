@@ -23,6 +23,10 @@
     "Password": "REPLACE_WITH_A_SWAGGER_PASSWORD"
   },
 
+  "Storage": {
+    "BasePath": "Storage"
+  },
+
   "Logging": {
     "LogLevel": {
       "Default": "Information",

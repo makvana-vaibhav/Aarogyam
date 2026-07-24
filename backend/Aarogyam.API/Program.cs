@@ -49,10 +49,17 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.Configure<SwaggerSettings>(builder.Configuration.GetSection("Swagger"));
 
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
-builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();
-builder.Services.AddScoped<IAdminService, AdminService>();
+
+builder.Services.Configure<StorageSettings>(builder.Configuration.GetSection("Storage"));
+builder.Services.AddSingleton<IFileStorageService, FileStorageService>();
+builder.Services.AddSingleton<IPdfService, PdfService>();
+builder.Services.AddSingleton<IQrCodeService, QrCodeService>();
+
+builder.Services.AddScoped<IPatientRepository, PatientRepository>();
+
+QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 
 var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>()
     ?? throw new InvalidOperationException("Jwt configuration section is missing.");

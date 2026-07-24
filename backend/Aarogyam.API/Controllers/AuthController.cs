@@ -1,6 +1,6 @@
 using Aarogyam.API.Models.Requests;
 using Aarogyam.API.Models.Responses;
-using Aarogyam.API.Services;
+using Aarogyam.API.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Aarogyam.API.Controllers;
@@ -9,13 +9,12 @@ namespace Aarogyam.API.Controllers;
 [Route("api/[controller]")] // attribute routing, the route is set to "api/auth" for this controller
 public class AuthController : ControllerBase
 {
-    private readonly IAuthService _authService;
+    private readonly IAuthRepository _authRepository;
 
 
-// Initializes a new instance of the <see cref="AuthController"/> class. create custom constructor to inject the IAuthService dependency into the controller
-    public AuthController(IAuthService authService)
+    public AuthController(IAuthRepository authRepository)
     {
-        _authService = authService;
+        _authRepository = authRepository;
     }
 
     [HttpPost("register/patient")]
@@ -23,7 +22,7 @@ public class AuthController : ControllerBase
     // and returns an HTTP response containing the registration result.
     public async Task<ActionResult<RegisterPatientResult>> RegisterPatient([FromBody] RegisterPatientRequest request)
     {
-        var result = await _authService.RegisterPatientAsync(request);
+        var result = await _authRepository.RegisterPatientAsync(request);
 
         if (result is null)
         {
@@ -45,7 +44,7 @@ public class AuthController : ControllerBase
     [HttpPost("register/doctor")]
     public async Task<ActionResult<RegisterDoctorResult>> RegisterDoctor([FromBody] RegisterDoctorRequest request)
     {
-        var result = await _authService.RegisterDoctorAsync(request);
+        var result = await _authRepository.RegisterDoctorAsync(request);
 
         if (result is null)
         {
@@ -67,7 +66,7 @@ public class AuthController : ControllerBase
     [HttpPost("verify-otp")]
     public async Task<ActionResult<VerifyOtpResult>> VerifyOtp([FromBody] VerifyOtpRequest request)
     {
-        var result = await _authService.VerifyOtpAsync(request);
+        var result = await _authRepository.VerifyOtpAsync(request);
 
         if (result is null)
         {
@@ -89,7 +88,7 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<ActionResult<LoginResult>> Login([FromBody] LoginRequest request)
     {
-        var result = await _authService.LoginAsync(request);
+        var result = await _authRepository.LoginAsync(request);
 
         if (result is null)
         {
@@ -111,7 +110,7 @@ public class AuthController : ControllerBase
     [HttpPost("resend-otp")]
     public async Task<ActionResult<ResendOtpResult>> ResendOtp([FromBody] ResendOtpRequest request)
     {
-        var result = await _authService.ResendOtpAsync(request);
+        var result = await _authRepository.ResendOtpAsync(request);
 
         if (result is null)
         {

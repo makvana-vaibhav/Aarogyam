@@ -600,38 +600,20 @@ public class AdminRepository : IAdminRepository
         return rows.FirstOrDefault();
     }
 
-    public async Task<UserManageResult?> ActivateUserAsync(int id)
-    {
-        return await SetUserActiveAsync(id, true);
-    }
+    public Task<SimpleResult?> ActivateUserAsync(int id) => SetUserActiveAsync(id, true);
 
-    public async Task<UserManageResult?> DeactivateUserAsync(int id)
-    {
-        return await SetUserActiveAsync(id, false);
-    }
+    public Task<SimpleResult?> DeactivateUserAsync(int id) => SetUserActiveAsync(id, false);
 
-    private async Task<UserManageResult?> SetUserActiveAsync(int id, bool isActive)
+    private async Task<SimpleResult?> SetUserActiveAsync(int id, bool isActive)
     {
-        var user = await GetUserByIdAsync(id);
-        if (user is null) return null;
-
         var parameters = new[]
         {
-            new SqlParameter("@Action", "UPDATE"),
             new SqlParameter("@UserId", id),
-            new SqlParameter("@RoleId", user.RoleId),
-            new SqlParameter("@Email", user.Email),
-            new SqlParameter("@PhoneNumber", user.PhoneNumber),
-            new SqlParameter("@PasswordHash", user.PasswordHash),
-            new SqlParameter("@IsEmailVerified", user.IsEmailVerified),
-            new SqlParameter("@IsActive", isActive),
-            new SqlParameter("@LastLoginAt", (object?)user.LastLoginAt ?? DBNull.Value)
+            new SqlParameter("@IsActive", isActive)
         };
 
-        var results = await _context.UserManageResults
-            .FromSqlRaw(
-                "EXEC dbo.spUsersManage @Action, @UserId, @RoleId, @Email, @PhoneNumber, @PasswordHash, @IsEmailVerified, @IsActive, @LastLoginAt",
-                parameters)
+        var results = await _context.SimpleResults
+            .FromSqlRaw("EXEC dbo.spUsersSetActive @UserId, @IsActive", parameters)
             .ToListAsync();
         return results.FirstOrDefault();
     }

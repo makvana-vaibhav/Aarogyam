@@ -51,7 +51,6 @@ public class AarogyamDbContext : DbContext
     public DbSet<DiagnosisTypeManageResult> DiagnosisTypeManageResults { get; set; }
 
     public DbSet<UserMasterRow> UserMasterRows { get; set; }
-    public DbSet<UserManageResult> UserManageResults { get; set; }
 
     public DbSet<DoctorMasterRow> DoctorMasterRows { get; set; }
     public DbSet<DoctorActionResult> DoctorActionResults { get; set; }
@@ -61,6 +60,23 @@ public class AarogyamDbContext : DbContext
     public DbSet<AuditLogRow> AuditLogRows { get; set; }
 
     public DbSet<DashboardStatsResult> DashboardStatsResults { get; set; }
+
+    public DbSet<VisitRow> VisitRows { get; set; }
+
+    public DbSet<DiagnosisRow> DiagnosisRows { get; set; }
+
+    public DbSet<PrescriptionRow> PrescriptionRows { get; set; }
+
+    public DbSet<MedicalReportRow> MedicalReportRows { get; set; }
+    public DbSet<MedicalReportManageResult> MedicalReportManageResults { get; set; }
+
+    public DbSet<NotificationRow> NotificationRows { get; set; }
+
+    public DbSet<SimpleResult> SimpleResults { get; set; }
+
+    public DbSet<PrescriptionDetailsRow> PrescriptionDetailsRows { get; set; }
+
+    public DbSet<PatientDashboardStatsResult> PatientDashboardStatsResults { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -140,7 +156,6 @@ public class AarogyamDbContext : DbContext
         modelBuilder.Entity<DiagnosisTypeManageResult>(entity => { entity.HasNoKey(); entity.ToView(null); });
 
         modelBuilder.Entity<UserMasterRow>(entity => { entity.HasNoKey(); entity.ToView(null); });
-        modelBuilder.Entity<UserManageResult>(entity => { entity.HasNoKey(); entity.ToView(null); });
 
         modelBuilder.Entity<DoctorMasterRow>(entity => { entity.HasNoKey(); entity.ToView(null); });
         modelBuilder.Entity<DoctorActionResult>(entity => { entity.HasNoKey(); entity.ToView(null); });
@@ -150,5 +165,22 @@ public class AarogyamDbContext : DbContext
         modelBuilder.Entity<AuditLogRow>(entity => { entity.HasNoKey(); entity.ToView(null); });
 
         modelBuilder.Entity<DashboardStatsResult>(entity => { entity.HasNoKey(); entity.ToView(null); });
+
+        modelBuilder.Entity<VisitRow>(entity => { entity.HasNoKey(); entity.ToView(null); });
+
+        modelBuilder.Entity<DiagnosisRow>(entity => { entity.HasNoKey(); entity.ToView(null); });
+
+        modelBuilder.Entity<PrescriptionRow>(entity => { entity.HasNoKey(); entity.ToView(null); });
+
+        modelBuilder.Entity<MedicalReportRow>(entity => { entity.HasNoKey(); entity.ToView(null); });
+        modelBuilder.Entity<MedicalReportManageResult>(entity => { entity.HasNoKey(); entity.ToView(null); });
+
+        modelBuilder.Entity<NotificationRow>(entity => { entity.HasNoKey(); entity.ToView(null); });
+
+        modelBuilder.Entity<PatientDashboardStatsResult>(entity => { entity.HasNoKey(); entity.ToView(null); });
+
+        modelBuilder.Entity<SimpleResult>(entity => { entity.HasNoKey(); entity.ToView(null); });
+
+        modelBuilder.Entity<PrescriptionDetailsRow>(entity => { entity.HasNoKey(); entity.ToView(null); });
     }
 }
