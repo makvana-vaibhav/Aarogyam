@@ -20,7 +20,7 @@ BEGIN
                 Title, ReportType, FilePath, FileSize, ReportDate)
             VALUES (@VisitId, @DiagnosisId, @PatientId, @DoctorId, @UploadedByUserId,
                 @Title, @ReportType, @FilePath, @FileSize, @ReportDate);
-            SELECT 1 AS Success, 'Created.' AS Message, SCOPE_IDENTITY() AS ReportId;
+            SELECT 1 AS Success, 'Created.' AS Message, CAST(SCOPE_IDENTITY() AS INT) AS ReportId;
         END
         ELSE IF @Action = 'UPDATE'
         BEGIN
@@ -29,19 +29,19 @@ BEGIN
                 UploadedByUserId = @UploadedByUserId, Title = @Title, ReportType = @ReportType,
                 FilePath = @FilePath, FileSize = @FileSize, ReportDate = @ReportDate, UpdatedAt = SYSUTCDATETIME()
             WHERE ReportId = @ReportId;
-            SELECT 1 AS Success, 'Updated.' AS Message;
+            SELECT 1 AS Success, 'Updated.' AS Message, NULL AS ReportId;
         END
         ELSE IF @Action = 'DELETE'
         BEGIN
             DELETE FROM dbo.MedicalReports WHERE ReportId = @ReportId;
-            SELECT 1 AS Success, 'Deleted.' AS Message;
+            SELECT 1 AS Success, 'Deleted.' AS Message, NULL AS ReportId;
         END
         ELSE
         BEGIN
-            SELECT 0 AS Success, 'Invalid action.' AS Message;
+            SELECT 0 AS Success, 'Invalid action.' AS Message, NULL AS ReportId;
         END
     END TRY
     BEGIN CATCH
-        SELECT 0 AS Success, ERROR_MESSAGE() AS Message;
+        SELECT 0 AS Success, ERROR_MESSAGE() AS Message, NULL AS ReportId;
     END CATCH
 END

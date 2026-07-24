@@ -18,7 +18,7 @@ BEGIN
         INSERT INTO dbo.Prescriptions (VisitId, DiagnosisId, PrescriptionText, PdfPath, PrescriptionDate)
         VALUES (@VisitId, @DiagnosisId, @PrescriptionText, @PdfPath, @PrescriptionDate);
 
-        DECLARE @NewPrescriptionId INT = SCOPE_IDENTITY();
+        DECLARE @NewPrescriptionId INT = CAST(SCOPE_IDENTITY() AS INT);
 
         INSERT INTO dbo.Notifications (UserId, Title, Message, IsRead)
         VALUES (@PatientUserId, 'New Prescription', 'A new prescription has been added to your health record.', 0);
@@ -29,6 +29,6 @@ BEGIN
     END TRY
     BEGIN CATCH
         IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
-        SELECT 0 AS Success, ERROR_MESSAGE() AS Message;
+        SELECT 0 AS Success, ERROR_MESSAGE() AS Message, NULL AS PrescriptionId;
     END CATCH
 END

@@ -24,7 +24,7 @@ BEGIN
                 BloodGroup, Address, CountryId, StateId, CityId, EmergencyContact, QrCodePath)
             VALUES (@UserId, @AarogyamId, @FirstName, @MiddleName, @LastName, @DateOfBirth, @Gender,
                 @BloodGroup, @Address, @CountryId, @StateId, @CityId, @EmergencyContact, @QrCodePath);
-            SELECT 1 AS Success, 'Created.' AS Message, SCOPE_IDENTITY() AS PatientId, @AarogyamId AS AarogyamId;
+            SELECT 1 AS Success, 'Created.' AS Message, CAST(SCOPE_IDENTITY() AS INT) AS PatientId, @AarogyamId AS AarogyamId;
         END
         ELSE IF @Action = 'UPDATE'
         BEGIN
@@ -34,19 +34,19 @@ BEGIN
                 Address = @Address, CountryId = @CountryId, StateId = @StateId, CityId = @CityId,
                 EmergencyContact = @EmergencyContact, QrCodePath = @QrCodePath, UpdatedAt = SYSUTCDATETIME()
             WHERE PatientId = @PatientId;
-            SELECT 1 AS Success, 'Updated.' AS Message;
+            SELECT 1 AS Success, 'Updated.' AS Message, NULL AS PatientId, NULL AS AarogyamId;
         END
         ELSE IF @Action = 'DELETE'
         BEGIN
             DELETE FROM dbo.Patients WHERE PatientId = @PatientId;
-            SELECT 1 AS Success, 'Deleted.' AS Message;
+            SELECT 1 AS Success, 'Deleted.' AS Message, NULL AS PatientId, NULL AS AarogyamId;
         END
         ELSE
         BEGIN
-            SELECT 0 AS Success, 'Invalid action.' AS Message;
+            SELECT 0 AS Success, 'Invalid action.' AS Message, NULL AS PatientId, NULL AS AarogyamId;
         END
     END TRY
     BEGIN CATCH
-        SELECT 0 AS Success, ERROR_MESSAGE() AS Message;
+        SELECT 0 AS Success, ERROR_MESSAGE() AS Message, NULL AS PatientId, NULL AS AarogyamId;
     END CATCH
 END

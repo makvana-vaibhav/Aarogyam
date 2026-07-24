@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prescriptions — Aarogyam Patient</title>
+<meta name="robots" content="noindex, nofollow">
+<script>(function(){try{if(localStorage.getItem("aarogyam-theme")==="dark"){document.documentElement.setAttribute("data-theme","dark");}}catch(e){}})();</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="prescriptions">
+<div class="sidebar-scrim" id="sidebarScrim"></div>
+<aside class="admin-sidebar"><div class="sidebar-brand"><svg width="24" height="24" viewBox="0 0 32 32" fill="none"><rect x="1.5" y="1.5" width="29" height="29" rx="8.5" stroke="#52b788" stroke-width="1.5"/><path d="M7 17h5l2.5-6 3.5 10 2.5-6.5L22 17h3" stroke="#74c69d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Aarogyam <small>Patient</small></div><nav class="admin-nav"><div class="nav-label">Patient module</div><a href="overview.html">Overview</a><a href="profile.html">Profile</a><a href="medical-history.html">Medical history</a><a href="reports.html">Reports</a><a href="prescriptions.html">Prescriptions</a><a href="notifications.html">Notifications<span class="nav-count" id="navNotificationCount" hidden>0</span></a><a href="health-card.html">QR health card</a></nav><div class="sidebar-foot"><div class="sidebar-profile"><div class="avatar-circle small" id="sidebarInitials">P</div><div><div class="row-title" id="sidebarProfileName">Patient</div><div class="row-sub" id="sidebarProfileMeta">Aarogyam ID</div></div></div></div></aside>
+<div class="admin-main">
+<header class="admin-topbar"><button class="sidebar-toggle" id="sidebarToggle" aria-label="Menu"><span></span></button><h1>Prescriptions</h1><div class="topbar-actions"><button class="theme-toggle" id="themeToggle" aria-label="Toggle color theme"><svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></svg><svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M4.4 4.4l1.7 1.7M17.9 17.9l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.4 19.6l1.7-1.7M17.9 6.1l1.7-1.7"/></svg></button><span class="admin-user"><span class="dot"></span><span id="patientEmail">—</span></span><button class="btn btn-ghost btn-sm" id="logoutBtn" type="button">Log out</button></div></header>
+<main class="admin-content">
+  <div class="page-head-row"><div><h2>Prescriptions</h2><p>Every prescription issued to you, with PDF download support.</p></div></div>
+  <div class="table-wrap"><table class="data-table"><thead><tr><th>Prescription</th><th>Date</th><th>Visit</th><th></th></tr></thead><tbody id="prescriptionsBody"><tr><td colspan="4" class="table-loading">Loading prescriptions…</td></tr></tbody></table></div>
+</main>
+</div>
+<div class="modal-overlay" id="prescriptionModal" hidden><div class="modal"><div class="modal-head"><h3>Prescription details</h3><button class="modal-close" type="button" data-close-modal="prescriptionModal" aria-label="Close">×</button></div><div class="modal-body"><div id="prescriptionDetailContent"><div class="table-loading">Loading prescription…</div></div><div class="modal-actions"><button class="btn btn-ghost" type="button" data-close-modal="prescriptionModal">Close</button><button class="btn btn-solid" id="downloadPrescriptionBtn" type="button">Download PDF</button></div></div></div></div>
+<div id="toastHost"></div>
+<script src="app.js"></script>
+<script src="portal.js"></script>
+</body>
+</html>

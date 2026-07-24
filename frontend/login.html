@@ -100,7 +100,7 @@
     "use strict";
 
     if (AarogyamAuth.isLoggedIn()) {
-      window.location.href = "dashboard.html";
+      window.location.href = AarogyamAuth.getDashboardHref();
       return;
     }
 
@@ -158,7 +158,12 @@
           roleName: result.roleName,
           approvalStatus: result.approvalStatus
         });
-        window.location.href = "dashboard.html";
+        window.location.href = AarogyamAuth.getDashboardHref({
+          userId: result.userId,
+          email: result.email,
+          roleName: result.roleName,
+          approvalStatus: result.approvalStatus
+        });
       } catch (err) {
         var notVerified = /not verified/i.test(err.message || "");
         showAlert(err.message, notVerified ? email : null);

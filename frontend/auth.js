@@ -46,6 +46,25 @@
     }
   }
 
+  function qs(params) {
+    if (!params) return "";
+    var parts = [];
+    Object.keys(params).forEach(function (key) {
+      var value = params[key];
+      if (value === undefined || value === null || value === "") return;
+      parts.push(encodeURIComponent(key) + "=" + encodeURIComponent(value));
+    });
+    return parts.length ? "?" + parts.join("&") : "";
+  }
+
+  function getDashboardHref(user) {
+    var currentUser = user || getUser() || {};
+    var role = String(currentUser.roleName || "").toLowerCase();
+    if (role === "patient") return "patient/overview.html";
+    if (role === "doctor") return "doctor/overview.html";
+    return "dashboard.html";
+  }
+
   async function apiRequest(path, options) {
     options = options || {};
     var headers = Object.assign({ "Content-Type": "application/json" }, options.headers || {});
@@ -71,14 +90,32 @@
     }
 
     if (!response.ok) {
-      var message = (data && data.message) ? data.message : "Request failed (" + response.status + ")";
-      var err = new Error(message);
+      var err = new Error(extractErrorMessage(data, response.status));
       err.data = data;
       err.status = response.status;
       throw err;
     }
 
     return data;
+  }
+
+  // ASP.NET Core's automatic [Required]/[MaxLength] validation (via [ApiController])
+  // returns { title, errors: { Field: ["..."] } } instead of our own { success, message }
+  // shape - without this, every validation failure showed a bare "Request failed (400)".
+  function extractErrorMessage(data, status) {
+    if (data) {
+      if (data.message) return data.message;
+      if (data.Message) return data.Message;
+      if (data.errors) {
+        var fieldNames = Object.keys(data.errors);
+        if (fieldNames.length) {
+          var firstMessages = data.errors[fieldNames[0]];
+          if (firstMessages && firstMessages.length) return firstMessages[0];
+        }
+      }
+      if (data.title) return data.title;
+    }
+    return "Request failed (" + status + ")";
   }
 
   var AarogyamAuth = {
@@ -97,6 +134,24 @@
     resendOtp: function (payload) {
       return apiRequest("/auth/resend-otp", { method: "POST", body: payload });
     },
+    countries: function () {
+      return apiRequest("/lookup/countries");
+    },
+    states: function (countryId) {
+      return apiRequest("/lookup/states" + qs({ countryId: countryId }));
+    },
+    cities: function (stateId) {
+      return apiRequest("/lookup/cities" + qs({ stateId: stateId }));
+    },
+    hospitals: function () {
+      return apiRequest("/lookup/hospitals");
+    },
+    degrees: function () {
+      return apiRequest("/lookup/degrees");
+    },
+    specializations: function () {
+      return apiRequest("/lookup/specializations");
+    },
     saveSession: saveSession,
     clearSession: clearSession,
     getToken: getToken,
@@ -108,6 +163,7 @@
       clearSession();
       window.location.href = "login.html";
     },
+    getDashboardHref: getDashboardHref,
     requireAuth: function () {
       if (!getToken()) {
         window.location.href = "login.html";
@@ -132,7 +188,7 @@
 
     if (loginBtn) {
       loginBtn.textContent = "Dashboard";
-      loginBtn.href = "dashboard.html";
+      loginBtn.href = getDashboardHref(user);
     }
 
     if (registerBtn) {

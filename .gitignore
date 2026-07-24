@@ -28,6 +28,9 @@ secrets.json
 backend/Aarogyam.API/appsettings.json
 backend/Aarogyam.API/appsettings.*.json
 
+# uploaded reports, generated prescription PDFs, generated QR codes
+backend/Aarogyam.API/Storage/
+
 # ===== Logs =====
 *.log
 logs/

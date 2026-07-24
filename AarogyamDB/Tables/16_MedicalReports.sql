@@ -3,7 +3,7 @@ CREATE TABLE dbo.MedicalReports (
     VisitId INT NULL REFERENCES dbo.Visits(VisitId),
     DiagnosisId INT NULL REFERENCES dbo.Diagnoses(DiagnosisId),
     PatientId INT NOT NULL REFERENCES dbo.Patients(PatientId) ON DELETE CASCADE,
-    DoctorId INT NOT NULL REFERENCES dbo.Doctors(DoctorId),
+    DoctorId INT NULL REFERENCES dbo.Doctors(DoctorId), -- NULL when the patient uploads their own report (no doctor involved)
     UploadedByUserId INT NOT NULL REFERENCES dbo.Users(UserId),
     Title NVARCHAR(200) NOT NULL,
     ReportType NVARCHAR(50) NOT NULL,
@@ -13,3 +13,4 @@ CREATE TABLE dbo.MedicalReports (
     CreatedAt DATETIME2 NOT NULL DEFAULT (SYSUTCDATETIME()),
     UpdatedAt DATETIME2 NULL
 );
+select * from dbo.MedicalReports;

@@ -11,26 +11,26 @@ BEGIN
         IF @Action = 'INSERT'
         BEGIN
             INSERT INTO dbo.Visits (PatientId, DoctorId, VisitDate, Notes) VALUES (@PatientId, @DoctorId, @VisitDate, @Notes);
-            SELECT 1 AS Success, 'Created.' AS Message, SCOPE_IDENTITY() AS VisitId;
+            SELECT 1 AS Success, 'Created.' AS Message, CAST(SCOPE_IDENTITY() AS INT) AS VisitId;
         END
         ELSE IF @Action = 'UPDATE'
         BEGIN
             UPDATE dbo.Visits
             SET PatientId = @PatientId, DoctorId = @DoctorId, VisitDate = @VisitDate, Notes = @Notes, UpdatedAt = SYSUTCDATETIME()
             WHERE VisitId = @VisitId;
-            SELECT 1 AS Success, 'Updated.' AS Message;
+            SELECT 1 AS Success, 'Updated.' AS Message, NULL AS VisitId;
         END
         ELSE IF @Action = 'DELETE'
         BEGIN
             DELETE FROM dbo.Visits WHERE VisitId = @VisitId;
-            SELECT 1 AS Success, 'Deleted.' AS Message;
+            SELECT 1 AS Success, 'Deleted.' AS Message, NULL AS VisitId;
         END
         ELSE
         BEGIN
-            SELECT 0 AS Success, 'Invalid action.' AS Message;
+            SELECT 0 AS Success, 'Invalid action.' AS Message, NULL AS VisitId;
         END
     END TRY
     BEGIN CATCH
-        SELECT 0 AS Success, ERROR_MESSAGE() AS Message;
+        SELECT 0 AS Success, ERROR_MESSAGE() AS Message, NULL AS VisitId;
     END CATCH
 END

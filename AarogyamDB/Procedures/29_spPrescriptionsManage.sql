@@ -13,7 +13,7 @@ BEGIN
         BEGIN
             INSERT INTO dbo.Prescriptions (VisitId, DiagnosisId, PrescriptionText, PdfPath, PrescriptionDate)
             VALUES (@VisitId, @DiagnosisId, @PrescriptionText, @PdfPath, @PrescriptionDate);
-            SELECT 1 AS Success, 'Created.' AS Message, SCOPE_IDENTITY() AS PrescriptionId;
+            SELECT 1 AS Success, 'Created.' AS Message, CAST(SCOPE_IDENTITY() AS INT) AS PrescriptionId;
         END
         ELSE IF @Action = 'UPDATE'
         BEGIN
@@ -21,19 +21,19 @@ BEGIN
             SET VisitId = @VisitId, DiagnosisId = @DiagnosisId, PrescriptionText = @PrescriptionText,
                 PdfPath = @PdfPath, PrescriptionDate = @PrescriptionDate, UpdatedAt = SYSUTCDATETIME()
             WHERE PrescriptionId = @PrescriptionId;
-            SELECT 1 AS Success, 'Updated.' AS Message;
+            SELECT 1 AS Success, 'Updated.' AS Message, NULL AS PrescriptionId;
         END
         ELSE IF @Action = 'DELETE'
         BEGIN
             DELETE FROM dbo.Prescriptions WHERE PrescriptionId = @PrescriptionId;
-            SELECT 1 AS Success, 'Deleted.' AS Message;
+            SELECT 1 AS Success, 'Deleted.' AS Message, NULL AS PrescriptionId;
         END
         ELSE
         BEGIN
-            SELECT 0 AS Success, 'Invalid action.' AS Message;
+            SELECT 0 AS Success, 'Invalid action.' AS Message, NULL AS PrescriptionId;
         END
     END TRY
     BEGIN CATCH
-        SELECT 0 AS Success, ERROR_MESSAGE() AS Message;
+        SELECT 0 AS Success, ERROR_MESSAGE() AS Message, NULL AS PrescriptionId;
     END CATCH
 END

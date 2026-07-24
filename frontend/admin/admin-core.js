@@ -81,14 +81,32 @@
     }
 
     if (!response.ok) {
-      var message = (data && (data.message || data.Message)) || "Request failed (" + response.status + ")";
-      var err = new Error(message);
+      var err = new Error(extractErrorMessage(data, response.status));
       err.status = response.status;
       err.data = data;
       throw err;
     }
 
     return data;
+  }
+
+  // ASP.NET Core's automatic [Required]/[MaxLength] validation returns
+  // { title, errors: { Field: ["..."] } } instead of our own { success, message }
+  // shape - without this, every validation failure showed a bare "Request failed (400)".
+  function extractErrorMessage(data, status) {
+    if (data) {
+      if (data.message) return data.message;
+      if (data.Message) return data.Message;
+      if (data.errors) {
+        var fieldNames = Object.keys(data.errors);
+        if (fieldNames.length) {
+          var firstMessages = data.errors[fieldNames[0]];
+          if (firstMessages && firstMessages.length) return firstMessages[0];
+        }
+      }
+      if (data.title) return data.title;
+    }
+    return "Request failed (" + status + ")";
   }
 
   function qs(params) {

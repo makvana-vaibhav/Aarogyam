@@ -18,6 +18,10 @@ services:
       Jwt__ExpiryMinutes: 60
       Swagger__Username: ${SWAGGER_USERNAME}
       Swagger__Password: ${SWAGGER_PASSWORD}
+    volumes:
+      # Uploaded medical reports, generated prescription PDFs and QR codes -
+      # without this, every redeploy (new container) wipes them.
+      - api-storage:/app/Storage
     networks:
       - aarogyam-net
       - sqlserver-net
@@ -49,3 +53,6 @@ networks:
   sqlserver-net:
     external: true
     name: ${SQLSERVER_NETWORK_NAME}
+
+volumes:
+  api-storage:

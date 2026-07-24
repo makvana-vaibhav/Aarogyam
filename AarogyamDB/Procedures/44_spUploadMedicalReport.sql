@@ -1,6 +1,6 @@
 CREATE OR ALTER PROCEDURE dbo.spUploadMedicalReport
     @PatientId INT,
-    @DoctorId INT,
+    @DoctorId INT = NULL, -- NULL when the patient uploads their own report
     @UploadedByUserId INT,
     @Title NVARCHAR(200),
     @ReportType NVARCHAR(50),
@@ -22,7 +22,7 @@ BEGIN
         VALUES (@VisitId, @DiagnosisId, @PatientId, @DoctorId, @UploadedByUserId,
             @Title, @ReportType, @FilePath, @FileSize, @ReportDate);
 
-        DECLARE @NewReportId INT = SCOPE_IDENTITY();
+        DECLARE @NewReportId INT = CAST(SCOPE_IDENTITY() AS INT);
 
         IF @UploadedByUserId <> @PatientUserId
         BEGIN
@@ -36,6 +36,6 @@ BEGIN
     END TRY
     BEGIN CATCH
         IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
-        SELECT 0 AS Success, ERROR_MESSAGE() AS Message;
+        SELECT 0 AS Success, ERROR_MESSAGE() AS Message, NULL AS ReportId;
     END CATCH
 END

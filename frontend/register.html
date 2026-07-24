@@ -139,20 +139,17 @@
           </div>
           <div class="form-row-2col">
             <div class="form-row">
-              <label for="p-country">Country ID</label>
-              <input id="p-country" type="number" value="1" min="1" required>
-              <span class="hint">Seed data: 1 = India.</span>
+              <label for="p-country">Country</label>
+              <select id="p-country" required><option value="">Loading…</option></select>
             </div>
             <div class="form-row">
-              <label for="p-state">State ID</label>
-              <input id="p-state" type="number" value="1" min="1" required>
-              <span class="hint">Seed data: 1 = Gujarat.</span>
+              <label for="p-state">State</label>
+              <select id="p-state" required disabled><option value="">Select country first</option></select>
             </div>
           </div>
           <div class="form-row">
-            <label for="p-city">City ID</label>
-            <input id="p-city" type="number" value="1" min="1" required>
-            <span class="hint">Seed data: 1 = Rajkot.</span>
+            <label for="p-city">City</label>
+            <select id="p-city" required disabled><option value="">Select state first</option></select>
           </div>
           <button id="patientSubmit" class="btn btn-solid btn-block" type="submit">Create patient account</button>
         </form>
@@ -194,18 +191,17 @@
           </div>
           <div class="form-row-2col">
             <div class="form-row">
-              <label for="d-hospital">Hospital ID</label>
-              <input id="d-hospital" type="number" min="1" required>
+              <label for="d-hospital">Hospital</label>
+              <select id="d-hospital" required><option value="">Loading…</option></select>
             </div>
             <div class="form-row">
-              <label for="d-degree">Degree ID</label>
-              <input id="d-degree" type="number" min="1" required>
+              <label for="d-degree">Degree</label>
+              <select id="d-degree" required><option value="">Loading…</option></select>
             </div>
           </div>
           <div class="form-row">
-            <label for="d-specialization">Specialization ID</label>
-            <input id="d-specialization" type="number" min="1" required>
-            <span class="hint">Hospital, degree and specialization must already exist in the master tables — ask an admin for the IDs if registration fails.</span>
+            <label for="d-specialization">Specialization</label>
+            <select id="d-specialization" required><option value="">Loading…</option></select>
           </div>
           <div class="form-row-2col">
             <div class="form-row">
@@ -223,20 +219,17 @@
           </div>
           <div class="form-row-2col">
             <div class="form-row">
-              <label for="d-country">Country ID</label>
-              <input id="d-country" type="number" value="1" min="1" required>
-              <span class="hint">Seed data: 1 = India.</span>
+              <label for="d-country">Country</label>
+              <select id="d-country" required><option value="">Loading…</option></select>
             </div>
             <div class="form-row">
-              <label for="d-state">State ID</label>
-              <input id="d-state" type="number" value="1" min="1" required>
-              <span class="hint">Seed data: 1 = Gujarat.</span>
+              <label for="d-state">State</label>
+              <select id="d-state" required disabled><option value="">Select country first</option></select>
             </div>
           </div>
           <div class="form-row">
-            <label for="d-city">City ID</label>
-            <input id="d-city" type="number" value="1" min="1" required>
-            <span class="hint">Seed data: 1 = Rajkot.</span>
+            <label for="d-city">City</label>
+            <select id="d-city" required disabled><option value="">Select state first</option></select>
           </div>
           <p class="form-note">Doctor accounts also need admin approval after email verification before login succeeds.</p>
           <button id="doctorSubmit" class="btn btn-solid btn-block" type="submit">Create doctor account</button>
@@ -264,7 +257,7 @@
     "use strict";
 
     if (AarogyamAuth.isLoggedIn()) {
-      window.location.href = "dashboard.html";
+      window.location.href = AarogyamAuth.getDashboardHref();
       return;
     }
 
@@ -272,6 +265,100 @@
     var patientForm = document.getElementById("patientForm");
     var doctorForm = document.getElementById("doctorForm");
     var alertBox = document.getElementById("registerAlert");
+
+    function populateSelect(selectEl, items, valueField, labelField, placeholder) {
+      selectEl.innerHTML = "";
+      var placeholderOpt = document.createElement("option");
+      placeholderOpt.value = "";
+      placeholderOpt.textContent = placeholder;
+      selectEl.appendChild(placeholderOpt);
+      items.forEach(function (item) {
+        var opt = document.createElement("option");
+        opt.value = item[valueField];
+        opt.textContent = item[labelField];
+        selectEl.appendChild(opt);
+      });
+    }
+
+    function setupLocationCascade(countrySelect, stateSelect, citySelect) {
+      AarogyamAuth.countries().then(function (countries) {
+        populateSelect(countrySelect, countries, "countryId", "countryName", "Select country");
+      }).catch(function () {
+        countrySelect.innerHTML = '<option value="">Failed to load — refresh the page</option>';
+      });
+
+      countrySelect.addEventListener("change", function () {
+        var countryId = countrySelect.value;
+        citySelect.innerHTML = '<option value="">Select state first</option>';
+        citySelect.disabled = true;
+
+        if (!countryId) {
+          stateSelect.innerHTML = '<option value="">Select country first</option>';
+          stateSelect.disabled = true;
+          return;
+        }
+
+        stateSelect.innerHTML = '<option value="">Loading…</option>';
+        stateSelect.disabled = true;
+        AarogyamAuth.states(countryId).then(function (states) {
+          populateSelect(stateSelect, states, "stateId", "stateName", "Select state");
+          stateSelect.disabled = false;
+        }).catch(function () {
+          stateSelect.innerHTML = '<option value="">Failed to load</option>';
+        });
+      });
+
+      stateSelect.addEventListener("change", function () {
+        var stateId = stateSelect.value;
+        if (!stateId) {
+          citySelect.innerHTML = '<option value="">Select state first</option>';
+          citySelect.disabled = true;
+          return;
+        }
+
+        citySelect.innerHTML = '<option value="">Loading…</option>';
+        citySelect.disabled = true;
+        AarogyamAuth.cities(stateId).then(function (cities) {
+          populateSelect(citySelect, cities, "cityId", "cityName", "Select city");
+          citySelect.disabled = false;
+        }).catch(function () {
+          citySelect.innerHTML = '<option value="">Failed to load</option>';
+        });
+      });
+    }
+
+    setupLocationCascade(
+      document.getElementById("p-country"),
+      document.getElementById("p-state"),
+      document.getElementById("p-city")
+    );
+    setupLocationCascade(
+      document.getElementById("d-country"),
+      document.getElementById("d-state"),
+      document.getElementById("d-city")
+    );
+
+    var hospitalSelect = document.getElementById("d-hospital");
+    var degreeSelect = document.getElementById("d-degree");
+    var specializationSelect = document.getElementById("d-specialization");
+
+    AarogyamAuth.hospitals().then(function (rows) {
+      populateSelect(hospitalSelect, rows, "hospitalId", "hospitalName", "Select hospital");
+    }).catch(function () {
+      hospitalSelect.innerHTML = '<option value="">Failed to load — refresh the page</option>';
+    });
+
+    AarogyamAuth.degrees().then(function (rows) {
+      populateSelect(degreeSelect, rows, "degreeId", "degreeName", "Select degree");
+    }).catch(function () {
+      degreeSelect.innerHTML = '<option value="">Failed to load — refresh the page</option>';
+    });
+
+    AarogyamAuth.specializations().then(function (rows) {
+      populateSelect(specializationSelect, rows, "specializationId", "specializationName", "Select specialization");
+    }).catch(function () {
+      specializationSelect.innerHTML = '<option value="">Failed to load — refresh the page</option>';
+    });
 
     tabs.forEach(function (tab) {
       tab.addEventListener("click", function () {

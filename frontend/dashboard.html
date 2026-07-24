@@ -105,6 +105,16 @@
     var user = AarogyamAuth.requireAuth();
     if (!user) return;
 
+    if (String(user.roleName || "").toLowerCase() === "patient") {
+      window.location.replace("patient/overview.html");
+      return;
+    }
+
+    if (String(user.roleName || "").toLowerCase() === "doctor") {
+      window.location.replace("doctor/overview.html");
+      return;
+    }
+
     document.getElementById("dvEmail").textContent = user.email || "—";
     document.getElementById("dvRole").textContent = user.roleName || "—";
     document.getElementById("dvUserId").textContent = user.userId != null ? user.userId : "—";
