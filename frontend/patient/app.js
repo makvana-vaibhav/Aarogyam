@@ -165,53 +165,109 @@
   }
 
   function logout() {
+    if (!window.confirm("Log out of Aarogyam?")) return;
     clearSession();
     window.location.href = "../login.html";
   }
 
-  function initShell(user) {
-    var emailEl = document.getElementById("patientEmail");
-    if (emailEl) emailEl.textContent = user.email || "Patient";
+  function renderNotifPopoverList(rows) {
+    var mount = document.getElementById("notifPopoverList");
+    if (!mount) return;
+    var list = rows.slice(0, 6);
+    if (!list.length) {
+      mount.innerHTML = '<div class="empty-state">You are all caught up.</div>';
+      return;
+    }
+    mount.innerHTML = list.map(function (item) {
+      return '<article class="list-item' + (item.isRead ? "" : " unread") + '">' +
+        '<div class="list-item-main">' +
+          '<div class="row-title">' + escapeHtml(item.title) + '</div>' +
+          '<div class="row-sub pre-wrap">' + escapeHtml(item.message) + '</div>' +
+          '<div class="list-meta">' + escapeHtml(formatRelativeTime(item.createdAt)) + '</div>' +
+        '</div>' +
+        (!item.isRead ? '<button class="btn btn-ghost btn-sm" type="button" data-read-notification="' + item.notificationId + '">Mark read</button>' : '') +
+      '</article>';
+    }).join("");
+  }
 
+  async function refreshNotifDot() {
+    var dot = document.getElementById("notifDot");
+    if (!dot) return;
+    try {
+      var unread = await PatientAPI.notifications(true);
+      dot.hidden = !unread.length;
+    } catch (e) {
+      dot.hidden = true;
+    }
+  }
+
+  async function loadNotifPopover() {
+    var mount = document.getElementById("notifPopoverList");
+    if (!mount) return;
+    mount.innerHTML = '<div class="table-loading">Loading…</div>';
+    try {
+      var rows = await PatientAPI.notifications();
+      renderNotifPopoverList(rows);
+    } catch (err) {
+      mount.innerHTML = '<div class="form-alert error">' + escapeHtml(err.message) + '</div>';
+    }
+  }
+
+  function initShell(user) {
     var logoutBtn = document.getElementById("logoutBtn");
     if (logoutBtn) logoutBtn.addEventListener("click", logout);
 
-    var sidebarToggle = document.getElementById("sidebarToggle");
-    var sidebar = document.querySelector(".admin-sidebar");
-    var scrim = document.getElementById("sidebarScrim");
-
-    function closeSidebar() {
-      document.body.classList.remove("sidebar-open");
-    }
-
-    if (sidebarToggle) {
-      sidebarToggle.addEventListener("click", function () {
-        document.body.classList.toggle("sidebar-open");
-      });
-    }
-    if (scrim) scrim.addEventListener("click", closeSidebar);
-    if (sidebar) {
-      sidebar.querySelectorAll("a").forEach(function (link) {
-        link.addEventListener("click", closeSidebar);
+    // mobile nav toggle
+    var mobileToggle = document.getElementById("mobileNavToggle");
+    if (mobileToggle) {
+      mobileToggle.addEventListener("click", function () {
+        document.body.classList.toggle("pt-nav-open");
       });
     }
 
-    var themeToggle = document.getElementById("themeToggle");
-    if (themeToggle) {
-      themeToggle.addEventListener("click", function () {
-        var current = document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
-        var next = current === "dark" ? "light" : "dark";
-        document.documentElement.setAttribute("data-theme", next);
-        try { localStorage.setItem("aarogyam-theme", next); } catch (e) {}
+    // popovers (avatar menu + notification bell) — only one open at a time
+    function closeAllPopovers() {
+      document.querySelectorAll(".pt-popover").forEach(function (p) { p.hidden = true; });
+    }
+    function setupPopover(btnId, popoverId, onOpen) {
+      var btn = document.getElementById(btnId);
+      var pop = document.getElementById(popoverId);
+      if (!btn || !pop) return;
+      btn.addEventListener("click", function (event) {
+        event.stopPropagation();
+        var willOpen = pop.hidden;
+        closeAllPopovers();
+        if (willOpen) {
+          pop.hidden = false;
+          if (onOpen) onOpen();
+        }
+      });
+      pop.addEventListener("click", function (event) { event.stopPropagation(); });
+    }
+    document.addEventListener("click", closeAllPopovers);
+
+    setupPopover("avatarBtn", "avatarPopover");
+    setupPopover("notifBellBtn", "notifPopover", loadNotifPopover);
+
+    var notifPopoverList = document.getElementById("notifPopoverList");
+    if (notifPopoverList) {
+      notifPopoverList.addEventListener("click", async function (event) {
+        var id = event.target.getAttribute("data-read-notification");
+        if (!id) return;
+        try {
+          await PatientAPI.markNotificationRead(id);
+          await loadNotifPopover();
+          refreshNotifDot();
+        } catch (e) {}
       });
     }
 
-    var currentPage = window.location.pathname.split("/").pop() || "index.html";
-    document.querySelectorAll(".admin-nav a").forEach(function (link) {
+    refreshNotifDot();
+
+    var currentPage = window.location.pathname.split("/").pop() || "overview.html";
+    document.querySelectorAll(".pt-links a, .pt-mobile-links a").forEach(function (link) {
       var href = (link.getAttribute("href") || "").split("?")[0];
-      if (href === currentPage) {
-        link.classList.add("active");
-      }
+      if (href === currentPage) link.classList.add("active");
     });
   }
 

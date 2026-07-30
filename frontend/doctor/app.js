@@ -162,6 +162,7 @@
   }
 
   function logout() {
+    if (!window.confirm("Log out of Aarogyam?")) return;
     clearSession();
     window.location.href = "../login.html";
   }
@@ -181,16 +182,6 @@
     document.querySelectorAll(".admin-sidebar a").forEach(function (link) {
       link.addEventListener("click", closeSidebar);
     });
-
-    var themeToggle = document.getElementById("themeToggle");
-    if (themeToggle) {
-      themeToggle.addEventListener("click", function () {
-        var current = document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
-        var next = current === "dark" ? "light" : "dark";
-        document.documentElement.setAttribute("data-theme", next);
-        try { localStorage.setItem("aarogyam-theme", next); } catch (e) {}
-      });
-    }
 
     var currentPage = window.location.pathname.split("/").pop() || "overview.html";
     document.querySelectorAll(".admin-nav a").forEach(function (link) {

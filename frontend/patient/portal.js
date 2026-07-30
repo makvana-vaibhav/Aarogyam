@@ -13,7 +13,6 @@
     diagnoses: [],
     reports: [],
     prescriptions: [],
-    notifications: [],
     currentPrescriptionId: null,
     selectedReportFile: null,
     qrUrl: null
@@ -49,20 +48,12 @@
     '</div>';
   }
 
-  async function refreshUnreadBadge() {
-    var badge = $("navNotificationCount");
-    if (!badge) return;
-    try {
-      var unread = await PatientAPI.notifications(true);
-      if (unread.length) {
-        badge.textContent = unread.length;
-        badge.hidden = false;
-      } else {
-        badge.hidden = true;
-      }
-    } catch (err) {
-      badge.hidden = true;
-    }
+  function wireModalCloseButtons() {
+    document.querySelectorAll("[data-close-modal]").forEach(function (button) {
+      button.addEventListener("click", function () {
+        setModalOpen($(button.getAttribute("data-close-modal")), false);
+      });
+    });
   }
 
   async function loadQrImage() {
@@ -97,18 +88,10 @@
       '<div class="cap">Patient</div>' +
       '<div class="card-title">' + esc(joinName(profile)) + '</div>' +
       '<div class="card-sub">Aarogyam ID ' + esc(profile.aarogyamId) + '</div>' +
-      '<div class="cap">Blood group</div>' +
+      '<div class="cap card-cap-spaced">Blood group</div>' +
       '<div>' + esc(profile.bloodGroup || "Not set") + '</div>' +
       '<div class="cap card-cap-spaced">Emergency contact</div>' +
       '<div>' + esc(profile.emergencyContact || "Not added") + '</div>';
-  }
-
-  function wireModalCloseButtons() {
-    document.querySelectorAll("[data-close-modal]").forEach(function (button) {
-      button.addEventListener("click", function () {
-        setModalOpen($(button.getAttribute("data-close-modal")), false);
-      });
-    });
   }
 
   function renderOverviewStats(stats) {
@@ -116,10 +99,9 @@
     if (!statGrid) return;
     var cards = [
       { label: "Total visits", value: stats.totalVisits, note: stats.lastVisitDate ? "Last visit " + PatientUtil.formatDate(stats.lastVisitDate) : "No visits yet" },
-      { label: "Diagnoses", value: stats.totalDiagnoses, note: "Across your full medical history" },
       { label: "Prescriptions", value: stats.totalPrescriptions, note: "Issued during consultations" },
       { label: "Reports", value: stats.totalReports, note: stats.reportsThisMonth + " added this month" },
-      { label: "Unread alerts", value: stats.unreadNotifications, note: "Notifications waiting for review", warn: stats.unreadNotifications > 0 }
+      { label: "Unread alerts", value: stats.unreadNotifications, note: "Waiting for your review", warn: stats.unreadNotifications > 0 }
     ];
     statGrid.innerHTML = cards.map(function (card) {
       return '<div class="stat-card' + (card.warn ? " warn" : "") + '">' +
@@ -130,20 +112,44 @@
     }).join("");
   }
 
+  function renderVisitsChart(visits) {
+    var mount = $("visitsChart");
+    if (!mount) return;
+    var now = new Date();
+    var buckets = [];
+    for (var i = 5; i >= 0; i--) {
+      var d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      buckets.push({ year: d.getFullYear(), month: d.getMonth(), label: d.toLocaleDateString(undefined, { month: "short" }), count: 0 });
+    }
+    visits.forEach(function (visit) {
+      var d = new Date(visit.visitDate);
+      if (isNaN(d.getTime())) return;
+      for (var b = 0; b < buckets.length; b++) {
+        if (buckets[b].year === d.getFullYear() && buckets[b].month === d.getMonth()) { buckets[b].count++; break; }
+      }
+    });
+    var max = Math.max.apply(null, buckets.map(function (b) { return b.count; })) || 1;
+    mount.innerHTML = buckets.map(function (b) {
+      var heightPct = b.count ? Math.max(Math.round((b.count / max) * 100), 8) : 2;
+      return '<div class="mini-chart-col">' +
+        '<div class="mini-chart-bar" style="height:' + heightPct + '%" title="' + b.count + ' visit' + (b.count === 1 ? "" : "s") + '"></div>' +
+        '<div class="mini-chart-label">' + esc(b.label) + '</div>' +
+      '</div>';
+    }).join("");
+  }
+
   function renderTimeline(visits, diagnoses, limit, mountId) {
     var mount = $(mountId);
     if (!mount) return;
-    if (!visits.length && !diagnoses.length) {
-      mount.innerHTML = '<div class="empty-state">No visits or diagnoses have been added yet.</div>';
+    if (!visits.length) {
+      mount.innerHTML = '<div class="empty-state">No visits recorded yet.</div>';
       return;
     }
-
     var diagnosisByVisitId = {};
     diagnoses.forEach(function (diagnosis) {
       if (!diagnosisByVisitId[diagnosis.visitId]) diagnosisByVisitId[diagnosis.visitId] = [];
       diagnosisByVisitId[diagnosis.visitId].push(diagnosis);
     });
-
     mount.innerHTML = visits.slice(0, limit || visits.length).map(function (visit) {
       var visitDiagnoses = diagnosisByVisitId[visit.visitId] || [];
       var tags = visitDiagnoses.map(function (item) {
@@ -151,11 +157,72 @@
       }).join("");
       return '<div class="timeline-item">' +
         '<div class="timeline-head">' +
-          '<b>Visit #' + esc(visit.visitId) + '</b>' +
-          '<span class="timeline-date">' + esc(PatientUtil.formatDate(visit.visitDate)) + '</span>' +
+          '<b>' + esc(PatientUtil.formatDate(visit.visitDate)) + '</b>' +
         '</div>' +
-        '<div class="timeline-body">' + esc(visit.notes || "Consultation notes were not added for this visit.") + '</div>' +
+        '<div class="timeline-body">' + esc((visit.notes || "Consultation notes were not added for this visit.").slice(0, 160)) + '</div>' +
         (tags ? '<div class="timeline-tags">' + tags + '</div>' : "") +
+      '</div>';
+    }).join("");
+  }
+
+  function assignVisitNumbers(visits) {
+    var sorted = visits.slice().sort(function (a, b) { return new Date(a.visitDate) - new Date(b.visitDate); });
+    var numberByVisitId = {};
+    sorted.forEach(function (visit, index) { numberByVisitId[visit.visitId] = index + 1; });
+    return numberByVisitId;
+  }
+
+  function renderHistoryList(visits, diagnoses, prescriptions, mountId) {
+    var mount = $(mountId);
+    if (!mount) return;
+    if (!visits.length) {
+      mount.innerHTML = '<div class="empty-state">No visits recorded yet.</div>';
+      return;
+    }
+
+    var numberByVisitId = assignVisitNumbers(state.visits);
+    var diagnosisByVisit = {};
+    diagnoses.forEach(function (d) { (diagnosisByVisit[d.visitId] = diagnosisByVisit[d.visitId] || []).push(d); });
+    var prescriptionByVisit = {};
+    prescriptions.forEach(function (p) { (prescriptionByVisit[p.visitId] = prescriptionByVisit[p.visitId] || []).push(p); });
+
+    var displayVisits = visits.slice().sort(function (a, b) { return new Date(b.visitDate) - new Date(a.visitDate); });
+
+    mount.innerHTML = displayVisits.map(function (visit) {
+      var vDiagnoses = diagnosisByVisit[visit.visitId] || [];
+      var vPrescriptions = prescriptionByVisit[visit.visitId] || [];
+      var tags = vDiagnoses.map(function (d) { return '<span class="badge ok">' + esc(d.diagnosisTitle) + '</span>'; }).join("");
+      var title = vDiagnoses.length ? vDiagnoses.map(function (d) { return d.diagnosisTitle; }).join(", ") : "Consultation";
+
+      var diagnosisBlock = vDiagnoses.length
+        ? '<div class="visit-sub-block"><div class="visit-sub-label">Diagnoses</div>' + vDiagnoses.map(function (d) {
+            return '<div class="timeline-body-card"><b>' + esc(d.diagnosisTitle) + '</b><div class="row-sub">' + esc(d.description || "No description added.") + '</div></div>';
+          }).join("") + '</div>'
+        : '';
+
+      var prescriptionBlock = vPrescriptions.length
+        ? '<div class="visit-sub-block"><div class="visit-sub-label">Prescriptions</div><div class="stack-list">' + vPrescriptions.map(function (p) {
+            return '<article class="list-item clickable" data-view-prescription="' + p.prescriptionId + '">' +
+              '<div class="list-item-main"><div class="row-title">' + esc(PatientUtil.formatDate(p.prescriptionDate)) + '</div><div class="row-sub">' + esc((p.prescriptionText || "").slice(0, 140)) + '</div></div>' +
+              '<button class="btn btn-ghost btn-sm" type="button" data-download-prescription="' + p.prescriptionId + '">Download</button>' +
+            '</article>';
+          }).join("") + '</div></div>'
+        : '';
+
+      return '<div class="visit-card">' +
+        '<div class="visit-card-head" data-toggle-visit="' + visit.visitId + '">' +
+          '<div class="visit-card-num">' + numberByVisitId[visit.visitId] + '</div>' +
+          '<div class="visit-card-main">' +
+            '<div class="visit-card-date">' + esc(PatientUtil.formatDate(visit.visitDate)) + '</div>' +
+            '<div class="visit-card-title">' + esc(title) + '</div>' +
+            (tags ? '<div class="visit-card-tags">' + tags + '</div>' : '') +
+          '</div>' +
+          '<svg class="visit-card-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 9l6 6 6-6"/></svg>' +
+        '</div>' +
+        '<div class="visit-card-body">' +
+          '<div class="visit-sub-block"><div class="visit-sub-label">Notes</div><div class="row-sub">' + esc(visit.notes || "No notes added.") + '</div></div>' +
+          diagnosisBlock + prescriptionBlock +
+        '</div>' +
       '</div>';
     }).join("");
   }
@@ -179,46 +246,6 @@
           '<button class="btn btn-danger btn-sm" type="button" data-delete-report="' + report.reportId + '">Delete</button>' +
         '</td>' +
       '</tr>';
-    }).join("");
-  }
-
-  function renderPrescriptionsTable(rows, mountId) {
-    var mount = $(mountId);
-    if (!mount) return;
-    if (!rows.length) {
-      mount.innerHTML = '<tr><td colspan="4" class="table-empty">No prescriptions available yet.</td></tr>';
-      return;
-    }
-    mount.innerHTML = rows.map(function (prescription) {
-      return '<tr>' +
-        '<td><div class="row-title">Prescription #' + esc(prescription.prescriptionId) + '</div><div class="row-sub">' + esc((prescription.prescriptionText || "").slice(0, 110) || "Prescription note") + '</div></td>' +
-        '<td>' + esc(PatientUtil.formatDate(prescription.prescriptionDate)) + '</td>' +
-        '<td>#' + esc(prescription.visitId) + '</td>' +
-        '<td class="actions">' +
-          '<button class="btn btn-ghost btn-sm" type="button" data-view-prescription="' + prescription.prescriptionId + '">View</button>' +
-          '<button class="btn btn-solid btn-sm" type="button" data-download-prescription="' + prescription.prescriptionId + '">Download</button>' +
-        '</td>' +
-      '</tr>';
-    }).join("");
-  }
-
-  function renderNotificationsList(rows, mountId, limit) {
-    var mount = $(mountId);
-    if (!mount) return;
-    var list = limit ? rows.slice(0, limit) : rows;
-    if (!list.length) {
-      mount.innerHTML = '<div class="empty-state">You are all caught up.</div>';
-      return;
-    }
-    mount.innerHTML = list.map(function (item) {
-      return '<article class="list-item' + (item.isRead ? "" : " unread") + '">' +
-        '<div class="list-item-main">' +
-          '<div class="row-title">' + esc(item.title) + '</div>' +
-          '<div class="row-sub pre-wrap">' + esc(item.message) + '</div>' +
-          '<div class="list-meta">' + esc(PatientUtil.formatRelativeTime(item.createdAt)) + '</div>' +
-        '</div>' +
-        (!item.isRead ? '<button class="btn btn-ghost btn-sm" type="button" data-read-notification="' + item.notificationId + '">Mark read</button>' : '') +
-      '</article>';
     }).join("");
   }
 
@@ -252,9 +279,7 @@
         '<div class="detail-grid">' +
           detailCell("Doctor", detail.doctorName) +
           detailCell("Date", PatientUtil.formatDate(detail.prescriptionDate)) +
-          detailCell("Visit", "#" + detail.visitId) +
           detailCell("Diagnosis", detail.diagnosisTitle || "Not linked") +
-          detailCell("Patient", detail.patientName, true) +
           detailCell("Prescription", detail.prescriptionText || "No prescription text.", true) +
         '</div>';
     } catch (err) {
@@ -265,21 +290,18 @@
   async function initOverview() {
     ui = {
       statGrid: $("statGrid"),
-      timelineList: $("timelineList"),
-      notificationList: $("notificationList")
+      timelineList: $("timelineList")
     };
     try {
       var responses = await Promise.all([
         PatientAPI.dashboard(),
         PatientAPI.profile(),
         PatientAPI.visits(),
-        PatientAPI.diagnoses(),
-        PatientAPI.notifications()
+        PatientAPI.diagnoses()
       ]);
       state.profile = responses[1];
       state.visits = responses[2] || [];
       state.diagnoses = responses[3] || [];
-      state.notifications = responses[4] || [];
 
       renderOverviewStats(responses[0]);
       renderProfileBadge(state.profile);
@@ -290,17 +312,13 @@
       $("profileDetails").innerHTML = [
         detailCell("Blood group", state.profile.bloodGroup || "Not set"),
         detailCell("Emergency contact", state.profile.emergencyContact || "Not added"),
-        detailCell("Address", state.profile.address || "Not added", true),
         detailCell("Member since", PatientUtil.formatDate(state.profile.createdAt))
       ].join("");
-      renderTimeline(state.visits, state.diagnoses, 5, "timelineList");
-      renderNotificationsList(state.notifications, "notificationList", 4);
-      renderHealthCardBlock(state.profile, "healthCardInfo");
-      loadQrImage();
+      renderVisitsChart(state.visits);
+      renderTimeline(state.visits, state.diagnoses, 3, "timelineList");
     } catch (err) {
       ui.statGrid.innerHTML = '<div class="form-alert error">' + esc(err.message) + '</div>';
       ui.timelineList.innerHTML = '<div class="empty-state">' + esc(err.message) + '</div>';
-      ui.notificationList.innerHTML = '<div class="empty-state">' + esc(err.message) + '</div>';
     }
   }
 
@@ -308,12 +326,24 @@
     ui = {
       profileAlert: $("profileAlert"),
       passwordAlert: $("passwordAlert"),
+      profileView: $("profileView"),
       profileForm: $("profileForm"),
       passwordForm: $("passwordForm"),
       countryId: $("countryId"),
       stateId: $("stateId"),
       cityId: $("cityId")
     };
+
+    function showView() {
+      ui.profileView.hidden = false;
+      ui.profileForm.hidden = true;
+      $("editProfileBtn").hidden = false;
+    }
+    function showEdit() {
+      ui.profileView.hidden = true;
+      ui.profileForm.hidden = false;
+      $("editProfileBtn").hidden = true;
+    }
 
     try {
       var responses = await Promise.all([
@@ -322,13 +352,27 @@
       ]);
       state.profile = responses[0];
       renderProfileBadge(state.profile);
+      renderProfileView(state.profile);
       populateProfileForm(state.profile, responses[1]);
       await populateStateOptions(state.profile.countryId, state.profile.stateId);
       await populateCityOptions(state.profile.stateId, state.profile.cityId);
+      renderHealthCardBlock(state.profile, "healthCardInfo");
+      loadQrImage();
     } catch (err) {
       ui.profileAlert.textContent = err.message;
       ui.profileAlert.hidden = false;
     }
+
+    $("editProfileBtn").addEventListener("click", showEdit);
+    $("cancelEditBtn").addEventListener("click", async function () {
+      try {
+        var countries = await PatientAPI.countries();
+        populateProfileForm(state.profile, countries);
+        await populateStateOptions(state.profile.countryId, state.profile.stateId);
+        await populateCityOptions(state.profile.stateId, state.profile.cityId);
+      } catch (e) {}
+      showView();
+    });
 
     ui.countryId.addEventListener("change", function () {
       populateStateOptions(ui.countryId.value, null);
@@ -359,6 +403,8 @@
         showToast("Profile updated successfully.");
         state.profile = await PatientAPI.profile();
         renderProfileBadge(state.profile);
+        renderProfileView(state.profile);
+        showView();
       } catch (err) {
         ui.profileAlert.textContent = err.message;
         ui.profileAlert.hidden = false;
@@ -382,8 +428,19 @@
     });
   }
 
-  function populateProfileForm(profile, countries) {
+  function renderProfileView(profile) {
     $("aarogyamIdValue").textContent = profile.aarogyamId;
+    $("profileView").innerHTML = [
+      detailCell("Name", joinName(profile)),
+      detailCell("Date of birth", PatientUtil.formatDate(profile.dateOfBirth)),
+      detailCell("Gender", profile.gender || "Not set"),
+      detailCell("Blood group", profile.bloodGroup || "Not set"),
+      detailCell("Address", profile.address || "Not added", true),
+      detailCell("Emergency contact", profile.emergencyContact || "Not added")
+    ].join("");
+  }
+
+  function populateProfileForm(profile, countries) {
     $("firstName").value = profile.firstName || "";
     $("middleName").value = profile.middleName || "";
     $("lastName").value = profile.lastName || "";
@@ -392,9 +449,11 @@
     $("bloodGroup").value = profile.bloodGroup || "";
     $("address").value = profile.address || "";
     $("emergencyContact").value = profile.emergencyContact || "";
-    $("countryId").innerHTML = '<option value="">Select country</option>' + countries.map(function (item) {
-      return '<option value="' + item.countryId + '"' + (item.countryId === profile.countryId ? " selected" : "") + '>' + esc(item.countryName) + '</option>';
-    }).join("");
+    if (countries) {
+      $("countryId").innerHTML = '<option value="">Select country</option>' + countries.map(function (item) {
+        return '<option value="' + item.countryId + '"' + (item.countryId === profile.countryId ? " selected" : "") + '>' + esc(item.countryName) + '</option>';
+      }).join("");
+    }
   }
 
   async function populateStateOptions(countryId, selectedStateId) {
@@ -420,24 +479,39 @@
   }
 
   async function initHistory() {
+    wireModalCloseButtons();
     try {
       var responses = await Promise.all([
         PatientAPI.profile(),
         PatientAPI.visits(),
         PatientAPI.diagnoses(),
+        PatientAPI.prescriptions(),
         PatientAPI.diagnosisTypes()
       ]);
       state.profile = responses[0];
       state.visits = responses[1] || [];
       state.diagnoses = responses[2] || [];
+      state.prescriptions = responses[3] || [];
       renderProfileBadge(state.profile);
-      renderHistoryPage(state.visits, state.diagnoses, responses[3] || []);
+      renderHistoryPage(state.visits, state.diagnoses, state.prescriptions, responses[4] || []);
     } catch (err) {
-      $("historyTimeline").innerHTML = '<div class="empty-state">' + esc(err.message) + '</div>';
+      $("historyList").innerHTML = '<div class="empty-state">' + esc(err.message) + '</div>';
     }
+
+    $("historyList").addEventListener("click", async function (event) {
+      var downloadBtn = event.target.closest("[data-download-prescription]");
+      if (downloadBtn) { await handlePrescriptionDownload(downloadBtn.getAttribute("data-download-prescription")); return; }
+      var prescriptionCard = event.target.closest("[data-view-prescription]");
+      if (prescriptionCard) { await openPrescription(prescriptionCard.getAttribute("data-view-prescription")); return; }
+      var toggleHead = event.target.closest("[data-toggle-visit]");
+      if (toggleHead) { toggleHead.closest(".visit-card").classList.toggle("open"); }
+    });
+    $("downloadPrescriptionBtn").addEventListener("click", function () {
+      if (state.currentPrescriptionId) handlePrescriptionDownload(state.currentPrescriptionId);
+    });
   }
 
-  function renderHistoryPage(visits, diagnoses, diagnosisTypes) {
+  function renderHistoryPage(visits, diagnoses, prescriptions, diagnosisTypes) {
     var searchInput = $("historySearch");
     var filterSelect = $("historyFilter");
     filterSelect.innerHTML = '<option value="">All diagnosis types</option>' + diagnosisTypes.map(function (item) {
@@ -447,19 +521,38 @@
     function apply() {
       var term = (searchInput.value || "").toLowerCase();
       var typeId = filterSelect.value ? Number(filterSelect.value) : null;
+
       var filteredDiagnoses = diagnoses.filter(function (item) {
         var matchesType = !typeId || item.diagnosisTypeId === typeId;
-        var matchesTerm = !term || item.diagnosisTitle.toLowerCase().indexOf(term) >= 0 || String(item.visitId).indexOf(term) >= 0 || (item.description || "").toLowerCase().indexOf(term) >= 0;
+        var matchesTerm = !term ||
+          item.diagnosisTitle.toLowerCase().indexOf(term) >= 0 ||
+          (item.description || "").toLowerCase().indexOf(term) >= 0;
         return matchesType && matchesTerm;
       });
       var allowedVisitIds = {};
       filteredDiagnoses.forEach(function (item) { allowedVisitIds[item.visitId] = true; });
+
+      var matchingPrescriptionVisitIds = {};
+      if (term) {
+        prescriptions.forEach(function (p) {
+          if ((p.prescriptionText || "").toLowerCase().indexOf(term) >= 0) matchingPrescriptionVisitIds[p.visitId] = true;
+        });
+      }
+
       var filteredVisits = term || typeId
         ? visits.filter(function (visit) {
-            return allowedVisitIds[visit.visitId] || String(visit.visitId).indexOf(term) >= 0 || (visit.notes || "").toLowerCase().indexOf(term) >= 0;
+            return allowedVisitIds[visit.visitId] ||
+              matchingPrescriptionVisitIds[visit.visitId] ||
+              (!typeId && (visit.notes || "").toLowerCase().indexOf(term) >= 0);
           })
         : visits;
-      renderTimeline(filteredVisits, filteredDiagnoses, filteredVisits.length, "historyTimeline");
+
+      var visibleVisitIds = {};
+      filteredVisits.forEach(function (v) { visibleVisitIds[v.visitId] = true; });
+      var visibleDiagnoses = diagnoses.filter(function (d) { return visibleVisitIds[d.visitId]; });
+      var visiblePrescriptions = prescriptions.filter(function (p) { return visibleVisitIds[p.visitId]; });
+
+      renderHistoryList(filteredVisits, visibleDiagnoses, visiblePrescriptions, "historyList");
     }
 
     searchInput.addEventListener("input", apply);
@@ -492,8 +585,9 @@
       state.reports = responses[2] || [];
       renderProfileBadge(state.profile);
       renderReportsTable(state.reports, "reportsBody");
+      var numberByVisitId = assignVisitNumbers(state.visits);
       ui.reportVisitId.innerHTML = '<option value="">None</option>' + state.visits.map(function (visit) {
-        return '<option value="' + visit.visitId + '">Visit #' + visit.visitId + ' • ' + esc(PatientUtil.formatDate(visit.visitDate)) + '</option>';
+        return '<option value="' + visit.visitId + '">Visit ' + numberByVisitId[visit.visitId] + ' • ' + esc(PatientUtil.formatDate(visit.visitDate)) + '</option>';
       }).join("");
     } catch (err) {
       ui.reportsBody.innerHTML = '<tr><td colspan="6" class="table-empty">' + esc(err.message) + '</td></tr>';
@@ -585,85 +679,8 @@
     });
   }
 
-  async function initPrescriptions() {
-    wireModalCloseButtons();
-    try {
-      var responses = await Promise.all([
-        PatientAPI.profile(),
-        PatientAPI.prescriptions()
-      ]);
-      state.profile = responses[0];
-      state.prescriptions = responses[1] || [];
-      renderProfileBadge(state.profile);
-      renderPrescriptionsTable(state.prescriptions, "prescriptionsBody");
-    } catch (err) {
-      $("prescriptionsBody").innerHTML = '<tr><td colspan="4" class="table-empty">' + esc(err.message) + '</td></tr>';
-    }
-
-    $("prescriptionsBody").addEventListener("click", async function (event) {
-      var viewId = event.target.getAttribute("data-view-prescription");
-      var downloadId = event.target.getAttribute("data-download-prescription");
-      if (viewId) await openPrescription(viewId);
-      if (downloadId) await handlePrescriptionDownload(downloadId);
-    });
-    $("downloadPrescriptionBtn").addEventListener("click", function () {
-      if (state.currentPrescriptionId) handlePrescriptionDownload(state.currentPrescriptionId);
-    });
-  }
-
-  async function initNotifications() {
-    try {
-      var responses = await Promise.all([
-        PatientAPI.profile(),
-        PatientAPI.notifications()
-      ]);
-      state.profile = responses[0];
-      state.notifications = responses[1] || [];
-      renderProfileBadge(state.profile);
-      renderNotificationsList(state.notifications, "notificationList");
-    } catch (err) {
-      $("notificationList").innerHTML = '<div class="empty-state">' + esc(err.message) + '</div>';
-    }
-
-    $("notificationList").addEventListener("click", async function (event) {
-      var notificationId = event.target.getAttribute("data-read-notification");
-      if (!notificationId) return;
-      try {
-        await PatientAPI.markNotificationRead(notificationId);
-        state.notifications = await PatientAPI.notifications();
-        renderNotificationsList(state.notifications, "notificationList");
-        refreshUnreadBadge();
-        showToast("Notification marked as read.");
-      } catch (err) {
-        showToast(err.message, true);
-      }
-    });
-  }
-
-  async function initHealthCard() {
-    try {
-      state.profile = await PatientAPI.profile();
-      renderProfileBadge(state.profile);
-      $("healthCardName").textContent = joinName(state.profile);
-      $("healthCardAarogyamId").textContent = state.profile.aarogyamId;
-      $("healthCardDob").textContent = PatientUtil.formatDate(state.profile.dateOfBirth);
-      $("healthCardGender").textContent = state.profile.gender || "—";
-      $("healthCardBloodGroup").textContent = state.profile.bloodGroup || "Not set";
-      $("healthCardEmergency").textContent = state.profile.emergencyContact || "Not added";
-      loadQrImage();
-    } catch (err) {
-      $("healthCardError").textContent = err.message;
-      $("healthCardError").hidden = false;
-    }
-  }
-
-  refreshUnreadBadge();
-
   if (page === "overview") initOverview();
   if (page === "profile") initProfile();
   if (page === "history") initHistory();
   if (page === "reports") initReports();
-  if (page === "prescriptions") initPrescriptions();
-  if (page === "notifications") initNotifications();
-  if (page === "health-card") initHealthCard();
 })();

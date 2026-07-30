@@ -102,7 +102,8 @@ public class DoctorController : ControllerBase
         if (doctor is null) return NotFound(new { success = 0, message = "Doctor profile not found." });
 
         var result = await _doctorRepository.CreateVisitAsync(doctor.DoctorId, request);
-        return result?.Success == 1 ? Ok(result) : BadRequest(result);
+        if (result is null) return BadRequest(new { success = 0, message = "Unable to create visit. Please try again." });
+        return result.Success == 1 ? Ok(result) : BadRequest(result);
     }
 
     [HttpPost("diagnoses")]
@@ -112,7 +113,8 @@ public class DoctorController : ControllerBase
         if (doctor is null) return NotFound(new { success = 0, message = "Doctor profile not found." });
 
         var result = await _doctorRepository.CreateDiagnosisAsync(doctor.DoctorId, request);
-        return result?.Success == 1 ? Ok(result) : BadRequest(result);
+        if (result is null) return BadRequest(new { success = 0, message = "Unable to create diagnosis. Please try again." });
+        return result.Success == 1 ? Ok(result) : BadRequest(result);
     }
 
     [HttpPost("prescriptions")]
@@ -122,7 +124,8 @@ public class DoctorController : ControllerBase
         if (doctor is null) return NotFound(new { success = 0, message = "Doctor profile not found." });
 
         var result = await _doctorRepository.CreatePrescriptionAsync(doctor.DoctorId, request);
-        return result?.Success == 1 ? Ok(result) : BadRequest(result);
+        if (result is null) return BadRequest(new { success = 0, message = "Unable to create prescription. Please try again." });
+        return result.Success == 1 ? Ok(result) : BadRequest(result);
     }
 
     [HttpPost("reports")]
