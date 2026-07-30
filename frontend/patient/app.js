@@ -179,13 +179,13 @@
       return;
     }
     mount.innerHTML = list.map(function (item) {
-      return '<article class="list-item' + (item.isRead ? "" : " unread") + '">' +
+      return '<article class="list-item unread">' +
         '<div class="list-item-main">' +
           '<div class="row-title">' + escapeHtml(item.title) + '</div>' +
           '<div class="row-sub pre-wrap">' + escapeHtml(item.message) + '</div>' +
           '<div class="list-meta">' + escapeHtml(formatRelativeTime(item.createdAt)) + '</div>' +
         '</div>' +
-        (!item.isRead ? '<button class="btn btn-ghost btn-sm" type="button" data-read-notification="' + item.notificationId + '">Mark read</button>' : '') +
+        '<button class="btn btn-ghost btn-sm" type="button" data-read-notification="' + item.notificationId + '">Mark read</button>' +
       '</article>';
     }).join("");
   }
@@ -206,7 +206,7 @@
     if (!mount) return;
     mount.innerHTML = '<div class="table-loading">Loading…</div>';
     try {
-      var rows = await PatientAPI.notifications();
+      var rows = await PatientAPI.notifications(true);
       renderNotifPopoverList(rows);
     } catch (err) {
       mount.innerHTML = '<div class="form-alert error">' + escapeHtml(err.message) + '</div>';

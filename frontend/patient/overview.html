@@ -13,7 +13,7 @@
 <body data-page="overview">
 <header class="pt-topnav">
   <div class="pt-topnav-inner">
-    <a class="pt-brand" href="overview.html"><svg width="24" height="24" viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect x="1.5" y="1.5" width="29" height="29" rx="8.5" stroke="#2d6a4f" stroke-width="1.5"/><path d="M7 17h5l2.5-6 3.5 10 2.5-6.5L22 17h3" stroke="#40916c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Aarogyam <small>Patient</small></a>
+    <a class="pt-brand" href="overview.html"><svg width="24" height="24" viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect x="1.5" y="1.5" width="29" height="29" rx="8.5" stroke="#2d6a4f" stroke-width="1.5"/><path d="M7 17h5l2.5-6 3.5 10 2.5-6.5L22 17h3" stroke="#40916c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Aarogyam</a>
     <nav class="pt-links">
       <a href="overview.html">Overview</a>
       <a href="medical-history.html">Medical History</a>
@@ -26,7 +26,7 @@
           <span class="pt-dot" id="notifDot" hidden></span>
         </button>
         <div class="pt-popover" id="notifPopover" hidden>
-          <div class="pt-popover-head">Notifications</div>
+          <div class="pt-popover-head">Unread notifications</div>
           <div class="pt-popover-list" id="notifPopoverList"><div class="table-loading">Loading…</div></div>
         </div>
       </div>
@@ -54,16 +54,16 @@
     <div class="page-head-row"><div><h2 id="welcomeHeading">Good day</h2><p>A quick snapshot of your health record.</p></div></div>
     <div class="stat-grid" id="statGrid"><div class="table-loading">Loading dashboard…</div></div>
 
-    <div class="grid-2 dashboard-grid">
-      <div class="mini-chart-card">
-        <div class="card-title">Visits over the last 6 months</div>
-        <div class="card-sub">A quick look at how often you've been seen.</div>
-        <div class="mini-chart-bars" id="visitsChart"></div>
-      </div>
+    <div class="grid-2 dashboard-grid-equal">
       <div class="card">
         <div class="hero-head"><div class="avatar-circle" id="patientInitials">P</div><div><div class="card-title" id="profileName">Loading profile…</div><div class="card-sub" id="profileMeta"></div></div></div>
         <div class="detail-grid compact-top" id="profileDetails"></div>
         <div class="qa-row"><a class="btn btn-ghost btn-sm" href="profile.html">View full profile</a></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Aarogyam health card</div>
+        <div class="card-sub">Scan this at any registered facility.</div>
+        <div class="health-card compact-top"><div class="hc-head"><b>AAROGYAM · HEALTH IDENTITY</b></div><div class="hc-body"><div class="hc-info" id="healthCardInfo"></div><div class="hc-qr"><img id="healthCardQr" alt="Patient health card QR code"></div></div></div>
       </div>
     </div>
 

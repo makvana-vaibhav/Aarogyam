@@ -112,32 +112,6 @@
     }).join("");
   }
 
-  function renderVisitsChart(visits) {
-    var mount = $("visitsChart");
-    if (!mount) return;
-    var now = new Date();
-    var buckets = [];
-    for (var i = 5; i >= 0; i--) {
-      var d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      buckets.push({ year: d.getFullYear(), month: d.getMonth(), label: d.toLocaleDateString(undefined, { month: "short" }), count: 0 });
-    }
-    visits.forEach(function (visit) {
-      var d = new Date(visit.visitDate);
-      if (isNaN(d.getTime())) return;
-      for (var b = 0; b < buckets.length; b++) {
-        if (buckets[b].year === d.getFullYear() && buckets[b].month === d.getMonth()) { buckets[b].count++; break; }
-      }
-    });
-    var max = Math.max.apply(null, buckets.map(function (b) { return b.count; })) || 1;
-    mount.innerHTML = buckets.map(function (b) {
-      var heightPct = b.count ? Math.max(Math.round((b.count / max) * 100), 8) : 2;
-      return '<div class="mini-chart-col">' +
-        '<div class="mini-chart-bar" style="height:' + heightPct + '%" title="' + b.count + ' visit' + (b.count === 1 ? "" : "s") + '"></div>' +
-        '<div class="mini-chart-label">' + esc(b.label) + '</div>' +
-      '</div>';
-    }).join("");
-  }
-
   function renderTimeline(visits, diagnoses, limit, mountId) {
     var mount = $(mountId);
     if (!mount) return;
@@ -314,7 +288,8 @@
         detailCell("Emergency contact", state.profile.emergencyContact || "Not added"),
         detailCell("Member since", PatientUtil.formatDate(state.profile.createdAt))
       ].join("");
-      renderVisitsChart(state.visits);
+      renderHealthCardBlock(state.profile, "healthCardInfo");
+      loadQrImage();
       renderTimeline(state.visits, state.diagnoses, 3, "timelineList");
     } catch (err) {
       ui.statGrid.innerHTML = '<div class="form-alert error">' + esc(err.message) + '</div>';

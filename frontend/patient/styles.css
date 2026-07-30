@@ -748,6 +748,9 @@ table.data-table { width: 100%; border-collapse: collapse; min-width: 560px; }
 .qa-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
 
 .dashboard-grid { margin-top: 4px; }
+.dashboard-grid-equal { margin-top: 4px; grid-template-columns: 1fr 1fr; align-items: stretch; }
+.dashboard-grid-equal .card { display: flex; flex-direction: column; }
+.dashboard-grid-equal .health-card { margin-top: auto; }
 
 .sidebar-profile {
   display: flex;
@@ -1080,12 +1083,6 @@ table.data-table { width: 100%; border-collapse: collapse; min-width: 560px; }
   background: rgba(45, 106, 79, 0.1);
 }
 .pt-dash .stat-card.warn::before { background: rgba(217, 158, 10, 0.14); }
-
-.mini-chart-card { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px 22px; }
-.mini-chart-bars { display: flex; align-items: flex-end; gap: 10px; height: 90px; margin-top: 16px; }
-.mini-chart-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
-.mini-chart-bar { width: 100%; max-width: 28px; border-radius: 4px 4px 0 0; background: var(--accent); min-height: 3px; transition: height 0.3s ease; }
-.mini-chart-label { font-family: var(--mono); font-size: 10px; color: var(--ink-faint); }
 
 /* ---------------------------------------------------------- */
 /* Clickable rows + field validation + step wizard              */
