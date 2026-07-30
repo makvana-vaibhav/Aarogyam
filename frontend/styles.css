@@ -17,9 +17,9 @@
   --frost: #d8f3dc;
 
   /* semantic — light (default) */
-  --bg: #f7faf8;
-  --bg-raised: #eef4f0;
-  --bg-card: #ffffff;
+  --bg: #faf5ec;
+  --bg-raised: #f1e8d8;
+  --bg-card: #fffbf3;
   --ink: #16301f;
   --ink-soft: #4c6759;
   --ink-faint: #829a8b;
@@ -28,8 +28,8 @@
   --line: rgba(19, 42, 30, 0.11);
   --line-strong: rgba(19, 42, 30, 0.22);
   --cta-bg: var(--frost);
-  --header-scrim: rgba(247, 250, 248, 0.88);
-  --mobile-nav-bg: rgba(247, 250, 248, 0.98);
+  --header-scrim: rgba(250, 245, 236, 0.88);
+  --mobile-nav-bg: rgba(250, 245, 236, 0.98);
   --footer-bg: var(--bg);
   --btn-solid-text: #fbfdfb;
   --shadow-soft: 0 16px 32px -20px rgba(19, 42, 30, 0.18);

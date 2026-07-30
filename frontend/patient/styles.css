@@ -14,9 +14,9 @@
   --celadon: #b7e4c7;
   --frost: #d8f3dc;
 
-  --bg: #f7faf8;
-  --bg-raised: #eef4f0;
-  --bg-card: #ffffff;
+  --bg: #faf5ec;
+  --bg-raised: #f1e8d8;
+  --bg-card: #fffbf3;
   --ink: #16301f;
   --ink-soft: #4c6759;
   --ink-faint: #829a8b;
@@ -896,6 +896,122 @@ table.data-table { width: 100%; border-collapse: collapse; min-width: 560px; }
   font-family: var(--mono);
   letter-spacing: 0.05em;
 }
+
+/* ---------------------------------------------------------- */
+/* Clickable rows + field validation + step wizard              */
+/* ---------------------------------------------------------- */
+
+a.list-item,
+.list-item.clickable,
+.timeline-item.clickable {
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+}
+a.list-item:hover,
+.list-item.clickable:hover,
+.timeline-item.clickable:hover .timeline-body-card {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-soft);
+  transform: translateY(-1px);
+}
+.timeline-body-card {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px 14px;
+  background: var(--bg-card);
+  margin-top: 6px;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+.list-item .chev { color: var(--ink-faint); flex: none; align-self: center; }
+
+:is(input, select, textarea, button, a, [tabindex]):focus-visible {
+  outline: 2px solid var(--accent-bright);
+  outline-offset: 2px;
+}
+
+.form-row.invalid input,
+.form-row.invalid select,
+.form-row.invalid textarea {
+  border-color: var(--danger-line);
+  background: var(--danger-bg);
+}
+.field-error {
+  display: none;
+  font-size: 12px;
+  color: var(--danger);
+  margin-top: 6px;
+}
+.form-row.invalid .field-error { display: block; }
+
+/* Step wizard (doctor create-visit and similar guided flows) */
+.wizard-steps {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 22px;
+  flex-wrap: wrap;
+}
+.wizard-step-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  padding: 7px 14px 7px 8px;
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  background: var(--bg-card);
+}
+.wizard-step-pill .num {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--bg-raised);
+  color: var(--ink-soft);
+  font-size: 11px;
+}
+.wizard-step-pill.active { border-color: var(--accent); color: var(--pine); }
+:root[data-theme="dark"] .wizard-step-pill.active { color: var(--celadon); }
+.wizard-step-pill.active .num { background: var(--accent); color: var(--btn-solid-text); }
+.wizard-step-pill.done .num { background: var(--pine); color: #fbfdfb; }
+.wizard-step-pill.done { color: var(--ink-soft); }
+.wizard-connector { width: 18px; height: 1px; background: var(--line-strong); flex: none; }
+
+.wizard-panel[hidden] { display: none; }
+.wizard-nav { display: flex; justify-content: space-between; gap: 10px; margin-top: 22px; }
+.wizard-nav .spacer { flex: 1; }
+
+.optional-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+}
+.optional-toggle .chev { transition: transform 0.2s; color: var(--ink-faint); }
+.optional-section.open .optional-toggle .chev { transform: rotate(180deg); }
+.optional-section .optional-body { display: none; margin-top: 14px; }
+.optional-section.open .optional-body { display: block; }
+
+.lookup-row { display: flex; gap: 10px; }
+.lookup-row input { flex: 1; }
+
+.patient-found-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  padding: 14px;
+  margin-top: 14px;
+  background: var(--bg-raised);
+}
+.patient-found-card .pf-main { min-width: 0; flex: 1; }
 
 /* ---------------------------------------------------------- */
 /* Responsive                                                    */

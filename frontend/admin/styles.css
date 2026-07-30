@@ -14,9 +14,9 @@
   --celadon: #b7e4c7;
   --frost: #d8f3dc;
 
-  --bg: #f7faf8;
-  --bg-raised: #eef4f0;
-  --bg-card: #ffffff;
+  --bg: #faf5ec;
+  --bg-raised: #f1e8d8;
+  --bg-card: #fffbf3;
   --ink: #16301f;
   --ink-soft: #4c6759;
   --ink-faint: #829a8b;
@@ -698,6 +698,29 @@ table.data-table { width: 100%; border-collapse: collapse; min-width: 560px; }
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: none; }
 }
+
+/* ---------------------------------------------------------- */
+/* Field validation                                              */
+/* ---------------------------------------------------------- */
+
+:is(input, select, textarea, button, a, [tabindex]):focus-visible {
+  outline: 2px solid var(--accent-bright);
+  outline-offset: 2px;
+}
+
+.form-row.invalid input,
+.form-row.invalid select,
+.form-row.invalid textarea {
+  border-color: var(--danger-line);
+  background: var(--danger-bg);
+}
+.field-error {
+  display: none;
+  font-size: 12px;
+  color: var(--danger);
+  margin-top: 6px;
+}
+.form-row.invalid .field-error { display: block; }
 
 /* ---------------------------------------------------------- */
 /* Responsive                                                    */

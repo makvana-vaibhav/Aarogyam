@@ -31,6 +31,21 @@
     document.body.style.overflow = isOpen ? "hidden" : "";
   }
 
+  function wireModalCloseButtons() {
+    document.querySelectorAll("[data-close-modal]").forEach(function (button) {
+      button.addEventListener("click", function () {
+        setModalOpen($(button.getAttribute("data-close-modal")), false);
+      });
+    });
+  }
+
+  function detailCell(label, value, full) {
+    return '<div class="' + (full ? "full" : "") + '">' +
+      '<div class="dl">' + esc(label) + '</div>' +
+      '<div class="dv">' + esc(value) + '</div>' +
+    '</div>';
+  }
+
   function joinName(row) {
     return [row.firstName, row.middleName, row.lastName].filter(Boolean).join(" ");
   }
@@ -205,6 +220,9 @@
       $("patientMeta").textContent = patient.aarogyamId + " • " + patient.gender + " • " + (patient.bloodGroup || "Blood group not set");
       $("openCreateVisit").href = "create-visit.html?patientId=" + patient.patientId;
 
+      state.currentVisits = visits;
+      state.currentDiagnoses = diagnoses;
+
       $("patientContent").innerHTML =
         '<div class="card"><div class="card-title">History</div><div class="timeline">' + renderVisitTimeline(visits, diagnoses) + '</div></div>' +
         '<div class="card"><div class="card-title">Reports</div>' + renderReportList(reports) + '</div>' +
@@ -212,16 +230,78 @@
 
       $("patientContent").addEventListener("click", async function (event) {
         var reportId = event.target.getAttribute("data-report-download");
-        if (!reportId) return;
-        try {
-          var file = await DoctorAPI.downloadReport(reportId);
-          DoctorUtil.downloadBlob(file.blob, file.fileName || ("report-" + reportId));
-        } catch (err) {
-          showToast(err.message, true);
+        if (reportId) {
+          try {
+            var file = await DoctorAPI.downloadReport(reportId);
+            DoctorUtil.downloadBlob(file.blob, file.fileName || ("report-" + reportId));
+          } catch (err) {
+            showToast(err.message, true);
+          }
+          return;
         }
+
+        var visitCard = event.target.closest("[data-view-visit]");
+        if (visitCard) { openVisitModal(visitCard.getAttribute("data-view-visit")); return; }
+
+        var prescriptionCard = event.target.closest("[data-view-prescription]");
+        var downloadBtn = event.target.closest("[data-download-prescription]");
+        if (downloadBtn) { handlePrescriptionDownload(downloadBtn.getAttribute("data-download-prescription")); return; }
+        if (prescriptionCard) { openPrescriptionModal(prescriptionCard.getAttribute("data-view-prescription")); return; }
+      });
+
+      wireModalCloseButtons();
+      $("downloadPrescriptionBtn").addEventListener("click", function () {
+        if (state.currentPrescriptionId) handlePrescriptionDownload(state.currentPrescriptionId);
       });
     } catch (err) {
       $("patientContent").innerHTML = '<div class="form-alert error">' + esc(err.message) + '</div>';
+    }
+  }
+
+  function openVisitModal(visitId) {
+    var visit = (state.currentVisits || []).find(function (v) { return String(v.visitId) === String(visitId); });
+    var diagnoses = (state.currentDiagnoses || []).filter(function (d) { return String(d.visitId) === String(visitId); });
+    if (!visit) return;
+    $("visitDetailContent").innerHTML =
+      '<div class="detail-grid">' +
+        detailCell("Visit", "#" + visit.visitId) +
+        detailCell("Date", DoctorUtil.formatDateTime(visit.visitDate)) +
+        detailCell("Notes", visit.notes || "No notes added.", true) +
+      '</div>' +
+      (diagnoses.length
+        ? '<div class="section-space"><div class="card-title">Diagnoses on this visit</div>' + diagnoses.map(function (d) {
+            return '<div class="timeline-body-card"><b>' + esc(d.diagnosisTitle) + '</b><div class="row-sub">' + esc(d.description || "No description added.") + '</div></div>';
+          }).join("") + '</div>'
+        : '');
+    setModalOpen($("visitModal"), true);
+  }
+
+  async function handlePrescriptionDownload(prescriptionId) {
+    try {
+      var file = await DoctorAPI.downloadPrescription(prescriptionId);
+      DoctorUtil.downloadBlob(file.blob, file.fileName || ("prescription-" + prescriptionId + ".pdf"));
+    } catch (err) {
+      showToast(err.message, true);
+    }
+  }
+
+  async function openPrescriptionModal(prescriptionId) {
+    state.currentPrescriptionId = prescriptionId;
+    var content = $("prescriptionDetailContent");
+    content.innerHTML = '<div class="table-loading">Loading prescription…</div>';
+    setModalOpen($("prescriptionModal"), true);
+    try {
+      var detail = await DoctorAPI.getPrescriptionDetails(prescriptionId);
+      content.innerHTML =
+        '<div class="detail-grid">' +
+          detailCell("Patient", detail.patientName) +
+          detailCell("Date", DoctorUtil.formatDate(detail.prescriptionDate)) +
+          detailCell("Visit", "#" + detail.visitId) +
+          detailCell("Diagnosis", detail.diagnosisTitle || "Not linked") +
+          detailCell("Prescription", detail.prescriptionText || "No prescription text.", true) +
+        '</div>';
+    } catch (err) {
+      content.innerHTML = '<div class="form-alert error">' + esc(err.message) + '</div>';
     }
   }
 
@@ -234,7 +314,7 @@
     });
     return visits.map(function (visit) {
       var items = diagnosisByVisit[visit.visitId] || [];
-      return '<div class="timeline-item"><div class="timeline-head"><b>Visit #' + esc(visit.visitId) + '</b><span class="timeline-date">' + esc(DoctorUtil.formatDate(visit.visitDate)) + '</span></div><div class="timeline-body">' + esc(visit.notes || "No notes added.") + '</div>' + (items.length ? '<div class="timeline-tags">' + items.map(function (d) { return '<span class="badge ok">' + esc(d.diagnosisTitle) + '</span>'; }).join("") + '</div>' : '') + '</div>';
+      return '<div class="timeline-item clickable" data-view-visit="' + visit.visitId + '"><div class="timeline-body-card"><div class="timeline-head"><b>Visit #' + esc(visit.visitId) + '</b><span class="timeline-date">' + esc(DoctorUtil.formatDate(visit.visitDate)) + '</span></div><div class="timeline-body">' + esc((visit.notes || "No notes added.").slice(0, 160)) + '</div>' + (items.length ? '<div class="timeline-tags">' + items.map(function (d) { return '<span class="badge ok">' + esc(d.diagnosisTitle) + '</span>'; }).join("") + '</div>' : '') + '</div></div>';
     }).join("");
   }
 
@@ -248,22 +328,51 @@
   function renderPrescriptionList(rows) {
     if (!rows.length) return '<div class="empty-state">No prescriptions issued yet.</div>';
     return '<div class="stack-list">' + rows.map(function (row) {
-      return '<article class="list-item"><div class="list-item-main"><div class="row-title">Prescription #' + esc(row.prescriptionId) + '</div><div class="row-sub">' + esc((row.prescriptionText || "").slice(0, 140)) + '</div></div></article>';
+      return '<article class="list-item clickable" data-view-prescription="' + row.prescriptionId + '"><div class="list-item-main"><div class="row-title">Prescription #' + esc(row.prescriptionId) + '</div><div class="row-sub">' + esc((row.prescriptionText || "").slice(0, 140)) + '</div><div class="list-meta">' + esc(DoctorUtil.formatDate(row.prescriptionDate)) + '</div></div><button class="btn btn-ghost btn-sm" data-download-prescription="' + row.prescriptionId + '" type="button">Download</button></article>';
     }).join("") + '</div>';
   }
 
-  async function initCreateVisit() {
-    var patientId = queryParam("patientId");
-    if (patientId) {
-      try {
-        var patient = await DoctorAPI.getPatient(patientId);
-        $("patientSummary").textContent = joinName(patient) + " • " + patient.aarogyamId;
-        $("patientId").value = patient.patientId;
-      } catch (err) {
-        $("flowAlert").textContent = err.message;
-        $("flowAlert").hidden = false;
-      }
+  function showFlowAlert(message) {
+    var alertEl = $("flowAlert");
+    alertEl.textContent = message;
+    alertEl.hidden = false;
+  }
+
+  function setInvalid(rowId, isInvalid) {
+    var row = $(rowId);
+    if (row) row.classList.toggle("invalid", isInvalid);
+  }
+
+  function toLocalDatetimeValue(date) {
+    var pad = function (n) { return String(n).padStart(2, "0"); };
+    return date.getFullYear() + "-" + pad(date.getMonth() + 1) + "-" + pad(date.getDate()) +
+      "T" + pad(date.getHours()) + ":" + pad(date.getMinutes());
+  }
+
+  function goToStep(step, foundPatient) {
+    $("panelStep1").hidden = step !== 1;
+    $("visitFlowForm").hidden = step !== 2;
+    $("stepPill1").classList.toggle("active", step === 1);
+    $("stepPill1").classList.toggle("done", step === 2);
+    $("stepPill2").classList.toggle("active", step === 2);
+    if (step === 2 && foundPatient) {
+      $("pfName").textContent = joinName(foundPatient);
+      $("pfMeta").textContent = foundPatient.aarogyamId + " • " + foundPatient.gender + " • " + (foundPatient.bloodGroup || "Blood group not set");
+      $("pfInitials").textContent = DoctorUtil.initials(foundPatient.firstName, foundPatient.lastName);
     }
+  }
+
+  function initOptionalToggles() {
+    document.querySelectorAll(".optional-toggle").forEach(function (toggle) {
+      toggle.addEventListener("click", function () {
+        var section = $(toggle.getAttribute("data-toggle"));
+        section.classList.toggle("open");
+      });
+    });
+  }
+
+  async function initCreateVisit() {
+    var state2 = { patient: null };
 
     try {
       var diagnosisTypes = await DoctorAPI.diagnosisTypes();
@@ -272,15 +381,97 @@
       }).join("");
     } catch (err) {}
 
+    initOptionalToggles();
+    $("visitDate").value = toLocalDatetimeValue(new Date());
+
+    async function runLookup(aarogyamId) {
+      $("flowAlert").hidden = true;
+      $("lookupResult").innerHTML = '<div class="table-loading">Searching…</div>';
+      $("continueToStep2").disabled = true;
+      try {
+        var rows = await DoctorAPI.searchPatients(aarogyamId, null);
+        if (!rows.length) {
+          $("lookupResult").innerHTML = '<div class="form-alert error">No patient found with that Aarogyam ID.</div>';
+          return;
+        }
+        state2.patient = rows[0];
+        $("lookupResult").innerHTML =
+          '<div class="patient-found-card"><div class="avatar-circle small">' + esc(DoctorUtil.initials(rows[0].firstName, rows[0].lastName)) + '</div>' +
+          '<div class="pf-main"><div class="row-title">' + esc(joinName(rows[0])) + '</div>' +
+          '<div class="row-sub mono">' + esc(rows[0].aarogyamId) + ' • ' + esc(rows[0].gender) + ' • ' + esc(rows[0].bloodGroup || "Blood group not set") + '</div></div></div>';
+        $("continueToStep2").disabled = false;
+      } catch (err) {
+        $("lookupResult").innerHTML = '<div class="form-alert error">' + esc(err.message) + '</div>';
+      }
+    }
+
+    var patientId = queryParam("patientId");
+    if (patientId) {
+      try {
+        state2.patient = await DoctorAPI.getPatient(patientId);
+        goToStep(2, state2.patient);
+      } catch (err) {
+        showFlowAlert(err.message);
+      }
+    }
+
+    $("lookupBtn").addEventListener("click", function () {
+      var value = $("lookupAarogyamId").value.trim();
+      setInvalid("rowAarogyamId", !value);
+      if (!value) return;
+      runLookup(value);
+    });
+    $("lookupAarogyamId").addEventListener("keydown", function (event) {
+      if (event.key === "Enter") { event.preventDefault(); $("lookupBtn").click(); }
+    });
+    $("continueToStep2").addEventListener("click", function () {
+      if (!state2.patient) return;
+      goToStep(2, state2.patient);
+    });
+    $("changePatientBtn").addEventListener("click", function () {
+      goToStep(1);
+    });
+    $("backToStep1").addEventListener("click", function () {
+      goToStep(1);
+    });
+
     $("visitFlowForm").addEventListener("submit", async function (event) {
       event.preventDefault();
       $("flowAlert").hidden = true;
-      var patientIdVal = Number($("patientId").value);
-      if (!patientIdVal) {
-        $("flowAlert").textContent = "Please choose a patient first.";
-        $("flowAlert").hidden = false;
+
+      if (!state2.patient) {
+        showFlowAlert("Please find and choose a patient first.");
+        goToStep(1);
         return;
       }
+
+      var diagnosisOpen = $("sectionDiagnosis").classList.contains("open");
+      var prescriptionOpen = $("sectionPrescription").classList.contains("open");
+      var reportOpen = $("sectionReport").classList.contains("open");
+
+      var visitDateValid = !!$("visitDate").value;
+      var diagnosisTypeValid = !diagnosisOpen || !!$("diagnosisTypeId").value;
+      var diagnosisTitleValid = !diagnosisOpen || !!$("diagnosisTitle").value.trim();
+      var prescriptionValid = !prescriptionOpen || !!$("prescriptionText").value.trim();
+      var reportTitleValid = !reportOpen || !!$("reportTitle").value.trim();
+      var reportFileValid = !reportOpen || !!$("reportFile").files[0];
+
+      setInvalid("rowVisitDate", !visitDateValid);
+      setInvalid("rowDiagnosisType", !diagnosisTypeValid);
+      setInvalid("rowDiagnosisTitle", !diagnosisTitleValid);
+      setInvalid("rowPrescriptionText", !prescriptionValid);
+      setInvalid("rowReportTitle", !reportTitleValid);
+      setInvalid("rowReportFile", !reportFileValid);
+
+      if (!visitDateValid || !diagnosisTypeValid || !diagnosisTitleValid || !prescriptionValid || !reportTitleValid || !reportFileValid) {
+        showFlowAlert("Please fix the highlighted fields.");
+        return;
+      }
+
+      var patientIdVal = state2.patient.patientId;
+      var visitDateOnly = $("visitDate").value.split("T")[0];
+      var submitBtn = event.target.querySelector('button[type="submit"]');
+      submitBtn.disabled = true;
 
       try {
         var visit = await DoctorAPI.createVisit({
@@ -290,45 +481,45 @@
         });
 
         var diagnosisId = null;
-        if ($("diagnosisTitle").value.trim()) {
+        if (diagnosisOpen) {
           var diagnosis = await DoctorAPI.createDiagnosis({
             visitId: visit.visitId,
             diagnosisTypeId: Number($("diagnosisTypeId").value),
             diagnosisTitle: $("diagnosisTitle").value.trim(),
             description: $("diagnosisDescription").value.trim(),
-            diagnosisDate: $("diagnosisDate").value
+            diagnosisDate: visitDateOnly
           });
           diagnosisId = diagnosis.diagnosisId;
         }
 
-        if ($("prescriptionText").value.trim()) {
+        if (prescriptionOpen) {
           await DoctorAPI.createPrescription({
             visitId: visit.visitId,
             diagnosisId: diagnosisId,
             prescriptionText: $("prescriptionText").value.trim(),
-            prescriptionDate: $("prescriptionDate").value
+            prescriptionDate: visitDateOnly
           });
         }
 
-        if ($("reportFile").files[0]) {
+        if (reportOpen) {
           var formData = new FormData();
           formData.append("PatientId", patientIdVal);
           formData.append("VisitId", visit.visitId);
           if (diagnosisId) formData.append("DiagnosisId", diagnosisId);
-          formData.append("Title", $("reportTitle").value.trim() || "Visit report");
+          formData.append("Title", $("reportTitle").value.trim());
           formData.append("ReportType", $("reportType").value.trim() || "Clinical");
-          if ($("reportDate").value) formData.append("ReportDate", $("reportDate").value);
+          formData.append("ReportDate", visitDateOnly);
           formData.append("File", $("reportFile").files[0]);
           await DoctorAPI.uploadReport(formData);
         }
 
-        showToast("Visit flow completed successfully.");
+        showToast("Visit created successfully.");
         setTimeout(function () {
           window.location.href = "patient.html?patientId=" + patientIdVal;
         }, 900);
       } catch (err) {
-        $("flowAlert").textContent = err.message;
-        $("flowAlert").hidden = false;
+        showFlowAlert(err.message);
+        submitBtn.disabled = false;
       }
     });
   }

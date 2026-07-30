@@ -76,6 +76,25 @@ public class DoctorController : ControllerBase
     public Task<List<Models.Responses.PrescriptionRow>> GetPatientPrescriptions(int id) =>
         _doctorRepository.GetPatientPrescriptionsAsync(id);
 
+    [HttpGet("prescriptions/{id:int}")]
+    public async Task<IActionResult> GetPrescriptionDetails(int id)
+    {
+        var details = await _doctorRepository.GetPrescriptionDetailsAsync(id);
+        return details is null ? NotFound(new { success = 0, message = "Prescription not found." }) : Ok(details);
+    }
+
+    [HttpGet("prescriptions/{id:int}/download")]
+    public async Task<IActionResult> DownloadPrescription(int id)
+    {
+        var pdfPath = await _doctorRepository.GetOrGeneratePrescriptionPdfPathAsync(id);
+        if (pdfPath is null) return NotFound(new { success = 0, message = "Prescription not found." });
+
+        var file = await _fileStorage.ReadAsync(pdfPath);
+        if (file is null) return NotFound(new { success = 0, message = "File not found on disk." });
+
+        return File(file.Value.Content, file.Value.ContentType, file.Value.FileName);
+    }
+
     [HttpPost("visits")]
     public async Task<IActionResult> CreateVisit([FromBody] CreateVisitRequest request)
     {

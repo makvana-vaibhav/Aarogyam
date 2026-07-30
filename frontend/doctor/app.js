@@ -135,6 +135,8 @@
     getPatientDiagnoses: function (id, diagnosisTypeId) { return apiRequest("/doctor/patients/" + id + "/diagnoses" + qs({ diagnosisTypeId: diagnosisTypeId })); },
     getPatientReports: function (id) { return apiRequest("/doctor/patients/" + id + "/reports"); },
     getPatientPrescriptions: function (id) { return apiRequest("/doctor/patients/" + id + "/prescriptions"); },
+    getPrescriptionDetails: function (id) { return apiRequest("/doctor/prescriptions/" + id); },
+    downloadPrescription: function (id) { return apiRequest("/doctor/prescriptions/" + id + "/download", { responseType: "blob" }); },
     createVisit: function (payload) { return apiRequest("/doctor/visits", { method: "POST", body: payload }); },
     createDiagnosis: function (payload) { return apiRequest("/doctor/diagnoses", { method: "POST", body: payload }); },
     createPrescription: function (payload) { return apiRequest("/doctor/prescriptions", { method: "POST", body: payload }); },

@@ -1,6 +1,7 @@
 using Aarogyam.API.Data;
 using Aarogyam.API.Models.Requests;
 using Aarogyam.API.Models.Responses;
+using Aarogyam.API.Services;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,10 +10,14 @@ namespace Aarogyam.API.Repositories;
 public class DoctorRepository : IDoctorRepository
 {
     private readonly AarogyamDbContext _context;
+    private readonly IFileStorageService _fileStorage;
+    private readonly IPdfService _pdfService;
 
-    public DoctorRepository(AarogyamDbContext context)
+    public DoctorRepository(AarogyamDbContext context, IFileStorageService fileStorage, IPdfService pdfService)
     {
         _context = context;
+        _fileStorage = fileStorage;
+        _pdfService = pdfService;
     }
 
     public async Task<DoctorMasterRow?> GetProfileByUserIdAsync(int userId)
@@ -116,6 +121,39 @@ public class DoctorRepository : IDoctorRepository
                 new SqlParameter("@VisitId", DBNull.Value),
                 new SqlParameter("@PatientId", patientId))
             .ToListAsync();
+    }
+
+    public async Task<PrescriptionDetailsRow?> GetPrescriptionDetailsAsync(int prescriptionId)
+    {
+        var rows = await _context.PrescriptionDetailsRows
+            .FromSqlRaw("EXEC dbo.spPrescriptionDetailsGet @PrescriptionId", new SqlParameter("@PrescriptionId", prescriptionId))
+            .ToListAsync();
+        return rows.FirstOrDefault();
+    }
+
+    public async Task<string?> GetOrGeneratePrescriptionPdfPathAsync(int prescriptionId)
+    {
+        var details = await GetPrescriptionDetailsAsync(prescriptionId);
+        if (details is null) return null;
+
+        if (!string.IsNullOrEmpty(details.PdfPath) && File.Exists(_fileStorage.ResolvePath(details.PdfPath)))
+        {
+            return details.PdfPath;
+        }
+
+        var pdfBytes = _pdfService.GeneratePrescriptionPdf(
+            details.PatientName, details.DoctorName, details.DiagnosisTitle, details.PrescriptionDate, details.PrescriptionText);
+
+        using var stream = new MemoryStream(pdfBytes);
+        var relativePath = await _fileStorage.SaveAsync("prescriptions", $"{prescriptionId}.pdf", stream);
+
+        await _context.SimpleResults
+            .FromSqlRaw("EXEC dbo.spPrescriptionsSetPdfPath @PrescriptionId, @PdfPath",
+                new SqlParameter("@PrescriptionId", prescriptionId),
+                new SqlParameter("@PdfPath", relativePath))
+            .ToListAsync();
+
+        return relativePath;
     }
 
     public async Task<MedicalReportRow?> GetReportByIdAsync(int reportId)
