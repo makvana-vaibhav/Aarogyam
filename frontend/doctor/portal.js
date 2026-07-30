@@ -272,98 +272,6 @@
       }).join("");
     } catch (err) {}
 
-    // Stepper & Wizard transitions
-    var currentStep = 1;
-    var stepsCount = 4;
-
-    function showStep(stepNum) {
-      currentStep = stepNum;
-      for (var i = 1; i <= stepsCount; i++) {
-        var container = $("step" + i);
-        if (container) {
-          if (i === stepNum) {
-            container.style.display = "block";
-            container.style.opacity = "0";
-            setTimeout(function (c) {
-              c.style.opacity = "1";
-            }, 50, container);
-          } else {
-            container.style.display = "none";
-          }
-        }
-      }
-
-      // Update stepper chips
-      var stepper = $("visitFlowStepper");
-      if (stepper) {
-        var chips = stepper.querySelectorAll(".chip");
-        chips.forEach(function (chip, index) {
-          if (index + 1 === stepNum) {
-            chip.classList.add("on");
-          } else {
-            chip.classList.remove("on");
-          }
-        });
-      }
-      
-      // Clear alert on step change
-      $("flowAlert").hidden = true;
-    }
-
-    // Step 1: Next
-    $("btnNext1").addEventListener("click", function () {
-      if (!$("patientId").checkValidity() || !$("visitDate").checkValidity()) {
-        $("visitFlowForm").reportValidity();
-        return;
-      }
-      showStep(2);
-    });
-
-    // Step 2: Back, Skip, Next
-    $("btnBack2").addEventListener("click", function () {
-      showStep(1);
-    });
-    $("btnSkip2").addEventListener("click", function () {
-      $("diagnosisTypeId").value = "";
-      $("diagnosisTitle").value = "";
-      $("diagnosisDate").value = "";
-      $("diagnosisDescription").value = "";
-      showStep(3);
-    });
-    $("btnNext2").addEventListener("click", function () {
-      if ($("diagnosisTitle").value.trim() && !$("diagnosisTypeId").value) {
-        $("flowAlert").textContent = "Please select a diagnosis type for the entered title.";
-        $("flowAlert").hidden = false;
-        return;
-      }
-      showStep(3);
-    });
-
-    // Step 3: Back, Skip, Next
-    $("btnBack3").addEventListener("click", function () {
-      showStep(2);
-    });
-    $("btnSkip3").addEventListener("click", function () {
-      $("prescriptionDate").value = "";
-      $("prescriptionText").value = "";
-      showStep(4);
-    });
-    $("btnNext3").addEventListener("click", function () {
-      showStep(4);
-    });
-
-    // Step 4: Back, Skip
-    $("btnBack4").addEventListener("click", function () {
-      showStep(3);
-    });
-    $("btnSkip4").addEventListener("click", function () {
-      $("reportTitle").value = "";
-      $("reportType").value = "";
-      $("reportDate").value = "";
-      $("reportFile").value = "";
-      $("visitFlowForm").dispatchEvent(new Event("submit", { cancelable: true }));
-    });
-
     $("visitFlowForm").addEventListener("submit", async function (event) {
       event.preventDefault();
       $("flowAlert").hidden = true;
@@ -371,21 +279,7 @@
       if (!patientIdVal) {
         $("flowAlert").textContent = "Please choose a patient first.";
         $("flowAlert").hidden = false;
-        showStep(1);
         return;
-      }
-      if (!$("visitDate").value) {
-        $("flowAlert").textContent = "Please select a visit date.";
-        $("flowAlert").hidden = false;
-        showStep(1);
-        return;
-      }
-
-      var submitBtn = event.target.querySelector("button[type='submit']");
-      var originalBtnText = submitBtn ? submitBtn.textContent : "";
-      if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.textContent = "Saving...";
       }
 
       try {
@@ -402,7 +296,7 @@
             diagnosisTypeId: Number($("diagnosisTypeId").value),
             diagnosisTitle: $("diagnosisTitle").value.trim(),
             description: $("diagnosisDescription").value.trim(),
-            diagnosisDate: $("diagnosisDate").value || null
+            diagnosisDate: $("diagnosisDate").value
           });
           diagnosisId = diagnosis.diagnosisId;
         }
@@ -412,7 +306,7 @@
             visitId: visit.visitId,
             diagnosisId: diagnosisId,
             prescriptionText: $("prescriptionText").value.trim(),
-            prescriptionDate: $("prescriptionDate").value || null
+            prescriptionDate: $("prescriptionDate").value
           });
         }
 
@@ -435,10 +329,6 @@
       } catch (err) {
         $("flowAlert").textContent = err.message;
         $("flowAlert").hidden = false;
-        if (submitBtn) {
-          submitBtn.disabled = false;
-          submitBtn.textContent = originalBtnText;
-        }
       }
     });
   }
