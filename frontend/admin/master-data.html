@@ -234,10 +234,11 @@
     function fieldControl(entity, field, existingRow) {
       var value = existingRow ? existingRow[field.name] : "";
       var reqAttr = field.required ? "required" : "";
+      var reqMark = field.required ? '<span class="req">*</span>' : '';
 
       if (field.type === "checkbox") {
         var checked = existingRow ? (existingRow[field.name] ? "checked" : "") : "checked";
-        return '<div class="form-row check"><input type="checkbox" id="f_' + field.name + '" name="' + field.name + '" ' + checked + '><label for="f_' + field.name + '">' + esc(field.label) + "</label></div>";
+        return '<div class="form-row check"><input type="checkbox" id="f_' + field.name + '" name="' + field.name + '" ' + checked + '><label for="f_' + field.name + '">' + esc(field.label) + reqMark + "</label></div>";
       }
 
       if (field.type === "select") {
@@ -246,11 +247,11 @@
           var selected = existingRow && existingRow[field.name] === optVal ? "selected" : "";
           return '<option value="' + optVal + '" ' + selected + ">" + esc(r[field.nameField]) + "</option>";
         }).join("");
-        return '<div class="form-row"><label for="f_' + field.name + '">' + esc(field.label) + '</label>' +
+        return '<div class="form-row"><label for="f_' + field.name + '">' + esc(field.label) + reqMark + '</label>' +
           '<select id="f_' + field.name + '" name="' + field.name + '" ' + reqAttr + '><option value="">Select…</option>' + options + "</select></div>";
       }
 
-      return '<div class="form-row"><label for="f_' + field.name + '">' + esc(field.label) + '</label>' +
+      return '<div class="form-row"><label for="f_' + field.name + '">' + esc(field.label) + reqMark + '</label>' +
         '<input type="text" id="f_' + field.name + '" name="' + field.name + '" value="' + esc(value) + '" ' +
         (field.maxLength ? 'maxlength="' + field.maxLength + '"' : "") + " " + reqAttr + "></div>";
     }

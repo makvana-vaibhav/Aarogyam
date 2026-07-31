@@ -784,6 +784,12 @@ body.nav-open .nav-toggle span::after { transform: translateY(-6px) rotate(-45de
   margin-bottom: 8px;
 }
 
+.req {
+  color: #d9534f;
+  font-weight: bold;
+  margin-left: 3px;
+}
+
 .form-row input,
 .form-row select,
 .form-row textarea {

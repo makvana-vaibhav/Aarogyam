@@ -657,6 +657,12 @@ table.data-table { width: 100%; border-collapse: collapse; min-width: 560px; }
 }
 .form-row.invalid .field-error { display: block; }
 
+.req {
+  color: #d9534f;
+  font-weight: bold;
+  margin-left: 3px;
+}
+
 /* ---------------------------------------------------------- */
 /* Responsive                                                    */
 /* ---------------------------------------------------------- */

@@ -61,11 +61,11 @@
         <form id="patientForm" novalidate>
           <div class="form-row-2col">
             <div class="form-row">
-              <label for="p-firstName">First name</label>
+              <label for="p-firstName">First name<span class="req">*</span></label>
               <input id="p-firstName" required maxlength="50">
             </div>
             <div class="form-row">
-              <label for="p-lastName">Last name</label>
+              <label for="p-lastName">Last name<span class="req">*</span></label>
               <input id="p-lastName" required maxlength="50">
             </div>
           </div>
@@ -75,26 +75,26 @@
           </div>
           <div class="form-row-2col">
             <div class="form-row">
-              <label for="p-email">Email</label>
+              <label for="p-email">Email<span class="req">*</span></label>
               <input id="p-email" type="email" required maxlength="100">
             </div>
             <div class="form-row">
-              <label for="p-phone">Phone number</label>
+              <label for="p-phone">Phone number<span class="req">*</span></label>
               <input id="p-phone" required maxlength="20">
             </div>
           </div>
           <div class="form-row">
-            <label for="p-password">Password</label>
+            <label for="p-password">Password<span class="req">*</span></label>
             <input id="p-password" type="password" required minlength="6" maxlength="200">
             <span class="hint">At least 6 characters.</span>
           </div>
           <div class="form-row-2col">
             <div class="form-row">
-              <label for="p-dob">Date of birth</label>
+              <label for="p-dob">Date of birth<span class="req">*</span></label>
               <input id="p-dob" type="date" required>
             </div>
             <div class="form-row">
-              <label for="p-gender">Gender</label>
+              <label for="p-gender">Gender<span class="req">*</span></label>
               <select id="p-gender" required>
                 <option value="">Select</option>
                 <option>Male</option>
@@ -120,21 +120,21 @@
             </div>
           </div>
           <div class="form-row">
-            <label for="p-address">Address</label>
+            <label for="p-address">Address<span class="req">*</span></label>
             <input id="p-address" required maxlength="200">
           </div>
           <div class="form-row-2col">
             <div class="form-row">
-              <label for="p-country">Country</label>
+              <label for="p-country">Country<span class="req">*</span></label>
               <select id="p-country" required><option value="">Loading…</option></select>
             </div>
             <div class="form-row">
-              <label for="p-state">State</label>
+              <label for="p-state">State<span class="req">*</span></label>
               <select id="p-state" required disabled><option value="">Select country first</option></select>
             </div>
           </div>
           <div class="form-row">
-            <label for="p-city">City</label>
+            <label for="p-city">City<span class="req">*</span></label>
             <select id="p-city" required disabled><option value="">Select state first</option></select>
           </div>
           <button id="patientSubmit" class="btn btn-solid btn-block" type="submit">Create patient account</button>
@@ -144,77 +144,77 @@
         <form id="doctorForm" novalidate hidden>
           <div class="form-row-2col">
             <div class="form-row">
-              <label for="d-firstName">First name</label>
+              <label for="d-firstName">First name<span class="req">*</span></label>
               <input id="d-firstName" required maxlength="50">
             </div>
             <div class="form-row">
-              <label for="d-lastName">Last name</label>
+              <label for="d-lastName">Last name<span class="req">*</span></label>
               <input id="d-lastName" required maxlength="50">
             </div>
           </div>
           <div class="form-row">
             <label for="d-middleName">Middle name</label>
-            <input id="d-middleName" required maxlength="50">
+            <input id="d-middleName" maxlength="50">
           </div>
           <div class="form-row-2col">
             <div class="form-row">
-              <label for="d-email">Email</label>
+              <label for="d-email">Email<span class="req">*</span></label>
               <input id="d-email" type="email" required maxlength="100">
             </div>
             <div class="form-row">
-              <label for="d-phone">Phone number</label>
+              <label for="d-phone">Phone number<span class="req">*</span></label>
               <input id="d-phone" required maxlength="20">
             </div>
           </div>
           <div class="form-row">
-            <label for="d-password">Password</label>
+            <label for="d-password">Password<span class="req">*</span></label>
             <input id="d-password" type="password" required minlength="6" maxlength="200">
             <span class="hint">At least 6 characters.</span>
           </div>
           <div class="form-row">
-            <label for="d-license">Licence number</label>
+            <label for="d-license">Licence number<span class="req">*</span></label>
             <input id="d-license" required maxlength="50">
           </div>
           <div class="form-row-2col">
             <div class="form-row">
-              <label for="d-hospital">Hospital</label>
+              <label for="d-hospital">Hospital<span class="req">*</span></label>
               <select id="d-hospital" required><option value="">Loading…</option></select>
             </div>
             <div class="form-row">
-              <label for="d-degree">Degree</label>
+              <label for="d-degree">Degree<span class="req">*</span></label>
               <select id="d-degree" required><option value="">Loading…</option></select>
             </div>
           </div>
           <div class="form-row">
-            <label for="d-specialization">Specialization</label>
+            <label for="d-specialization">Specialization<span class="req">*</span></label>
             <select id="d-specialization" required><option value="">Loading…</option></select>
           </div>
           <div class="form-row-2col">
             <div class="form-row">
-              <label for="d-licenseDoc">Licence document path/URL</label>
+              <label for="d-licenseDoc">Licence document path/URL<span class="req">*</span></label>
               <input id="d-licenseDoc" required maxlength="200">
             </div>
             <div class="form-row">
-              <label for="d-degreeDoc">Degree document path/URL</label>
+              <label for="d-degreeDoc">Degree document path/URL<span class="req">*</span></label>
               <input id="d-degreeDoc" required maxlength="200">
             </div>
           </div>
           <div class="form-row">
-            <label for="d-address">Address</label>
+            <label for="d-address">Address<span class="req">*</span></label>
             <input id="d-address" required maxlength="200">
           </div>
           <div class="form-row-2col">
             <div class="form-row">
-              <label for="d-country">Country</label>
+              <label for="d-country">Country<span class="req">*</span></label>
               <select id="d-country" required><option value="">Loading…</option></select>
             </div>
             <div class="form-row">
-              <label for="d-state">State</label>
+              <label for="d-state">State<span class="req">*</span></label>
               <select id="d-state" required disabled><option value="">Select country first</option></select>
             </div>
           </div>
           <div class="form-row">
-            <label for="d-city">City</label>
+            <label for="d-city">City<span class="req">*</span></label>
             <select id="d-city" required disabled><option value="">Select state first</option></select>
           </div>
           <p class="form-note">Doctor accounts also need admin approval after email verification before login succeeds.</p>

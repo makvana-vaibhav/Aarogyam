@@ -64,24 +64,24 @@
 
       <form id="profileForm" class="section-space" novalidate hidden>
         <div class="form-row-2col">
-          <div class="form-row"><label for="firstName">First name</label><input id="firstName" required></div>
+          <div class="form-row"><label for="firstName">First name<span class="req">*</span></label><input id="firstName" required></div>
           <div class="form-row"><label for="middleName">Middle name</label><input id="middleName"></div>
         </div>
         <div class="form-row-2col">
-          <div class="form-row"><label for="lastName">Last name</label><input id="lastName" required></div>
-          <div class="form-row"><label for="dateOfBirth">Date of birth</label><input id="dateOfBirth" type="date" required></div>
+          <div class="form-row"><label for="lastName">Last name<span class="req">*</span></label><input id="lastName" required></div>
+          <div class="form-row"><label for="dateOfBirth">Date of birth<span class="req">*</span></label><input id="dateOfBirth" type="date" required></div>
         </div>
         <div class="form-row-2col">
-          <div class="form-row"><label for="gender">Gender</label><select id="gender" required><option value="">Select gender</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+          <div class="form-row"><label for="gender">Gender<span class="req">*</span></label><select id="gender" required><option value="">Select gender</option><option>Male</option><option>Female</option><option>Other</option></select></div>
           <div class="form-row"><label for="bloodGroup">Blood group</label><input id="bloodGroup" placeholder="O+"></div>
         </div>
-        <div class="form-row"><label for="address">Address</label><textarea id="address" required></textarea></div>
+        <div class="form-row"><label for="address">Address<span class="req">*</span></label><textarea id="address" required></textarea></div>
         <div class="form-row-2col">
-          <div class="form-row"><label for="countryId">Country</label><select id="countryId" required></select></div>
-          <div class="form-row"><label for="stateId">State</label><select id="stateId" required><option value="">Select state</option></select></div>
+          <div class="form-row"><label for="countryId">Country<span class="req">*</span></label><select id="countryId" required></select></div>
+          <div class="form-row"><label for="stateId">State<span class="req">*</span></label><select id="stateId" required><option value="">Select state</option></select></div>
         </div>
         <div class="form-row-2col">
-          <div class="form-row"><label for="cityId">City</label><select id="cityId" required><option value="">Select city</option></select></div>
+          <div class="form-row"><label for="cityId">City<span class="req">*</span></label><select id="cityId" required><option value="">Select city</option></select></div>
           <div class="form-row"><label for="emergencyContact">Emergency contact</label><input id="emergencyContact" placeholder="+91..."></div>
         </div>
         <div class="modal-actions" style="justify-content: flex-start;">
@@ -110,8 +110,8 @@
         <div class="card-sub">Update your password securely.</div>
         <div id="passwordAlert" class="form-alert error" hidden></div>
         <form id="passwordForm" novalidate>
-          <div class="form-row"><label for="currentPassword">Current password</label><input id="currentPassword" type="password" required></div>
-          <div class="form-row"><label for="newPassword">New password</label><input id="newPassword" type="password" required minlength="8"></div>
+          <div class="form-row"><label for="currentPassword">Current password<span class="req">*</span></label><input id="currentPassword" type="password" required></div>
+          <div class="form-row"><label for="newPassword">New password<span class="req">*</span></label><input id="newPassword" type="password" required minlength="8"></div>
           <button class="btn btn-solid" type="submit">Update password</button>
         </form>
       </div>

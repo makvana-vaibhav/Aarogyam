@@ -1222,6 +1222,12 @@ a.list-item:hover,
 .optional-section .optional-body { display: none; margin-top: 14px; }
 .optional-section.open .optional-body { display: block; }
 
+.req {
+  color: #d9534f;
+  font-weight: bold;
+  margin-left: 3px;
+}
+
 .lookup-row { display: flex; gap: 10px; }
 .lookup-row input { flex: 1; }
 

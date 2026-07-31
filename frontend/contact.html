@@ -77,11 +77,11 @@
 
         <form class="contact-form reveal d1" action="mailto:support@aarogyam.health" method="post" enctype="text/plain">
           <div class="form-row">
-            <label for="cf-name">Your name</label>
+            <label for="cf-name">Your name<span class="req">*</span></label>
             <input id="cf-name" name="name" type="text" placeholder="Jane Mehta" required>
           </div>
           <div class="form-row">
-            <label for="cf-email">Email</label>
+            <label for="cf-email">Email<span class="req">*</span></label>
             <input id="cf-email" name="email" type="email" placeholder="jane@mail.com" required>
           </div>
           <div class="form-row">
@@ -95,7 +95,7 @@
             </select>
           </div>
           <div class="form-row">
-            <label for="cf-msg">Message</label>
+            <label for="cf-msg">Message<span class="req">*</span></label>
             <textarea id="cf-msg" name="message" placeholder="What's on your mind?" required></textarea>
           </div>
           <button class="btn btn-solid btn-lg" type="submit">Send message <span class="arr">→</span></button>
