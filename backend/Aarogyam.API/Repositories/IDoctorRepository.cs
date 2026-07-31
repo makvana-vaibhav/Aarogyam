@@ -6,6 +6,8 @@ namespace Aarogyam.API.Repositories;
 public interface IDoctorRepository
 {
     Task<DoctorMasterRow?> GetProfileByUserIdAsync(int userId);
+    Task<SimpleResult?> UpdateProfileAsync(int doctorId, UpdateDoctorProfileRequest request);
+    Task<SimpleResult?> ChangePasswordAsync(int userId, string currentPassword, string newPassword);
     Task<DoctorDashboardStatsResult?> GetDashboardStatsAsync(int doctorId);
     Task<List<DoctorPatientRow>> GetMyPatientsAsync(int doctorId, string? search);
     Task<List<PatientMasterRow>> SearchPatientsAsync(string? aarogyamId, string? searchName);
@@ -15,6 +17,8 @@ public interface IDoctorRepository
     Task<List<DiagnosisRow>> GetPatientDiagnosesAsync(int patientId, int? diagnosisTypeId);
     Task<List<MedicalReportRow>> GetPatientReportsAsync(int patientId);
     Task<List<PrescriptionRow>> GetPatientPrescriptionsAsync(int patientId);
+    Task<PrescriptionDetailsRow?> GetPrescriptionDetailsAsync(int prescriptionId);
+    Task<string?> GetOrGeneratePrescriptionPdfPathAsync(int prescriptionId);
     Task<MedicalReportRow?> GetReportByIdAsync(int reportId);
     Task<List<NotificationRow>> GetNotificationsAsync(int userId, bool unreadOnly);
     Task<SimpleResult?> MarkNotificationReadAsync(int notificationId, int userId);

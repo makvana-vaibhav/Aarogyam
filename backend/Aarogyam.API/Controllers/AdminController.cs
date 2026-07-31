@@ -13,10 +13,12 @@ namespace Aarogyam.API.Controllers;
 public class AdminController : ControllerBase
 {
     private readonly IAdminRepository _adminRepository;
+    private readonly IAuditLogRepository _auditLogRepository;
 
-    public AdminController(IAdminRepository adminRepository)
+    public AdminController(IAdminRepository adminRepository, IAuditLogRepository auditLogRepository)
     {
         _adminRepository = adminRepository;
+        _auditLogRepository = auditLogRepository;
     }
 
     // ================= Role Master =================
@@ -38,21 +40,36 @@ public class AdminController : ControllerBase
     public async Task<IActionResult> CreateRole([FromBody] RoleRequest request)
     {
         var result = await _adminRepository.CreateRoleAsync(request);
-        return result?.Success == 1 ? Ok(result) : BadRequest(result);
+        if (result?.Success == 1)
+        {
+            await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "CREATE", "RoleMaster", result.RoleId ?? 0);
+            return Ok(result);
+        }
+        return BadRequest(result);
     }
 
     [HttpPut("master/roles/{id:int}")]
     public async Task<IActionResult> UpdateRole(int id, [FromBody] RoleRequest request)
     {
         var result = await _adminRepository.UpdateRoleAsync(id, request);
-        return result?.Success == 1 ? Ok(result) : BadRequest(result);
+        if (result?.Success == 1)
+        {
+            await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "UPDATE", "RoleMaster", id);
+            return Ok(result);
+        }
+        return BadRequest(result);
     }
 
     [HttpDelete("master/roles/{id:int}")]
     public async Task<IActionResult> DeleteRole(int id)
     {
         var result = await _adminRepository.DeleteRoleAsync(id);
-        return result?.Success == 1 ? Ok(result) : BadRequest(result);
+        if (result?.Success == 1)
+        {
+            await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "DELETE", "RoleMaster", id);
+            return Ok(result);
+        }
+        return BadRequest(result);
     }
 
     // ================= Country Master =================
@@ -74,21 +91,36 @@ public class AdminController : ControllerBase
     public async Task<IActionResult> CreateCountry([FromBody] CountryRequest request)
     {
         var result = await _adminRepository.CreateCountryAsync(request);
-        return result?.Success == 1 ? Ok(result) : BadRequest(result);
+        if (result?.Success == 1)
+        {
+            await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "CREATE", "CountryMaster", result.CountryId ?? 0);
+            return Ok(result);
+        }
+        return BadRequest(result);
     }
 
     [HttpPut("master/countries/{id:int}")]
     public async Task<IActionResult> UpdateCountry(int id, [FromBody] CountryRequest request)
     {
         var result = await _adminRepository.UpdateCountryAsync(id, request);
-        return result?.Success == 1 ? Ok(result) : BadRequest(result);
+        if (result?.Success == 1)
+        {
+            await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "UPDATE", "CountryMaster", id);
+            return Ok(result);
+        }
+        return BadRequest(result);
     }
 
     [HttpDelete("master/countries/{id:int}")]
     public async Task<IActionResult> DeleteCountry(int id)
     {
         var result = await _adminRepository.DeleteCountryAsync(id);
-        return result?.Success == 1 ? Ok(result) : BadRequest(result);
+        if (result?.Success == 1)
+        {
+            await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "DELETE", "CountryMaster", id);
+            return Ok(result);
+        }
+        return BadRequest(result);
     }
 
     // ================= State Master =================
@@ -110,21 +142,36 @@ public class AdminController : ControllerBase
     public async Task<IActionResult> CreateState([FromBody] StateRequest request)
     {
         var result = await _adminRepository.CreateStateAsync(request);
-        return result?.Success == 1 ? Ok(result) : BadRequest(result);
+        if (result?.Success == 1)
+        {
+            await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "CREATE", "StateMaster", result.StateId ?? 0);
+            return Ok(result);
+        }
+        return BadRequest(result);
     }
 
     [HttpPut("master/states/{id:int}")]
     public async Task<IActionResult> UpdateState(int id, [FromBody] StateRequest request)
     {
         var result = await _adminRepository.UpdateStateAsync(id, request);
-        return result?.Success == 1 ? Ok(result) : BadRequest(result);
+        if (result?.Success == 1)
+        {
+            await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "UPDATE", "StateMaster", id);
+            return Ok(result);
+        }
+        return BadRequest(result);
     }
 
     [HttpDelete("master/states/{id:int}")]
     public async Task<IActionResult> DeleteState(int id)
     {
         var result = await _adminRepository.DeleteStateAsync(id);
-        return result?.Success == 1 ? Ok(result) : BadRequest(result);
+        if (result?.Success == 1)
+        {
+            await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "DELETE", "StateMaster", id);
+            return Ok(result);
+        }
+        return BadRequest(result);
     }
 
     // ================= City Master =================
@@ -146,21 +193,36 @@ public class AdminController : ControllerBase
     public async Task<IActionResult> CreateCity([FromBody] CityRequest request)
     {
         var result = await _adminRepository.CreateCityAsync(request);
-        return result?.Success == 1 ? Ok(result) : BadRequest(result);
+        if (result?.Success == 1)
+        {
+            await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "CREATE", "CityMaster", result.CityId ?? 0);
+            return Ok(result);
+        }
+        return BadRequest(result);
     }
 
     [HttpPut("master/cities/{id:int}")]
     public async Task<IActionResult> UpdateCity(int id, [FromBody] CityRequest request)
     {
         var result = await _adminRepository.UpdateCityAsync(id, request);
-        return result?.Success == 1 ? Ok(result) : BadRequest(result);
+        if (result?.Success == 1)
+        {
+            await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "UPDATE", "CityMaster", id);
+            return Ok(result);
+        }
+        return BadRequest(result);
     }
 
     [HttpDelete("master/cities/{id:int}")]
     public async Task<IActionResult> DeleteCity(int id)
     {
         var result = await _adminRepository.DeleteCityAsync(id);
-        return result?.Success == 1 ? Ok(result) : BadRequest(result);
+        if (result?.Success == 1)
+        {
+            await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "DELETE", "CityMaster", id);
+            return Ok(result);
+        }
+        return BadRequest(result);
     }
 
     // ================= Hospital Master =================
@@ -182,21 +244,36 @@ public class AdminController : ControllerBase
     public async Task<IActionResult> CreateHospital([FromBody] HospitalRequest request)
     {
         var result = await _adminRepository.CreateHospitalAsync(request);
-        return result?.Success == 1 ? Ok(result) : BadRequest(result);
+        if (result?.Success == 1)
+        {
+            await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "CREATE", "HospitalMaster", result.HospitalId ?? 0);
+            return Ok(result);
+        }
+        return BadRequest(result);
     }
 
     [HttpPut("master/hospitals/{id:int}")]
     public async Task<IActionResult> UpdateHospital(int id, [FromBody] HospitalRequest request)
     {
         var result = await _adminRepository.UpdateHospitalAsync(id, request);
-        return result?.Success == 1 ? Ok(result) : BadRequest(result);
+        if (result?.Success == 1)
+        {
+            await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "UPDATE", "HospitalMaster", id);
+            return Ok(result);
+        }
+        return BadRequest(result);
     }
 
     [HttpDelete("master/hospitals/{id:int}")]
     public async Task<IActionResult> DeleteHospital(int id)
     {
         var result = await _adminRepository.DeleteHospitalAsync(id);
-        return result?.Success == 1 ? Ok(result) : BadRequest(result);
+        if (result?.Success == 1)
+        {
+            await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "DELETE", "HospitalMaster", id);
+            return Ok(result);
+        }
+        return BadRequest(result);
     }
 
     // ================= Degree Master =================
@@ -218,21 +295,36 @@ public class AdminController : ControllerBase
     public async Task<IActionResult> CreateDegree([FromBody] DegreeRequest request)
     {
         var result = await _adminRepository.CreateDegreeAsync(request);
-        return result?.Success == 1 ? Ok(result) : BadRequest(result);
+        if (result?.Success == 1)
+        {
+            await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "CREATE", "DegreeMaster", result.DegreeId ?? 0);
+            return Ok(result);
+        }
+        return BadRequest(result);
     }
 
     [HttpPut("master/degrees/{id:int}")]
     public async Task<IActionResult> UpdateDegree(int id, [FromBody] DegreeRequest request)
     {
         var result = await _adminRepository.UpdateDegreeAsync(id, request);
-        return result?.Success == 1 ? Ok(result) : BadRequest(result);
+        if (result?.Success == 1)
+        {
+            await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "UPDATE", "DegreeMaster", id);
+            return Ok(result);
+        }
+        return BadRequest(result);
     }
 
     [HttpDelete("master/degrees/{id:int}")]
     public async Task<IActionResult> DeleteDegree(int id)
     {
         var result = await _adminRepository.DeleteDegreeAsync(id);
-        return result?.Success == 1 ? Ok(result) : BadRequest(result);
+        if (result?.Success == 1)
+        {
+            await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "DELETE", "DegreeMaster", id);
+            return Ok(result);
+        }
+        return BadRequest(result);
     }
 
     // ================= Specialization Master =================
@@ -254,21 +346,36 @@ public class AdminController : ControllerBase
     public async Task<IActionResult> CreateSpecialization([FromBody] SpecializationRequest request)
     {
         var result = await _adminRepository.CreateSpecializationAsync(request);
-        return result?.Success == 1 ? Ok(result) : BadRequest(result);
+        if (result?.Success == 1)
+        {
+            await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "CREATE", "SpecializationMaster", result.SpecializationId ?? 0);
+            return Ok(result);
+        }
+        return BadRequest(result);
     }
 
     [HttpPut("master/specializations/{id:int}")]
     public async Task<IActionResult> UpdateSpecialization(int id, [FromBody] SpecializationRequest request)
     {
         var result = await _adminRepository.UpdateSpecializationAsync(id, request);
-        return result?.Success == 1 ? Ok(result) : BadRequest(result);
+        if (result?.Success == 1)
+        {
+            await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "UPDATE", "SpecializationMaster", id);
+            return Ok(result);
+        }
+        return BadRequest(result);
     }
 
     [HttpDelete("master/specializations/{id:int}")]
     public async Task<IActionResult> DeleteSpecialization(int id)
     {
         var result = await _adminRepository.DeleteSpecializationAsync(id);
-        return result?.Success == 1 ? Ok(result) : BadRequest(result);
+        if (result?.Success == 1)
+        {
+            await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "DELETE", "SpecializationMaster", id);
+            return Ok(result);
+        }
+        return BadRequest(result);
     }
 
     // ================= Diagnosis Type Master =================
@@ -290,21 +397,36 @@ public class AdminController : ControllerBase
     public async Task<IActionResult> CreateDiagnosisType([FromBody] DiagnosisTypeRequest request)
     {
         var result = await _adminRepository.CreateDiagnosisTypeAsync(request);
-        return result?.Success == 1 ? Ok(result) : BadRequest(result);
+        if (result?.Success == 1)
+        {
+            await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "CREATE", "DiagnosisTypeMaster", result.DiagnosisTypeId ?? 0);
+            return Ok(result);
+        }
+        return BadRequest(result);
     }
 
     [HttpPut("master/diagnosis-types/{id:int}")]
     public async Task<IActionResult> UpdateDiagnosisType(int id, [FromBody] DiagnosisTypeRequest request)
     {
         var result = await _adminRepository.UpdateDiagnosisTypeAsync(id, request);
-        return result?.Success == 1 ? Ok(result) : BadRequest(result);
+        if (result?.Success == 1)
+        {
+            await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "UPDATE", "DiagnosisTypeMaster", id);
+            return Ok(result);
+        }
+        return BadRequest(result);
     }
 
     [HttpDelete("master/diagnosis-types/{id:int}")]
     public async Task<IActionResult> DeleteDiagnosisType(int id)
     {
         var result = await _adminRepository.DeleteDiagnosisTypeAsync(id);
-        return result?.Success == 1 ? Ok(result) : BadRequest(result);
+        if (result?.Success == 1)
+        {
+            await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "DELETE", "DiagnosisTypeMaster", id);
+            return Ok(result);
+        }
+        return BadRequest(result);
     }
 
     // ================= User Management =================
@@ -327,7 +449,12 @@ public class AdminController : ControllerBase
     {
         var result = await _adminRepository.ActivateUserAsync(id);
         if (result is null) return NotFound(new { success = 0, message = "User not found." });
-        return result.Success == 1 ? Ok(result) : BadRequest(result);
+        if (result.Success == 1)
+        {
+            await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "ACTIVATE_USER", "Users", id);
+            return Ok(result);
+        }
+        return BadRequest(result);
     }
 
     [HttpPut("users/{id:int}/deactivate")]
@@ -335,7 +462,12 @@ public class AdminController : ControllerBase
     {
         var result = await _adminRepository.DeactivateUserAsync(id);
         if (result is null) return NotFound(new { success = 0, message = "User not found." });
-        return result.Success == 1 ? Ok(result) : BadRequest(result);
+        if (result.Success == 1)
+        {
+            await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "DEACTIVATE_USER", "Users", id);
+            return Ok(result);
+        }
+        return BadRequest(result);
     }
 
     // ================= Doctor Verification =================

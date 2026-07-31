@@ -127,6 +127,8 @@
 
   var DoctorAPI = {
     profile: function () { return apiRequest("/doctor/profile"); },
+    updateProfile: function (payload) { return apiRequest("/doctor/profile", { method: "PUT", body: payload }); },
+    changePassword: function (payload) { return apiRequest("/doctor/change-password", { method: "PUT", body: payload }); },
     dashboard: function () { return apiRequest("/doctor/dashboard"); },
     myPatients: function (search) { return apiRequest("/doctor/patients" + qs({ search: search })); },
     searchPatients: function (aarogyamId, searchName) { return apiRequest("/doctor/patients/search" + qs({ aarogyamId: aarogyamId, searchName: searchName })); },
@@ -135,6 +137,8 @@
     getPatientDiagnoses: function (id, diagnosisTypeId) { return apiRequest("/doctor/patients/" + id + "/diagnoses" + qs({ diagnosisTypeId: diagnosisTypeId })); },
     getPatientReports: function (id) { return apiRequest("/doctor/patients/" + id + "/reports"); },
     getPatientPrescriptions: function (id) { return apiRequest("/doctor/patients/" + id + "/prescriptions"); },
+    getPrescriptionDetails: function (id) { return apiRequest("/doctor/prescriptions/" + id); },
+    downloadPrescription: function (id) { return apiRequest("/doctor/prescriptions/" + id + "/download", { responseType: "blob" }); },
     createVisit: function (payload) { return apiRequest("/doctor/visits", { method: "POST", body: payload }); },
     createDiagnosis: function (payload) { return apiRequest("/doctor/diagnoses", { method: "POST", body: payload }); },
     createPrescription: function (payload) { return apiRequest("/doctor/prescriptions", { method: "POST", body: payload }); },
@@ -142,7 +146,12 @@
     downloadReport: function (id) { return apiRequest("/doctor/reports/" + id + "/download", { responseType: "blob" }); },
     notifications: function (unreadOnly) { return apiRequest("/doctor/notifications" + qs({ unreadOnly: unreadOnly })); },
     markNotificationRead: function (id) { return apiRequest("/doctor/notifications/" + id + "/read", { method: "PUT" }); },
-    diagnosisTypes: function () { return apiRequest("/lookup/diagnosis-types"); }
+    diagnosisTypes: function () { return apiRequest("/lookup/diagnosis-types"); },
+    countries: function () { return apiRequest("/lookup/countries"); },
+    states: function (countryId) { return apiRequest("/lookup/states" + qs({ countryId: countryId })); },
+    cities: function (stateId) { return apiRequest("/lookup/cities" + qs({ stateId: stateId })); },
+    hospitals: function () { return apiRequest("/lookup/hospitals"); },
+    specializations: function () { return apiRequest("/lookup/specializations"); }
   };
 
   function requireDoctorAuth() {
@@ -160,38 +169,105 @@
   }
 
   function logout() {
+    if (!window.confirm("Log out of Aarogyam?")) return;
     clearSession();
     window.location.href = "../login.html";
   }
 
-  function initShell(user) {
-    var emailEl = document.getElementById("doctorEmail");
-    if (emailEl) emailEl.textContent = user.email || "Doctor";
+  function renderNotifPopoverList(rows) {
+    var mount = document.getElementById("notifPopoverList");
+    if (!mount) return;
+    var list = rows.slice(0, 6);
+    if (!list.length) {
+      mount.innerHTML = '<div class="empty-state">You are all caught up.</div>';
+      return;
+    }
+    mount.innerHTML = list.map(function (item) {
+      return '<article class="list-item unread">' +
+        '<div class="list-item-main">' +
+          '<div class="row-title">' + escapeHtml(item.title) + '</div>' +
+          '<div class="row-sub pre-wrap">' + escapeHtml(item.message) + '</div>' +
+          '<div class="list-meta">' + escapeHtml(formatRelativeTime(item.createdAt)) + '</div>' +
+        '</div>' +
+        '<button class="btn btn-ghost btn-sm" type="button" data-read-notification="' + item.notificationId + '">Mark read</button>' +
+      '</article>';
+    }).join("");
+  }
 
+  async function refreshNotifDot() {
+    var dot = document.getElementById("notifDot");
+    if (!dot) return;
+    try {
+      var unread = await DoctorAPI.notifications(true);
+      dot.hidden = !unread.length;
+    } catch (e) {
+      dot.hidden = true;
+    }
+  }
+
+  async function loadNotifPopover() {
+    var mount = document.getElementById("notifPopoverList");
+    if (!mount) return;
+    mount.innerHTML = '<div class="table-loading">Loading…</div>';
+    try {
+      var rows = await DoctorAPI.notifications(true);
+      renderNotifPopoverList(rows);
+    } catch (err) {
+      mount.innerHTML = '<div class="form-alert error">' + escapeHtml(err.message) + '</div>';
+    }
+  }
+
+  function initShell(user) {
     var logoutBtn = document.getElementById("logoutBtn");
     if (logoutBtn) logoutBtn.addEventListener("click", logout);
 
-    var sidebarToggle = document.getElementById("sidebarToggle");
-    var scrim = document.getElementById("sidebarScrim");
-    function closeSidebar() { document.body.classList.remove("sidebar-open"); }
-    if (sidebarToggle) sidebarToggle.addEventListener("click", function () { document.body.classList.toggle("sidebar-open"); });
-    if (scrim) scrim.addEventListener("click", closeSidebar);
-    document.querySelectorAll(".admin-sidebar a").forEach(function (link) {
-      link.addEventListener("click", closeSidebar);
-    });
-
-    var themeToggle = document.getElementById("themeToggle");
-    if (themeToggle) {
-      themeToggle.addEventListener("click", function () {
-        var current = document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
-        var next = current === "dark" ? "light" : "dark";
-        document.documentElement.setAttribute("data-theme", next);
-        try { localStorage.setItem("aarogyam-theme", next); } catch (e) {}
+    var mobileToggle = document.getElementById("mobileNavToggle");
+    if (mobileToggle) {
+      mobileToggle.addEventListener("click", function () {
+        document.body.classList.toggle("pt-nav-open");
       });
     }
 
+    function closeAllPopovers() {
+      document.querySelectorAll(".pt-popover").forEach(function (p) { p.hidden = true; });
+    }
+    function setupPopover(btnId, popoverId, onOpen) {
+      var btn = document.getElementById(btnId);
+      var pop = document.getElementById(popoverId);
+      if (!btn || !pop) return;
+      btn.addEventListener("click", function (event) {
+        event.stopPropagation();
+        var willOpen = pop.hidden;
+        closeAllPopovers();
+        if (willOpen) {
+          pop.hidden = false;
+          if (onOpen) onOpen();
+        }
+      });
+      pop.addEventListener("click", function (event) { event.stopPropagation(); });
+    }
+    document.addEventListener("click", closeAllPopovers);
+
+    setupPopover("avatarBtn", "avatarPopover");
+    setupPopover("notifBellBtn", "notifPopover", loadNotifPopover);
+
+    var notifPopoverList = document.getElementById("notifPopoverList");
+    if (notifPopoverList) {
+      notifPopoverList.addEventListener("click", async function (event) {
+        var id = event.target.getAttribute("data-read-notification");
+        if (!id) return;
+        try {
+          await DoctorAPI.markNotificationRead(id);
+          await loadNotifPopover();
+          refreshNotifDot();
+        } catch (e) {}
+      });
+    }
+
+    refreshNotifDot();
+
     var currentPage = window.location.pathname.split("/").pop() || "overview.html";
-    document.querySelectorAll(".admin-nav a").forEach(function (link) {
+    document.querySelectorAll(".pt-links a, .pt-mobile-links a").forEach(function (link) {
       if ((link.getAttribute("href") || "").split("?")[0] === currentPage) {
         link.classList.add("active");
       }

@@ -5,80 +5,93 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Overview — Aarogyam Patient</title>
 <meta name="robots" content="noindex, nofollow">
-<script>
-  (function () {
-    try {
-      if (localStorage.getItem("aarogyam-theme") === "dark") {
-        document.documentElement.setAttribute("data-theme", "dark");
-      }
-    } catch (e) {}
-  })();
-</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css?v=5">
 </head>
 <body data-page="overview">
-<div class="sidebar-scrim" id="sidebarScrim"></div>
-<aside class="admin-sidebar">
-  <div class="sidebar-brand"><svg width="24" height="24" viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect x="1.5" y="1.5" width="29" height="29" rx="8.5" stroke="#52b788" stroke-width="1.5"/><path d="M7 17h5l2.5-6 3.5 10 2.5-6.5L22 17h3" stroke="#74c69d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Aarogyam <small>Patient</small></div>
-  <nav class="admin-nav">
-    <div class="nav-label">Patient module</div>
+<header class="pt-topnav">
+  <div class="pt-topnav-inner">
+    <a class="pt-brand" href="overview.html"><svg width="24" height="24" viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect x="1.5" y="1.5" width="29" height="29" rx="8.5" stroke="#2d6a4f" stroke-width="1.5"/><path d="M7 17h5l2.5-6 3.5 10 2.5-6.5L22 17h3" stroke="#40916c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Aarogyam</a>
+    <nav class="pt-links">
+      <a href="overview.html">Overview</a>
+      <a href="medical-history.html">Medical History</a>
+      <a href="reports.html">Reports</a>
+    </nav>
+    <div class="pt-actions">
+      <div>
+        <button class="pt-icon-btn" id="notifBellBtn" type="button" aria-label="Notifications">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+          <span class="pt-dot" id="notifDot" hidden></span>
+        </button>
+        <div class="pt-popover" id="notifPopover" hidden>
+          <div class="pt-popover-head">Unread notifications</div>
+          <div class="pt-popover-list" id="notifPopoverList"><div class="table-loading">Loading…</div></div>
+        </div>
+      </div>
+      <div>
+        <button class="pt-avatar-btn" id="avatarBtn" type="button" aria-label="Account"><span class="avatar-circle small" id="sidebarInitials">P</span></button>
+        <div class="pt-popover" id="avatarPopover" hidden>
+          <div class="pt-account-card"><div class="pt-account-name" id="sidebarProfileName">Patient</div><div class="pt-account-meta" id="sidebarProfileMeta">Aarogyam ID</div></div>
+          <div class="pt-popover-menu">
+            <a href="profile.html">Profile &amp; settings</a>
+            <button class="danger" id="logoutBtn" type="button">Log out</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="pt-mobile-toggle" id="mobileNavToggle" type="button" aria-label="Menu"><span></span></button>
+  </div>
+  <nav class="pt-mobile-links">
     <a href="overview.html">Overview</a>
-    <a href="profile.html">Profile</a>
-    <a href="medical-history.html">Medical history</a>
+    <a href="medical-history.html">Medical History</a>
     <a href="reports.html">Reports</a>
-    <a href="prescriptions.html">Prescriptions</a>
-    <a href="notifications.html">Notifications<span class="nav-count" id="navNotificationCount" hidden>0</span></a>
-    <a href="health-card.html">QR health card</a>
   </nav>
-  <div class="sidebar-foot">
-    <div class="sidebar-profile">
-      <div class="avatar-circle small" id="sidebarInitials">P</div>
-      <div><div class="row-title" id="sidebarProfileName">Patient</div><div class="row-sub" id="sidebarProfileMeta">Aarogyam ID</div></div>
+</header>
+<main class="pt-main">
+  <div class="pt-content pt-dash">
+    <div class="page-head-row"><div><h2 id="welcomeHeading">Good day</h2><p>A quick snapshot of your health record.</p></div></div>
+    <div class="stat-grid" id="statGrid"><div class="table-loading">Loading dashboard…</div></div>
+
+    <div class="grid-2 grid-2-equal dashboard-grid">
+      <div class="card">
+        <div class="card-title">Aarogyam health card</div>
+        <div class="card-sub">Scan this at any registered facility.</div>
+        <div class="health-card compact-top"><div class="hc-head"><b>AAROGYAM · HEALTH IDENTITY</b></div><div class="hc-body"><div class="hc-info" id="healthCardInfo"></div><div class="hc-qr"><img id="healthCardQr" alt="Patient health card QR code"></div></div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Quick actions</div>
+        <div class="card-sub">Manage your Aarogyam ID and profile.</div>
+        <div class="quick-actions compact-top">
+          <button class="quick-action-btn" id="downloadCardBtn" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12m0 0l-4-4m4 4l4-4"/><path d="M4 18v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1"/></svg>
+            Download Aarogyam card
+          </button>
+          <button class="quick-action-btn" id="copyAarogyamIdBtn" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M4 16V5a1 1 0 0 1 1-1h11"/></svg>
+            Copy Aarogyam ID
+          </button>
+          <button class="quick-action-btn" id="downloadProfilePdfBtn" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h6"/></svg>
+            Download profile PDF
+          </button>
+          <a class="quick-action-btn" href="profile.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m0 0l-5-5m5 5l-5 5"/></svg>
+            View full profile
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card section-space">
+      <div class="page-head-row section-head"><div><div class="card-title">Recent visits</div><div class="card-sub">Your most recent consultations.</div></div><a class="btn btn-ghost btn-sm" href="medical-history.html">View full history</a></div>
+      <div id="timelineList" class="timeline"><div class="table-loading">Loading visits…</div></div>
     </div>
   </div>
-</aside>
-<div class="admin-main">
-  <header class="admin-topbar">
-    <button class="sidebar-toggle" id="sidebarToggle" aria-label="Menu"><span></span></button>
-    <h1>Overview</h1>
-    <div class="topbar-actions">
-      <button class="theme-toggle" id="themeToggle" aria-label="Toggle color theme"><svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></svg><svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M4.4 4.4l1.7 1.7M17.9 17.9l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.4 19.6l1.7-1.7M17.9 6.1l1.7-1.7"/></svg></button>
-      <span class="admin-user"><span class="dot"></span><span id="patientEmail">—</span></span>
-      <button class="btn btn-ghost btn-sm" id="logoutBtn" type="button">Log out</button>
-    </div>
-  </header>
-  <main class="admin-content">
-    <div class="page-head-row"><div><h2 id="welcomeHeading">Your health overview</h2><p>A snapshot of your visits, reports, prescriptions and care reminders.</p></div><a class="btn btn-solid btn-sm" href="reports.html">Upload report</a></div>
-    <div class="stat-grid" id="statGrid"><div class="table-loading">Loading dashboard…</div></div>
-    <div class="grid-2 dashboard-grid">
-      <div>
-        <div class="card hero-card">
-          <div class="hero-head"><div class="avatar-circle" id="patientInitials">P</div><div><div class="card-title" id="profileName">Loading patient profile…</div><div class="card-sub" id="profileMeta">Pulling your health ID and care details.</div></div></div>
-          <div class="detail-grid compact-top" id="profileDetails"></div>
-        </div>
-        <div class="card">
-          <div class="page-head-row section-head"><div><div class="card-title">Recent medical history</div><div class="card-sub">Latest visits and diagnoses from your timeline.</div></div><a class="btn btn-ghost btn-sm" href="medical-history.html">View full history</a></div>
-          <div id="timelineList" class="timeline"><div class="table-loading">Loading timeline…</div></div>
-        </div>
-      </div>
-      <div>
-        <div class="card">
-          <div class="page-head-row section-head"><div><div class="card-title">QR health card</div><div class="card-sub">Show your Aarogyam ID at any registered facility.</div></div><a class="btn btn-ghost btn-sm" href="health-card.html">Open card</a></div>
-          <div class="health-card"><div class="hc-head"><b>Aarogyam Health Card</b></div><div class="hc-body"><div class="hc-info" id="healthCardInfo"></div><div class="hc-qr"><img id="healthCardQr" alt="Patient health card QR code"></div></div></div>
-        </div>
-        <div class="card">
-          <div class="page-head-row section-head"><div><div class="card-title">Notifications</div><div class="card-sub">Unread updates and care reminders.</div></div><a class="btn btn-ghost btn-sm" href="notifications.html">Open all</a></div>
-          <div id="notificationList" class="stack-list"><div class="table-loading">Loading notifications…</div></div>
-        </div>
-      </div>
-    </div>
-  </main>
-</div>
+</main>
 <div id="toastHost"></div>
-<script src="app.js"></script>
-<script src="portal.js"></script>
+<script src="app.js?v=3"></script>
+<script src="portal.js?v=3"></script>
 </body>
 </html>

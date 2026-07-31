@@ -10,11 +10,12 @@ namespace Aarogyam.API.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IAuthRepository _authRepository;
+    private readonly IAuditLogRepository _auditLogRepository;
 
-
-    public AuthController(IAuthRepository authRepository)
+    public AuthController(IAuthRepository authRepository, IAuditLogRepository auditLogRepository)
     {
         _authRepository = authRepository;
+        _auditLogRepository = auditLogRepository;
     }
 
     [HttpPost("register/patient")]
@@ -36,6 +37,11 @@ public class AuthController : ControllerBase
         if (result.Success == 0)
         {
             return BadRequest(result);
+        }
+
+        if (result.UserId.HasValue)
+        {
+            await _auditLogRepository.LogAsync(result.UserId, "REGISTER", "Patients", result.UserId.Value);
         }
 
         return Ok(result);
@@ -60,6 +66,11 @@ public class AuthController : ControllerBase
             return BadRequest(result);
         }
 
+        if (result.UserId.HasValue)
+        {
+            await _auditLogRepository.LogAsync(result.UserId, "REGISTER", "Doctors", result.UserId.Value);
+        }
+
         return Ok(result);
     }
 
@@ -81,6 +92,8 @@ public class AuthController : ControllerBase
         {
             return BadRequest(result);
         }
+
+        await _auditLogRepository.LogAsync(request.UserId, "VERIFY_OTP", "Users", request.UserId);
 
         return Ok(result);
     }
@@ -104,6 +117,11 @@ public class AuthController : ControllerBase
             return Unauthorized(result);
         }
 
+        if (result.UserId.HasValue)
+        {
+            await _auditLogRepository.LogAsync(result.UserId, "LOGIN", "Users", result.UserId.Value);
+        }
+
         return Ok(result);
     }
 
@@ -125,6 +143,79 @@ public class AuthController : ControllerBase
         {
             return BadRequest(result);
         }
+
+        return Ok(result);
+    }
+
+    [HttpPost("forgot-password")]
+    public async Task<ActionResult<ForgotPasswordResult>> ForgotPassword([FromBody] ForgotPasswordRequest request)
+    {
+        var result = await _authRepository.ForgotPasswordAsync(request);
+
+        if (result is null)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, new ForgotPasswordResult
+            {
+                Success = 0,
+                Message = "Unable to process forgot password request."
+            });
+        }
+
+        if (result.Success == 0)
+        {
+            return BadRequest(result);
+        }
+
+        if (result.UserId.HasValue)
+        {
+            await _auditLogRepository.LogAsync(result.UserId, "FORGOT_PASSWORD_REQUEST", "Users", result.UserId.Value);
+        }
+
+        return Ok(result);
+    }
+
+    [HttpPost("verify-forgot-otp")]
+    public async Task<ActionResult<SimpleResult>> VerifyForgotOtp([FromBody] VerifyForgotOtpRequest request)
+    {
+        var result = await _authRepository.VerifyForgotOtpAsync(request);
+
+        if (result is null)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, new SimpleResult
+            {
+                Success = 0,
+                Message = "Unable to verify OTP code."
+            });
+        }
+
+        if (result.Success == 0)
+        {
+            return BadRequest(result);
+        }
+
+        return Ok(result);
+    }
+
+    [HttpPost("reset-password")]
+    public async Task<ActionResult<SimpleResult>> ResetPassword([FromBody] ResetPasswordRequest request)
+    {
+        var result = await _authRepository.ResetPasswordAsync(request);
+
+        if (result is null)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, new SimpleResult
+            {
+                Success = 0,
+                Message = "Unable to reset password."
+            });
+        }
+
+        if (result.Success == 0)
+        {
+            return BadRequest(result);
+        }
+
+        await _auditLogRepository.LogAsync(request.UserId, "RESET_PASSWORD", "Users", request.UserId);
 
         return Ok(result);
     }

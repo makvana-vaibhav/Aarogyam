@@ -20,6 +20,8 @@ public class AarogyamDbContext : DbContext
 
     public DbSet<ResendOtpResult> ResendOtpResults { get; set; }
 
+    public DbSet<ForgotPasswordResult> ForgotPasswordResults { get; set; }
+
     public DbSet<OtpManageResult> OtpManageResults { get; set; }
 
     public DbSet<DoctorApprovalResult> DoctorApprovalResults { get; set; }
@@ -113,6 +115,12 @@ public class AarogyamDbContext : DbContext
         });
 
         modelBuilder.Entity<ResendOtpResult>(entity =>
+        {
+            entity.HasNoKey();
+            entity.ToView(null);
+        });
+
+        modelBuilder.Entity<ForgotPasswordResult>(entity =>
         {
             entity.HasNoKey();
             entity.ToView(null);

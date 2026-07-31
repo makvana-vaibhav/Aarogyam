@@ -7,8 +7,7 @@
 
   var page = document.body.getAttribute("data-page");
   var state = {
-    profile: null,
-    notifications: []
+    profile: null
   };
 
   function $(id) { return document.getElementById(id); }
@@ -31,6 +30,21 @@
     document.body.style.overflow = isOpen ? "hidden" : "";
   }
 
+  function wireModalCloseButtons() {
+    document.querySelectorAll("[data-close-modal]").forEach(function (button) {
+      button.addEventListener("click", function () {
+        setModalOpen($(button.getAttribute("data-close-modal")), false);
+      });
+    });
+  }
+
+  function detailCell(label, value, full) {
+    return '<div class="' + (full ? "full" : "") + '">' +
+      '<div class="dl">' + esc(label) + '</div>' +
+      '<div class="dv">' + esc(value) + '</div>' +
+    '</div>';
+  }
+
   function joinName(row) {
     return [row.firstName, row.middleName, row.lastName].filter(Boolean).join(" ");
   }
@@ -48,52 +62,14 @@
     if (hero) hero.textContent = fullName;
   }
 
-  async function refreshNotificationBadge() {
-    var badge = $("navNotificationCount");
-    if (!badge) return;
-    try {
-      state.notifications = await DoctorAPI.notifications(true);
-      if (state.notifications.length) {
-        badge.textContent = state.notifications.length;
-        badge.hidden = false;
-      } else {
-        badge.hidden = true;
-      }
-    } catch (err) {
-      badge.hidden = true;
-    }
-  }
-
-  function renderNotifications(mountId, rows, limit) {
-    var mount = $(mountId);
-    if (!mount) return;
-    var list = limit ? rows.slice(0, limit) : rows;
-    if (!list.length) {
-      mount.innerHTML = '<div class="empty-state">No notifications right now.</div>';
-      return;
-    }
-    mount.innerHTML = list.map(function (item) {
-      return '<article class="list-item' + (item.isRead ? "" : " unread") + '">' +
-        '<div class="list-item-main">' +
-          '<div class="row-title">' + esc(item.title) + '</div>' +
-          '<div class="row-sub pre-wrap">' + esc(item.message) + '</div>' +
-          '<div class="list-meta">' + esc(DoctorUtil.formatRelativeTime(item.createdAt)) + '</div>' +
-        '</div>' +
-        (!item.isRead ? '<button class="btn btn-ghost btn-sm" data-read="' + item.notificationId + '" type="button">Mark read</button>' : '') +
-      '</article>';
-    }).join("");
-  }
-
   async function initOverview() {
     try {
       var responses = await Promise.all([
         DoctorAPI.dashboard(),
-        DoctorAPI.myPatients(),
-        DoctorAPI.notifications()
+        DoctorAPI.myPatients()
       ]);
       var stats = responses[0];
       var recentPatients = responses[1] || [];
-      state.notifications = responses[2] || [];
 
       $("statGrid").innerHTML = [
         card("Patients treated", stats.patientsTreated, "Unique patients"),
@@ -104,10 +80,33 @@
       ].join("");
 
       renderPatientsTable("recentPatientsBody", recentPatients.slice(0, 5));
-      renderNotifications("notificationList", state.notifications, 4);
     } catch (err) {
       $("statGrid").innerHTML = '<div class="form-alert error">' + esc(err.message) + '</div>';
     }
+
+    initSearchSection();
+  }
+
+  function initSearchSection() {
+    var form = $("searchForm");
+    var body = $("searchResults");
+    if (!form || !body) return;
+    form.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      body.innerHTML = '<div class="table-loading">Searching…</div>';
+      try {
+        var rows = await DoctorAPI.searchPatients($("aarogyamId").value.trim(), $("searchName").value.trim());
+        if (!rows.length) {
+          body.innerHTML = '<div class="empty-state">No patient matched that search.</div>';
+          return;
+        }
+        body.innerHTML = rows.map(function (row) {
+          return '<div class="card result-card"><div class="result-copy"><div class="row-title">' + esc(joinName(row)) + '</div><div class="row-sub">AAID ' + esc(row.aarogyamId) + ' • ' + esc(row.gender) + ' • ' + esc(row.bloodGroup || "Blood group not set") + '</div></div><a class="btn btn-solid btn-sm" href="patient.html?patientId=' + row.patientId + '">View record</a></div>';
+        }).join("");
+      } catch (err) {
+        body.innerHTML = '<div class="form-alert error">' + esc(err.message) + '</div>';
+      }
+    });
   }
 
   function card(label, value, note) {
@@ -129,27 +128,6 @@
         '<td class="actions"><a class="btn btn-ghost btn-sm" href="patient.html?patientId=' + row.patientId + '">Open</a></td>' +
       '</tr>';
     }).join("");
-  }
-
-  async function initSearch() {
-    var form = $("searchForm");
-    var body = $("searchResults");
-    form.addEventListener("submit", async function (event) {
-      event.preventDefault();
-      body.innerHTML = '<div class="table-loading">Searching…</div>';
-      try {
-        var rows = await DoctorAPI.searchPatients($("aarogyamId").value.trim(), $("searchName").value.trim());
-        if (!rows.length) {
-          body.innerHTML = '<div class="empty-state">No patient matched that search.</div>';
-          return;
-        }
-        body.innerHTML = rows.map(function (row) {
-          return '<div class="card result-card"><div class="result-copy"><div class="row-title">' + esc(joinName(row)) + '</div><div class="row-sub">AAID ' + esc(row.aarogyamId) + ' • ' + esc(row.gender) + ' • ' + esc(row.bloodGroup || "Blood group not set") + '</div></div><a class="btn btn-solid btn-sm" href="patient.html?patientId=' + row.patientId + '">View record</a></div>';
-        }).join("");
-      } catch (err) {
-        body.innerHTML = '<div class="form-alert error">' + esc(err.message) + '</div>';
-      }
-    });
   }
 
   async function initMyPatients() {
@@ -205,6 +183,9 @@
       $("patientMeta").textContent = patient.aarogyamId + " • " + patient.gender + " • " + (patient.bloodGroup || "Blood group not set");
       $("openCreateVisit").href = "create-visit.html?patientId=" + patient.patientId;
 
+      state.currentVisits = visits;
+      state.currentDiagnoses = diagnoses;
+
       $("patientContent").innerHTML =
         '<div class="card"><div class="card-title">History</div><div class="timeline">' + renderVisitTimeline(visits, diagnoses) + '</div></div>' +
         '<div class="card"><div class="card-title">Reports</div>' + renderReportList(reports) + '</div>' +
@@ -212,16 +193,78 @@
 
       $("patientContent").addEventListener("click", async function (event) {
         var reportId = event.target.getAttribute("data-report-download");
-        if (!reportId) return;
-        try {
-          var file = await DoctorAPI.downloadReport(reportId);
-          DoctorUtil.downloadBlob(file.blob, file.fileName || ("report-" + reportId));
-        } catch (err) {
-          showToast(err.message, true);
+        if (reportId) {
+          try {
+            var file = await DoctorAPI.downloadReport(reportId);
+            DoctorUtil.downloadBlob(file.blob, file.fileName || ("report-" + reportId));
+          } catch (err) {
+            showToast(err.message, true);
+          }
+          return;
         }
+
+        var visitCard = event.target.closest("[data-view-visit]");
+        if (visitCard) { openVisitModal(visitCard.getAttribute("data-view-visit")); return; }
+
+        var prescriptionCard = event.target.closest("[data-view-prescription]");
+        var downloadBtn = event.target.closest("[data-download-prescription]");
+        if (downloadBtn) { handlePrescriptionDownload(downloadBtn.getAttribute("data-download-prescription")); return; }
+        if (prescriptionCard) { openPrescriptionModal(prescriptionCard.getAttribute("data-view-prescription")); return; }
+      });
+
+      wireModalCloseButtons();
+      $("downloadPrescriptionBtn").addEventListener("click", function () {
+        if (state.currentPrescriptionId) handlePrescriptionDownload(state.currentPrescriptionId);
       });
     } catch (err) {
       $("patientContent").innerHTML = '<div class="form-alert error">' + esc(err.message) + '</div>';
+    }
+  }
+
+  function openVisitModal(visitId) {
+    var visit = (state.currentVisits || []).find(function (v) { return String(v.visitId) === String(visitId); });
+    var diagnoses = (state.currentDiagnoses || []).filter(function (d) { return String(d.visitId) === String(visitId); });
+    if (!visit) return;
+    $("visitDetailContent").innerHTML =
+      '<div class="detail-grid">' +
+        detailCell("Visit", "#" + visit.visitId) +
+        detailCell("Date", DoctorUtil.formatDateTime(visit.visitDate)) +
+        detailCell("Notes", visit.notes || "No notes added.", true) +
+      '</div>' +
+      (diagnoses.length
+        ? '<div class="section-space"><div class="card-title">Diagnoses on this visit</div>' + diagnoses.map(function (d) {
+            return '<div class="timeline-body-card"><b>' + esc(d.diagnosisTitle) + '</b><div class="row-sub">' + esc(d.description || "No description added.") + '</div></div>';
+          }).join("") + '</div>'
+        : '');
+    setModalOpen($("visitModal"), true);
+  }
+
+  async function handlePrescriptionDownload(prescriptionId) {
+    try {
+      var file = await DoctorAPI.downloadPrescription(prescriptionId);
+      DoctorUtil.downloadBlob(file.blob, file.fileName || ("prescription-" + prescriptionId + ".pdf"));
+    } catch (err) {
+      showToast(err.message, true);
+    }
+  }
+
+  async function openPrescriptionModal(prescriptionId) {
+    state.currentPrescriptionId = prescriptionId;
+    var content = $("prescriptionDetailContent");
+    content.innerHTML = '<div class="table-loading">Loading prescription…</div>';
+    setModalOpen($("prescriptionModal"), true);
+    try {
+      var detail = await DoctorAPI.getPrescriptionDetails(prescriptionId);
+      content.innerHTML =
+        '<div class="detail-grid">' +
+          detailCell("Patient", detail.patientName) +
+          detailCell("Date", DoctorUtil.formatDate(detail.prescriptionDate)) +
+          detailCell("Visit", "#" + detail.visitId) +
+          detailCell("Diagnosis", detail.diagnosisTitle || "Not linked") +
+          detailCell("Prescription", detail.prescriptionText || "No prescription text.", true) +
+        '</div>';
+    } catch (err) {
+      content.innerHTML = '<div class="form-alert error">' + esc(err.message) + '</div>';
     }
   }
 
@@ -234,7 +277,7 @@
     });
     return visits.map(function (visit) {
       var items = diagnosisByVisit[visit.visitId] || [];
-      return '<div class="timeline-item"><div class="timeline-head"><b>Visit #' + esc(visit.visitId) + '</b><span class="timeline-date">' + esc(DoctorUtil.formatDate(visit.visitDate)) + '</span></div><div class="timeline-body">' + esc(visit.notes || "No notes added.") + '</div>' + (items.length ? '<div class="timeline-tags">' + items.map(function (d) { return '<span class="badge ok">' + esc(d.diagnosisTitle) + '</span>'; }).join("") + '</div>' : '') + '</div>';
+      return '<div class="timeline-item clickable" data-view-visit="' + visit.visitId + '"><div class="timeline-body-card"><div class="timeline-head"><b>Visit #' + esc(visit.visitId) + '</b><span class="timeline-date">' + esc(DoctorUtil.formatDate(visit.visitDate)) + '</span></div><div class="timeline-body">' + esc((visit.notes || "No notes added.").slice(0, 160)) + '</div>' + (items.length ? '<div class="timeline-tags">' + items.map(function (d) { return '<span class="badge ok">' + esc(d.diagnosisTitle) + '</span>'; }).join("") + '</div>' : '') + '</div></div>';
     }).join("");
   }
 
@@ -248,22 +291,51 @@
   function renderPrescriptionList(rows) {
     if (!rows.length) return '<div class="empty-state">No prescriptions issued yet.</div>';
     return '<div class="stack-list">' + rows.map(function (row) {
-      return '<article class="list-item"><div class="list-item-main"><div class="row-title">Prescription #' + esc(row.prescriptionId) + '</div><div class="row-sub">' + esc((row.prescriptionText || "").slice(0, 140)) + '</div></div></article>';
+      return '<article class="list-item clickable" data-view-prescription="' + row.prescriptionId + '"><div class="list-item-main"><div class="row-title">Prescription #' + esc(row.prescriptionId) + '</div><div class="row-sub">' + esc((row.prescriptionText || "").slice(0, 140)) + '</div><div class="list-meta">' + esc(DoctorUtil.formatDate(row.prescriptionDate)) + '</div></div><button class="btn btn-ghost btn-sm" data-download-prescription="' + row.prescriptionId + '" type="button">Download</button></article>';
     }).join("") + '</div>';
   }
 
-  async function initCreateVisit() {
-    var patientId = queryParam("patientId");
-    if (patientId) {
-      try {
-        var patient = await DoctorAPI.getPatient(patientId);
-        $("patientSummary").textContent = joinName(patient) + " • " + patient.aarogyamId;
-        $("patientId").value = patient.patientId;
-      } catch (err) {
-        $("flowAlert").textContent = err.message;
-        $("flowAlert").hidden = false;
-      }
+  function showFlowAlert(message) {
+    var alertEl = $("flowAlert");
+    alertEl.textContent = message;
+    alertEl.hidden = false;
+  }
+
+  function setInvalid(rowId, isInvalid) {
+    var row = $(rowId);
+    if (row) row.classList.toggle("invalid", isInvalid);
+  }
+
+  function toLocalDatetimeValue(date) {
+    var pad = function (n) { return String(n).padStart(2, "0"); };
+    return date.getFullYear() + "-" + pad(date.getMonth() + 1) + "-" + pad(date.getDate()) +
+      "T" + pad(date.getHours()) + ":" + pad(date.getMinutes());
+  }
+
+  function goToStep(step, foundPatient) {
+    $("panelStep1").hidden = step !== 1;
+    $("visitFlowForm").hidden = step !== 2;
+    $("stepPill1").classList.toggle("active", step === 1);
+    $("stepPill1").classList.toggle("done", step === 2);
+    $("stepPill2").classList.toggle("active", step === 2);
+    if (step === 2 && foundPatient) {
+      $("pfName").textContent = joinName(foundPatient);
+      $("pfMeta").textContent = foundPatient.aarogyamId + " • " + foundPatient.gender + " • " + (foundPatient.bloodGroup || "Blood group not set");
+      $("pfInitials").textContent = DoctorUtil.initials(foundPatient.firstName, foundPatient.lastName);
     }
+  }
+
+  function initOptionalToggles() {
+    document.querySelectorAll(".optional-toggle").forEach(function (toggle) {
+      toggle.addEventListener("click", function () {
+        var section = $(toggle.getAttribute("data-toggle"));
+        section.classList.toggle("open");
+      });
+    });
+  }
+
+  async function initCreateVisit() {
+    var state2 = { patient: null };
 
     try {
       var diagnosisTypes = await DoctorAPI.diagnosisTypes();
@@ -272,121 +344,109 @@
       }).join("");
     } catch (err) {}
 
-    // Stepper & Wizard transitions
-    var currentStep = 1;
-    var stepsCount = 4;
+    initOptionalToggles();
+    $("visitDate").value = toLocalDatetimeValue(new Date());
 
-    function showStep(stepNum) {
-      currentStep = stepNum;
-      for (var i = 1; i <= stepsCount; i++) {
-        var container = $("step" + i);
-        if (container) {
-          if (i === stepNum) {
-            container.style.display = "block";
-            container.style.opacity = "0";
-            setTimeout(function (c) {
-              c.style.opacity = "1";
-            }, 50, container);
-          } else {
-            container.style.display = "none";
-          }
-        }
-      }
-
-      // Update stepper chips
-      var stepper = $("visitFlowStepper");
-      if (stepper) {
-        var chips = stepper.querySelectorAll(".chip");
-        chips.forEach(function (chip, index) {
-          if (index + 1 === stepNum) {
-            chip.classList.add("on");
-          } else {
-            chip.classList.remove("on");
-          }
-        });
-      }
-      
-      // Clear alert on step change
+    async function runLookup(rawId, autoAdvance) {
+      var aarogyamId = extractAarogyamId(rawId);
+      if ($("lookupAarogyamId")) $("lookupAarogyamId").value = aarogyamId;
       $("flowAlert").hidden = true;
+      $("lookupResult").innerHTML = '<div class="table-loading">Searching…</div>';
+      $("continueToStep2").disabled = true;
+      try {
+        var rows = await DoctorAPI.searchPatients(aarogyamId, null);
+        if (!rows.length) {
+          $("lookupResult").innerHTML = '<div class="form-alert error">No patient found with Aarogyam ID: ' + esc(aarogyamId) + '</div>';
+          return;
+        }
+        state2.patient = rows[0];
+        $("lookupResult").innerHTML =
+          '<div class="patient-found-card"><div class="avatar-circle small">' + esc(DoctorUtil.initials(rows[0].firstName, rows[0].lastName)) + '</div>' +
+          '<div class="pf-main"><div class="row-title">' + esc(joinName(rows[0])) + '</div>' +
+          '<div class="row-sub mono">' + esc(rows[0].aarogyamId) + ' • ' + esc(rows[0].gender) + ' • ' + esc(rows[0].bloodGroup || "Blood group not set") + '</div></div></div>';
+        $("continueToStep2").disabled = false;
+        if (autoAdvance) {
+          goToStep(2, state2.patient);
+        }
+      } catch (err) {
+        $("lookupResult").innerHTML = '<div class="form-alert error">' + esc(err.message) + '</div>';
+      }
     }
 
-    // Step 1: Next
-    $("btnNext1").addEventListener("click", function () {
-      if (!$("patientId").checkValidity() || !$("visitDate").checkValidity()) {
-        $("visitFlowForm").reportValidity();
-        return;
+    // Expose runLookup for global scanner when already on create-visit page
+    window._doctorRunLookup = runLookup;
+
+    var patientIdParam = queryParam("patientId");
+    var aarogyamIdParam = queryParam("aarogyamId");
+
+    if (patientIdParam) {
+      try {
+        state2.patient = await DoctorAPI.getPatient(patientIdParam);
+        goToStep(2, state2.patient);
+      } catch (err) {
+        showFlowAlert(err.message);
       }
-      showStep(2);
-    });
+    } else if (aarogyamIdParam) {
+      runLookup(aarogyamIdParam, true);
+    }
 
-    // Step 2: Back, Skip, Next
-    $("btnBack2").addEventListener("click", function () {
-      showStep(1);
+    $("lookupBtn").addEventListener("click", function () {
+      var value = $("lookupAarogyamId").value.trim();
+      setInvalid("rowAarogyamId", !value);
+      if (!value) return;
+      runLookup(value, false);
     });
-    $("btnSkip2").addEventListener("click", function () {
-      $("diagnosisTypeId").value = "";
-      $("diagnosisTitle").value = "";
-      $("diagnosisDate").value = "";
-      $("diagnosisDescription").value = "";
-      showStep(3);
+    $("lookupAarogyamId").addEventListener("keydown", function (event) {
+      if (event.key === "Enter") { event.preventDefault(); $("lookupBtn").click(); }
     });
-    $("btnNext2").addEventListener("click", function () {
-      if ($("diagnosisTitle").value.trim() && !$("diagnosisTypeId").value) {
-        $("flowAlert").textContent = "Please select a diagnosis type for the entered title.";
-        $("flowAlert").hidden = false;
-        return;
-      }
-      showStep(3);
+    $("continueToStep2").addEventListener("click", function () {
+      if (!state2.patient) return;
+      goToStep(2, state2.patient);
     });
-
-    // Step 3: Back, Skip, Next
-    $("btnBack3").addEventListener("click", function () {
-      showStep(2);
+    $("changePatientBtn").addEventListener("click", function () {
+      goToStep(1);
     });
-    $("btnSkip3").addEventListener("click", function () {
-      $("prescriptionDate").value = "";
-      $("prescriptionText").value = "";
-      showStep(4);
-    });
-    $("btnNext3").addEventListener("click", function () {
-      showStep(4);
-    });
-
-    // Step 4: Back, Skip
-    $("btnBack4").addEventListener("click", function () {
-      showStep(3);
-    });
-    $("btnSkip4").addEventListener("click", function () {
-      $("reportTitle").value = "";
-      $("reportType").value = "";
-      $("reportDate").value = "";
-      $("reportFile").value = "";
-      $("visitFlowForm").dispatchEvent(new Event("submit", { cancelable: true }));
+    $("backToStep1").addEventListener("click", function () {
+      goToStep(1);
     });
 
     $("visitFlowForm").addEventListener("submit", async function (event) {
       event.preventDefault();
       $("flowAlert").hidden = true;
-      var patientIdVal = Number($("patientId").value);
-      if (!patientIdVal) {
-        $("flowAlert").textContent = "Please choose a patient first.";
-        $("flowAlert").hidden = false;
-        showStep(1);
-        return;
-      }
-      if (!$("visitDate").value) {
-        $("flowAlert").textContent = "Please select a visit date.";
-        $("flowAlert").hidden = false;
-        showStep(1);
+
+      if (!state2.patient) {
+        showFlowAlert("Please find and choose a patient first.");
+        goToStep(1);
         return;
       }
 
-      var submitBtn = event.target.querySelector("button[type='submit']");
-      var originalBtnText = submitBtn ? submitBtn.textContent : "";
-      if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.textContent = "Saving...";
+      var diagnosisOpen = $("sectionDiagnosis").classList.contains("open");
+      var prescriptionOpen = $("sectionPrescription").classList.contains("open");
+      var reportOpen = $("sectionReport").classList.contains("open");
+
+      var visitDateValid = !!$("visitDate").value;
+      var diagnosisTypeValid = !diagnosisOpen || !!$("diagnosisTypeId").value;
+      var diagnosisTitleValid = !diagnosisOpen || !!$("diagnosisTitle").value.trim();
+      var prescriptionValid = !prescriptionOpen || !!$("prescriptionText").value.trim();
+      var reportTitleValid = !reportOpen || !!$("reportTitle").value.trim();
+      var reportFileValid = !reportOpen || !!$("reportFile").files[0];
+
+      setInvalid("rowVisitDate", !visitDateValid);
+      setInvalid("rowDiagnosisType", !diagnosisTypeValid);
+      setInvalid("rowDiagnosisTitle", !diagnosisTitleValid);
+      setInvalid("rowPrescriptionText", !prescriptionValid);
+      setInvalid("rowReportTitle", !reportTitleValid);
+      setInvalid("rowReportFile", !reportFileValid);
+
+      if (!visitDateValid || !diagnosisTypeValid || !diagnosisTitleValid || !prescriptionValid || !reportTitleValid || !reportFileValid) {
+        showFlowAlert("Please fix the highlighted fields.");
+        return;
       }
+
+      var patientIdVal = state2.patient.patientId;
+      var visitDateOnly = $("visitDate").value.split("T")[0];
+      var submitBtn = event.target.querySelector('button[type="submit"]');
+      submitBtn.disabled = true;
 
       try {
         var visit = await DoctorAPI.createVisit({
@@ -396,79 +456,399 @@
         });
 
         var diagnosisId = null;
-        if ($("diagnosisTitle").value.trim()) {
+        if (diagnosisOpen) {
           var diagnosis = await DoctorAPI.createDiagnosis({
             visitId: visit.visitId,
             diagnosisTypeId: Number($("diagnosisTypeId").value),
             diagnosisTitle: $("diagnosisTitle").value.trim(),
             description: $("diagnosisDescription").value.trim(),
-            diagnosisDate: $("diagnosisDate").value || null
+            diagnosisDate: visitDateOnly
           });
           diagnosisId = diagnosis.diagnosisId;
         }
 
-        if ($("prescriptionText").value.trim()) {
+        if (prescriptionOpen) {
           await DoctorAPI.createPrescription({
             visitId: visit.visitId,
             diagnosisId: diagnosisId,
             prescriptionText: $("prescriptionText").value.trim(),
-            prescriptionDate: $("prescriptionDate").value || null
+            prescriptionDate: visitDateOnly
           });
         }
 
-        if ($("reportFile").files[0]) {
+        if (reportOpen) {
           var formData = new FormData();
           formData.append("PatientId", patientIdVal);
           formData.append("VisitId", visit.visitId);
           if (diagnosisId) formData.append("DiagnosisId", diagnosisId);
-          formData.append("Title", $("reportTitle").value.trim() || "Visit report");
+          formData.append("Title", $("reportTitle").value.trim());
           formData.append("ReportType", $("reportType").value.trim() || "Clinical");
-          if ($("reportDate").value) formData.append("ReportDate", $("reportDate").value);
+          formData.append("ReportDate", visitDateOnly);
           formData.append("File", $("reportFile").files[0]);
           await DoctorAPI.uploadReport(formData);
         }
 
-        showToast("Visit flow completed successfully.");
+        showToast("Visit created successfully.");
         setTimeout(function () {
           window.location.href = "patient.html?patientId=" + patientIdVal;
         }, 900);
       } catch (err) {
-        $("flowAlert").textContent = err.message;
-        $("flowAlert").hidden = false;
-        if (submitBtn) {
-          submitBtn.disabled = false;
-          submitBtn.textContent = originalBtnText;
-        }
+        showFlowAlert(err.message);
+        submitBtn.disabled = false;
       }
     });
   }
 
-  async function initNotifications() {
+  function nameById(list, idField, nameField, id) {
+    var item = list.find(function (row) { return row[idField] === id; });
+    return item ? item[nameField] : "—";
+  }
+
+  async function populateStateOptions(countryId, selectedStateId) {
+    if (!countryId) {
+      $("stateId").innerHTML = '<option value="">Select state</option>';
+      return;
+    }
+    var states = await DoctorAPI.states(countryId);
+    $("stateId").innerHTML = '<option value="">Select state</option>' + states.map(function (item) {
+      return '<option value="' + item.stateId + '"' + (item.stateId === selectedStateId ? " selected" : "") + '>' + esc(item.stateName) + '</option>';
+    }).join("");
+  }
+
+  async function populateCityOptions(stateId, selectedCityId) {
+    if (!stateId) {
+      $("cityId").innerHTML = '<option value="">Select city</option>';
+      return;
+    }
+    var cities = await DoctorAPI.cities(stateId);
+    $("cityId").innerHTML = '<option value="">Select city</option>' + cities.map(function (item) {
+      return '<option value="' + item.cityId + '"' + (item.cityId === selectedCityId ? " selected" : "") + '>' + esc(item.cityName) + '</option>';
+    }).join("");
+  }
+
+  async function initProfile() {
+    var ui = {
+      profileAlert: $("profileAlert"),
+      passwordAlert: $("passwordAlert"),
+      profileView: $("profileView"),
+      profileForm: $("profileForm"),
+      passwordForm: $("passwordForm")
+    };
+    var lookups = { hospitals: [], specializations: [], countries: [] };
+    var doctor = null;
+
+    function showView() {
+      ui.profileView.hidden = false;
+      ui.profileForm.hidden = true;
+      $("editProfileBtn").hidden = false;
+    }
+    function showEdit() {
+      ui.profileView.hidden = true;
+      ui.profileForm.hidden = false;
+      $("editProfileBtn").hidden = true;
+    }
+
+    function renderProfileView() {
+      $("licenseValue").textContent = doctor.licenseNumber;
+      ui.profileView.innerHTML = [
+        detailCell("Name", "Dr. " + joinName(doctor)),
+        detailCell("Hospital", nameById(lookups.hospitals, "hospitalId", "hospitalName", doctor.hospitalId)),
+        detailCell("Specialization", nameById(lookups.specializations, "specializationId", "specializationName", doctor.specializationId)),
+        detailCell("Approval status", doctor.approvalStatus),
+        detailCell("Address", doctor.address, true)
+      ].join("");
+    }
+
+    function populateProfileForm() {
+      $("firstName").value = doctor.firstName || "";
+      $("middleName").value = doctor.middleName || "";
+      $("lastName").value = doctor.lastName || "";
+      $("address").value = doctor.address || "";
+      $("hospitalId").innerHTML = lookups.hospitals.map(function (item) {
+        return '<option value="' + item.hospitalId + '"' + (item.hospitalId === doctor.hospitalId ? " selected" : "") + '>' + esc(item.hospitalName) + '</option>';
+      }).join("");
+      $("specializationId").innerHTML = lookups.specializations.map(function (item) {
+        return '<option value="' + item.specializationId + '"' + (item.specializationId === doctor.specializationId ? " selected" : "") + '>' + esc(item.specializationName) + '</option>';
+      }).join("");
+      $("countryId").innerHTML = lookups.countries.map(function (item) {
+        return '<option value="' + item.countryId + '"' + (item.countryId === doctor.countryId ? " selected" : "") + '>' + esc(item.countryName) + '</option>';
+      }).join("");
+    }
+
     try {
-      state.notifications = await DoctorAPI.notifications();
-      renderNotifications("notificationList", state.notifications);
-      $("notificationList").addEventListener("click", async function (event) {
-        var id = event.target.getAttribute("data-read");
-        if (!id) return;
-        try {
-          await DoctorAPI.markNotificationRead(id);
-          state.notifications = await DoctorAPI.notifications();
-          renderNotifications("notificationList", state.notifications);
-          refreshNotificationBadge();
-        } catch (err) {
-          showToast(err.message, true);
-        }
-      });
+      var responses = await Promise.all([
+        DoctorAPI.profile(),
+        DoctorAPI.hospitals(),
+        DoctorAPI.specializations(),
+        DoctorAPI.countries()
+      ]);
+      doctor = responses[0];
+      lookups.hospitals = responses[1] || [];
+      lookups.specializations = responses[2] || [];
+      lookups.countries = responses[3] || [];
+
+      renderProfileView();
+      populateProfileForm();
+      await populateStateOptions(doctor.countryId, doctor.stateId);
+      await populateCityOptions(doctor.stateId, doctor.cityId);
     } catch (err) {
-      $("notificationList").innerHTML = '<div class="form-alert error">' + esc(err.message) + '</div>';
+      ui.profileAlert.textContent = err.message;
+      ui.profileAlert.hidden = false;
+    }
+
+    $("editProfileBtn").addEventListener("click", showEdit);
+    $("cancelEditBtn").addEventListener("click", async function () {
+      populateProfileForm();
+      await populateStateOptions(doctor.countryId, doctor.stateId);
+      await populateCityOptions(doctor.stateId, doctor.cityId);
+      showView();
+    });
+
+    $("countryId").addEventListener("change", function () {
+      populateStateOptions($("countryId").value, null);
+      $("cityId").innerHTML = '<option value="">Select city</option>';
+    });
+    $("stateId").addEventListener("change", function () {
+      populateCityOptions($("stateId").value, null);
+    });
+
+    ui.profileForm.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      ui.profileAlert.hidden = true;
+      var payload = {
+        firstName: $("firstName").value.trim(),
+        middleName: $("middleName").value.trim() || null,
+        lastName: $("lastName").value.trim(),
+        hospitalId: Number($("hospitalId").value),
+        specializationId: Number($("specializationId").value),
+        address: $("address").value.trim(),
+        countryId: Number($("countryId").value),
+        stateId: Number($("stateId").value),
+        cityId: Number($("cityId").value)
+      };
+      try {
+        await DoctorAPI.updateProfile(payload);
+        showToast("Profile updated successfully.");
+        doctor = await DoctorAPI.profile();
+        renderProfileView();
+        loadSharedProfile();
+        showView();
+      } catch (err) {
+        ui.profileAlert.textContent = err.message;
+        ui.profileAlert.hidden = false;
+      }
+    });
+
+    ui.passwordForm.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      ui.passwordAlert.hidden = true;
+      try {
+        await DoctorAPI.changePassword({
+          currentPassword: $("currentPassword").value,
+          newPassword: $("newPassword").value
+        });
+        ui.passwordForm.reset();
+        showToast("Password updated successfully.");
+      } catch (err) {
+        ui.passwordAlert.textContent = err.message;
+        ui.passwordAlert.hidden = false;
+      }
+    });
+  }
+
+  function extractAarogyamId(raw) {
+    if (!raw) return "";
+    raw = String(raw).trim();
+    if (raw.indexOf("aarogyamId=") !== -1) {
+      var match = raw.match(/aarogyamId=([^&]+)/);
+      if (match) return decodeURIComponent(match[1]);
+    }
+    if (raw.indexOf("AAROGYAM|") === 0) {
+      var parts = raw.split("|");
+      if (parts.length >= 2) return parts[1];
+    }
+    return raw;
+  }
+
+  var globalCameraStream = null;
+  var globalCameraInterval = null;
+
+  function stopGlobalCamera() {
+    if (globalCameraInterval) {
+      clearInterval(globalCameraInterval);
+      globalCameraInterval = null;
+    }
+    if (globalCameraStream) {
+      try {
+        globalCameraStream.getTracks().forEach(function (track) { track.stop(); });
+      } catch (e) {}
+      globalCameraStream = null;
+    }
+    var modal = $("qrScannerModal");
+    if (modal) {
+      modal.hidden = true;
+      document.body.style.overflow = "";
     }
   }
 
-  loadSharedProfile().then(refreshNotificationBadge);
+  function ensureQrModalInDom() {
+    if ($("qrScannerModal")) return;
+
+    var overlay = document.createElement("div");
+    overlay.className = "modal-overlay";
+    overlay.id = "qrScannerModal";
+    overlay.hidden = true;
+    overlay.innerHTML =
+      '<div class="modal" style="max-width: 440px; text-align: center;">' +
+        '<div class="modal-head">' +
+          '<h3>Scan Patient QR Code</h3>' +
+          '<button class="modal-close" type="button" id="closeQrScannerBtn" aria-label="Close">×</button>' +
+        '</div>' +
+        '<div class="modal-body">' +
+          '<p style="font-size: 13.5px; color: var(--ink-soft); margin-bottom: 14px;">' +
+            'Point your camera at the patient\'s Aarogyam Health Card QR Code.' +
+          '</p>' +
+          '<div style="position: relative; width: 100%; border-radius: 12px; overflow: hidden; background: #000; display: grid; place-items: center; min-height: 250px;">' +
+            '<video id="qrScanVideo" playsinline webkit-playsinline muted style="width: 100%; height: auto; max-height: 280px; object-fit: cover;"></video>' +
+            '<canvas id="qrScanCanvas" hidden></canvas>' +
+            '<div style="position: absolute; width: 180px; height: 180px; border: 2px dashed #52b788; border-radius: 12px; pointer-events: none;"></div>' +
+          '</div>' +
+          '<div id="qrScanStatus" style="font-size: 13px; color: var(--accent); margin-top: 12px; font-weight: 500;">' +
+            'Initializing camera…' +
+          '</div>' +
+        '</div>' +
+        '<div class="modal-actions" style="justify-content: center; margin-top: 16px;">' +
+          '<button class="btn btn-ghost" type="button" id="cancelQrScannerBtn">Cancel</button>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(overlay);
+  }
+
+  async function startGlobalQrScanner() {
+    ensureQrModalInDom();
+
+    var modal = $("qrScannerModal");
+    modal.hidden = false;
+    document.body.style.overflow = "hidden";
+
+    var video = $("qrScanVideo");
+    var canvas = $("qrScanCanvas");
+    var status = $("qrScanStatus");
+
+    if (!video || !canvas || !status) return;
+
+    status.textContent = "Requesting camera access…";
+
+    var closeBtn = $("closeQrScannerBtn");
+    var cancelBtn = $("cancelQrScannerBtn");
+    if (closeBtn) closeBtn.onclick = stopGlobalCamera;
+    if (cancelBtn) cancelBtn.onclick = stopGlobalCamera;
+
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      status.textContent = "Camera access is not supported on this browser/device.";
+      return;
+    }
+
+    var constraintsList = [
+      { video: { facingMode: { exact: "environment" } } },
+      { video: { facingMode: "environment" } },
+      { video: true }
+    ];
+
+    var stream = null;
+    for (var i = 0; i < constraintsList.length; i++) {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia(constraintsList[i]);
+        if (stream) break;
+      } catch (e) {}
+    }
+
+    if (!stream) {
+      status.textContent = "Could not access camera. Please check camera permissions in browser settings.";
+      return;
+    }
+
+    globalCameraStream = stream;
+    video.srcObject = stream;
+    video.setAttribute("playsinline", "true");
+    video.setAttribute("webkit-playsinline", "true");
+    video.muted = true;
+
+    try {
+      await video.play();
+    } catch (e) {}
+
+    status.textContent = "Scanning for QR Code… Point camera at Health Card.";
+
+    var isBarcodeDetectorSupported = "BarcodeDetector" in window;
+    var barcodeDetector = null;
+    if (isBarcodeDetectorSupported) {
+      try {
+        barcodeDetector = new BarcodeDetector({ formats: ["qr_code"] });
+      } catch (e) {
+        isBarcodeDetectorSupported = false;
+      }
+    }
+
+    globalCameraInterval = setInterval(async function () {
+      if (!video || video.readyState < 2) return;
+
+      var scannedText = null;
+
+      if (isBarcodeDetectorSupported && barcodeDetector) {
+        try {
+          var barcodes = await barcodeDetector.detect(video);
+          if (barcodes && barcodes.length > 0) {
+            scannedText = barcodes[0].rawValue;
+          }
+        } catch (e) {}
+      }
+
+      if (!scannedText && window.jsQR) {
+        try {
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          var ctx = canvas.getContext("2d");
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          var code = jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: "dontInvert" });
+          if (code && code.data) {
+            scannedText = code.data;
+          }
+        } catch (e) {}
+      }
+
+      if (scannedText) {
+        status.textContent = "QR Code Detected!";
+        if (navigator.vibrate) {
+          try { navigator.vibrate(100); } catch (e) {}
+        }
+        showToast("QR Code Scanned!");
+        stopGlobalCamera();
+
+        var scannedId = extractAarogyamId(scannedText);
+
+        if (page === "create-visit" && typeof window._doctorRunLookup === "function") {
+          window._doctorRunLookup(scannedId, true);
+        } else {
+          window.location.href = "create-visit.html?aarogyamId=" + encodeURIComponent(scannedId);
+        }
+      }
+    }, 250);
+  }
+
+  document.addEventListener("click", function (e) {
+    var btn = e.target.closest("#topNavScanQrBtn, #overviewScanQrBtn, #myPatientsScanQrBtn, #scanQrBtn, #mobileNavScanQrBtn, .nav-qr-btn");
+    if (btn) {
+      e.preventDefault();
+      startGlobalQrScanner();
+    }
+  });
+
+  loadSharedProfile();
   if (page === "overview") initOverview();
-  if (page === "search") initSearch();
   if (page === "patients") initMyPatients();
   if (page === "patient") initPatientDetail();
   if (page === "create-visit") initCreateVisit();
-  if (page === "notifications") initNotifications();
+  if (page === "profile") initProfile();
 })();

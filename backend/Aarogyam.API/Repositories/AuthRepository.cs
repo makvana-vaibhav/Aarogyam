@@ -223,8 +223,78 @@ public class AuthRepository : IAuthRepository
         };
     }
 
+    public async Task<ForgotPasswordResult?> ForgotPasswordAsync(ForgotPasswordRequest request)
+    {
+        var parameters = new[]
+        {
+            new SqlParameter("@Email", request.Email)
+        };
+
+        var results = await _context.ForgotPasswordResults
+            .FromSqlRaw("EXEC dbo.spForgotPassword @Email", parameters)
+            .ToListAsync();
+
+        var result = results.FirstOrDefault();
+        if (result is null || result.Success == 0 || !result.UserId.HasValue)
+        {
+            return result ?? new ForgotPasswordResult { Success = 0, Message = "No active account found with this email." };
+        }
+
+        var otp = await CreateAndSendOtpAsync(
+            result.UserId.Value,
+            request.Email,
+            subject: "Your Aarogyam password reset code",
+            title: "Reset your password",
+            subtitle: "Use the verification code below to reset your Aarogyam account password.");
+
+        return new ForgotPasswordResult
+        {
+            Success = otp.Success ? 1 : 0,
+            Message = otp.Success ? "Password reset code sent to your email." : otp.Message,
+            UserId = result.UserId
+        };
+    }
+
+    public async Task<SimpleResult?> VerifyForgotOtpAsync(VerifyForgotOtpRequest request)
+    {
+        var parameters = new[]
+        {
+            new SqlParameter("@UserId", request.UserId),
+            new SqlParameter("@OtpCode", request.OtpCode)
+        };
+
+        var results = await _context.SimpleResults
+            .FromSqlRaw("EXEC dbo.spVerifyForgotOtp @UserId, @OtpCode", parameters)
+            .ToListAsync();
+
+        return results.FirstOrDefault();
+    }
+
+    public async Task<SimpleResult?> ResetPasswordAsync(ResetPasswordRequest request)
+    {
+        var passwordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+
+        var parameters = new[]
+        {
+            new SqlParameter("@UserId", request.UserId),
+            new SqlParameter("@OtpCode", request.OtpCode),
+            new SqlParameter("@NewPasswordHash", passwordHash)
+        };
+
+        var results = await _context.SimpleResults
+            .FromSqlRaw("EXEC dbo.spResetPasswordWithOtp @UserId, @OtpCode, @NewPasswordHash", parameters)
+            .ToListAsync();
+
+        return results.FirstOrDefault();
+    }
+
     private async Task<(bool Success, string Message, int? OtpId, string OtpCode, DateTime ExpiresAt)> CreateAndSendOtpAsync(
-        int userId, string email)
+        int userId,
+        string email,
+        string subject = "Your Aarogyam verification code",
+        string title = "Verify your email address",
+        string subtitle = "Use the verification code below to complete your email verification.",
+        string name = "")
     {
         var otpCode = Random.Shared.Next(100000, 1000000).ToString();
         var expiresAt = DateTime.UtcNow.AddMinutes(10);
@@ -251,7 +321,7 @@ public class AuthRepository : IAuthRepository
         {
             try
             {
-                await _emailService.SendOtpEmailAsync(email, otpCode);
+                await _emailService.SendOtpEmailAsync(email, otpCode, subject, title, subtitle, name);
             }
             catch (Exception ex)
             {

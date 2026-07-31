@@ -59,6 +59,7 @@ builder.Services.AddSingleton<IQrCodeService, QrCodeService>();
 
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
+builder.Services.AddScoped<IAuditLogRepository, AuditLogRepository>();
 
 QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 
