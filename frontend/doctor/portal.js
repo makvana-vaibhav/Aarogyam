@@ -347,20 +347,6 @@
     initOptionalToggles();
     $("visitDate").value = toLocalDatetimeValue(new Date());
 
-    function extractAarogyamId(raw) {
-      if (!raw) return "";
-      raw = String(raw).trim();
-      if (raw.indexOf("aarogyamId=") !== -1) {
-        var match = raw.match(/aarogyamId=([^&]+)/);
-        if (match) return decodeURIComponent(match[1]);
-      }
-      if (raw.indexOf("AAROGYAM|") === 0) {
-        var parts = raw.split("|");
-        if (parts.length >= 2) return parts[1];
-      }
-      return raw;
-    }
-
     async function runLookup(rawId, autoAdvance) {
       var aarogyamId = extractAarogyamId(rawId);
       if ($("lookupAarogyamId")) $("lookupAarogyamId").value = aarogyamId;
@@ -386,6 +372,9 @@
         $("lookupResult").innerHTML = '<div class="form-alert error">' + esc(err.message) + '</div>';
       }
     }
+
+    // Expose runLookup for global scanner when already on create-visit page
+    window._doctorRunLookup = runLookup;
 
     var patientIdParam = queryParam("patientId");
     var aarogyamIdParam = queryParam("aarogyamId");
@@ -420,93 +409,6 @@
     $("backToStep1").addEventListener("click", function () {
       goToStep(1);
     });
-
-    // Camera QR Scanner
-    var cameraStream = null;
-    var cameraScanInterval = null;
-
-    function stopCamera() {
-      if (cameraScanInterval) {
-        clearInterval(cameraScanInterval);
-        cameraScanInterval = null;
-      }
-      if (cameraStream) {
-        cameraStream.getTracks().forEach(function (track) { track.stop(); });
-        cameraStream = null;
-      }
-      setModalOpen($("qrScannerModal"), false);
-    }
-
-    function startQrScanner() {
-      setModalOpen($("qrScannerModal"), true);
-      var video = $("qrScanVideo");
-      var canvas = $("qrScanCanvas");
-      var status = $("qrScanStatus");
-      if (!video || !canvas || !status) return;
-
-      status.textContent = "Requesting camera access…";
-
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        status.textContent = "Camera scanning is not supported on this browser/device.";
-        return;
-      }
-
-      navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-        .then(function (stream) {
-          cameraStream = stream;
-          video.srcObject = stream;
-          video.setAttribute("playsinline", true);
-          video.play();
-          status.textContent = "Scanning for QR Code… Point camera at Health Card.";
-
-          cameraScanInterval = setInterval(function () {
-            if (video.readyState === video.HAVE_ENOUGH_DATA) {
-              canvas.width = video.videoWidth;
-              canvas.height = video.videoHeight;
-              var ctx = canvas.getContext("2d");
-              ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-              var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-
-              var code = null;
-              if (window.jsQR) {
-                code = jsQR(imageData.data, imageData.width, imageData.height, {
-                  inversionAttempts: "dontInvert"
-                });
-              }
-
-              if (code && code.data) {
-                var scannedText = code.data;
-                status.textContent = "QR Code Detected!";
-                showToast("QR Code Scanned successfully!");
-                stopCamera();
-                var scannedId = extractAarogyamId(scannedText);
-                if (page === "create-visit") {
-                  runLookup(scannedId, true);
-                } else {
-                  window.location.href = "create-visit.html?aarogyamId=" + encodeURIComponent(scannedId);
-                }
-              }
-            }
-          }, 300);
-        })
-        .catch(function (err) {
-          status.textContent = "Camera access denied or unavailable: " + err.message;
-        });
-    }
-
-    ["topNavScanQrBtn", "overviewScanQrBtn", "myPatientsScanQrBtn", "scanQrBtn"].forEach(function (id) {
-      var btn = $(id);
-      if (btn) {
-        btn.addEventListener("click", startQrScanner);
-      }
-    });
-
-    if ($("closeQrScannerBtn")) {
-      $("closeQrScannerBtn").addEventListener("click", stopCamera);
-    }
-    if ($("cancelQrScannerBtn")) {
-      $("cancelQrScannerBtn").addEventListener("click", stopCamera);
-    }
 
     $("visitFlowForm").addEventListener("submit", async function (event) {
       event.preventDefault();
@@ -753,6 +655,195 @@
       }
     });
   }
+
+  function extractAarogyamId(raw) {
+    if (!raw) return "";
+    raw = String(raw).trim();
+    if (raw.indexOf("aarogyamId=") !== -1) {
+      var match = raw.match(/aarogyamId=([^&]+)/);
+      if (match) return decodeURIComponent(match[1]);
+    }
+    if (raw.indexOf("AAROGYAM|") === 0) {
+      var parts = raw.split("|");
+      if (parts.length >= 2) return parts[1];
+    }
+    return raw;
+  }
+
+  var globalCameraStream = null;
+  var globalCameraInterval = null;
+
+  function stopGlobalCamera() {
+    if (globalCameraInterval) {
+      clearInterval(globalCameraInterval);
+      globalCameraInterval = null;
+    }
+    if (globalCameraStream) {
+      try {
+        globalCameraStream.getTracks().forEach(function (track) { track.stop(); });
+      } catch (e) {}
+      globalCameraStream = null;
+    }
+    var modal = $("qrScannerModal");
+    if (modal) {
+      modal.hidden = true;
+      document.body.style.overflow = "";
+    }
+  }
+
+  function ensureQrModalInDom() {
+    if ($("qrScannerModal")) return;
+
+    var overlay = document.createElement("div");
+    overlay.className = "modal-overlay";
+    overlay.id = "qrScannerModal";
+    overlay.hidden = true;
+    overlay.innerHTML =
+      '<div class="modal" style="max-width: 440px; text-align: center;">' +
+        '<div class="modal-head">' +
+          '<h3>Scan Patient QR Code</h3>' +
+          '<button class="modal-close" type="button" id="closeQrScannerBtn" aria-label="Close">×</button>' +
+        '</div>' +
+        '<div class="modal-body">' +
+          '<p style="font-size: 13.5px; color: var(--ink-soft); margin-bottom: 14px;">' +
+            'Point your camera at the patient\'s Aarogyam Health Card QR Code.' +
+          '</p>' +
+          '<div style="position: relative; width: 100%; border-radius: 12px; overflow: hidden; background: #000; display: grid; place-items: center; min-height: 250px;">' +
+            '<video id="qrScanVideo" playsinline webkit-playsinline muted style="width: 100%; height: auto; max-height: 280px; object-fit: cover;"></video>' +
+            '<canvas id="qrScanCanvas" hidden></canvas>' +
+            '<div style="position: absolute; width: 180px; height: 180px; border: 2px dashed #52b788; border-radius: 12px; pointer-events: none;"></div>' +
+          '</div>' +
+          '<div id="qrScanStatus" style="font-size: 13px; color: var(--accent); margin-top: 12px; font-weight: 500;">' +
+            'Initializing camera…' +
+          '</div>' +
+        '</div>' +
+        '<div class="modal-actions" style="justify-content: center; margin-top: 16px;">' +
+          '<button class="btn btn-ghost" type="button" id="cancelQrScannerBtn">Cancel</button>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(overlay);
+  }
+
+  async function startGlobalQrScanner() {
+    ensureQrModalInDom();
+
+    var modal = $("qrScannerModal");
+    modal.hidden = false;
+    document.body.style.overflow = "hidden";
+
+    var video = $("qrScanVideo");
+    var canvas = $("qrScanCanvas");
+    var status = $("qrScanStatus");
+
+    if (!video || !canvas || !status) return;
+
+    status.textContent = "Requesting camera access…";
+
+    var closeBtn = $("closeQrScannerBtn");
+    var cancelBtn = $("cancelQrScannerBtn");
+    if (closeBtn) closeBtn.onclick = stopGlobalCamera;
+    if (cancelBtn) cancelBtn.onclick = stopGlobalCamera;
+
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      status.textContent = "Camera access is not supported on this browser/device.";
+      return;
+    }
+
+    var constraintsList = [
+      { video: { facingMode: { exact: "environment" } } },
+      { video: { facingMode: "environment" } },
+      { video: true }
+    ];
+
+    var stream = null;
+    for (var i = 0; i < constraintsList.length; i++) {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia(constraintsList[i]);
+        if (stream) break;
+      } catch (e) {}
+    }
+
+    if (!stream) {
+      status.textContent = "Could not access camera. Please check camera permissions in browser settings.";
+      return;
+    }
+
+    globalCameraStream = stream;
+    video.srcObject = stream;
+    video.setAttribute("playsinline", "true");
+    video.setAttribute("webkit-playsinline", "true");
+    video.muted = true;
+
+    try {
+      await video.play();
+    } catch (e) {}
+
+    status.textContent = "Scanning for QR Code… Point camera at Health Card.";
+
+    var isBarcodeDetectorSupported = "BarcodeDetector" in window;
+    var barcodeDetector = null;
+    if (isBarcodeDetectorSupported) {
+      try {
+        barcodeDetector = new BarcodeDetector({ formats: ["qr_code"] });
+      } catch (e) {
+        isBarcodeDetectorSupported = false;
+      }
+    }
+
+    globalCameraInterval = setInterval(async function () {
+      if (!video || video.readyState < 2) return;
+
+      var scannedText = null;
+
+      if (isBarcodeDetectorSupported && barcodeDetector) {
+        try {
+          var barcodes = await barcodeDetector.detect(video);
+          if (barcodes && barcodes.length > 0) {
+            scannedText = barcodes[0].rawValue;
+          }
+        } catch (e) {}
+      }
+
+      if (!scannedText && window.jsQR) {
+        try {
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          var ctx = canvas.getContext("2d");
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          var code = jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: "dontInvert" });
+          if (code && code.data) {
+            scannedText = code.data;
+          }
+        } catch (e) {}
+      }
+
+      if (scannedText) {
+        status.textContent = "QR Code Detected!";
+        if (navigator.vibrate) {
+          try { navigator.vibrate(100); } catch (e) {}
+        }
+        showToast("QR Code Scanned!");
+        stopGlobalCamera();
+
+        var scannedId = extractAarogyamId(scannedText);
+
+        if (page === "create-visit" && typeof window._doctorRunLookup === "function") {
+          window._doctorRunLookup(scannedId, true);
+        } else {
+          window.location.href = "create-visit.html?aarogyamId=" + encodeURIComponent(scannedId);
+        }
+      }
+    }, 250);
+  }
+
+  document.addEventListener("click", function (e) {
+    var btn = e.target.closest("#topNavScanQrBtn, #overviewScanQrBtn, #myPatientsScanQrBtn, #scanQrBtn, #mobileNavScanQrBtn, .nav-qr-btn");
+    if (btn) {
+      e.preventDefault();
+      startGlobalQrScanner();
+    }
+  });
 
   loadSharedProfile();
   if (page === "overview") initOverview();
