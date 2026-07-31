@@ -347,14 +347,30 @@
     initOptionalToggles();
     $("visitDate").value = toLocalDatetimeValue(new Date());
 
-    async function runLookup(aarogyamId) {
+    function extractAarogyamId(raw) {
+      if (!raw) return "";
+      raw = String(raw).trim();
+      if (raw.indexOf("aarogyamId=") !== -1) {
+        var match = raw.match(/aarogyamId=([^&]+)/);
+        if (match) return decodeURIComponent(match[1]);
+      }
+      if (raw.indexOf("AAROGYAM|") === 0) {
+        var parts = raw.split("|");
+        if (parts.length >= 2) return parts[1];
+      }
+      return raw;
+    }
+
+    async function runLookup(rawId, autoAdvance) {
+      var aarogyamId = extractAarogyamId(rawId);
+      if ($("lookupAarogyamId")) $("lookupAarogyamId").value = aarogyamId;
       $("flowAlert").hidden = true;
       $("lookupResult").innerHTML = '<div class="table-loading">Searching…</div>';
       $("continueToStep2").disabled = true;
       try {
         var rows = await DoctorAPI.searchPatients(aarogyamId, null);
         if (!rows.length) {
-          $("lookupResult").innerHTML = '<div class="form-alert error">No patient found with that Aarogyam ID.</div>';
+          $("lookupResult").innerHTML = '<div class="form-alert error">No patient found with Aarogyam ID: ' + esc(aarogyamId) + '</div>';
           return;
         }
         state2.patient = rows[0];
@@ -363,26 +379,33 @@
           '<div class="pf-main"><div class="row-title">' + esc(joinName(rows[0])) + '</div>' +
           '<div class="row-sub mono">' + esc(rows[0].aarogyamId) + ' • ' + esc(rows[0].gender) + ' • ' + esc(rows[0].bloodGroup || "Blood group not set") + '</div></div></div>';
         $("continueToStep2").disabled = false;
+        if (autoAdvance) {
+          goToStep(2, state2.patient);
+        }
       } catch (err) {
         $("lookupResult").innerHTML = '<div class="form-alert error">' + esc(err.message) + '</div>';
       }
     }
 
-    var patientId = queryParam("patientId");
-    if (patientId) {
+    var patientIdParam = queryParam("patientId");
+    var aarogyamIdParam = queryParam("aarogyamId");
+
+    if (patientIdParam) {
       try {
-        state2.patient = await DoctorAPI.getPatient(patientId);
+        state2.patient = await DoctorAPI.getPatient(patientIdParam);
         goToStep(2, state2.patient);
       } catch (err) {
         showFlowAlert(err.message);
       }
+    } else if (aarogyamIdParam) {
+      runLookup(aarogyamIdParam, true);
     }
 
     $("lookupBtn").addEventListener("click", function () {
       var value = $("lookupAarogyamId").value.trim();
       setInvalid("rowAarogyamId", !value);
       if (!value) return;
-      runLookup(value);
+      runLookup(value, false);
     });
     $("lookupAarogyamId").addEventListener("keydown", function (event) {
       if (event.key === "Enter") { event.preventDefault(); $("lookupBtn").click(); }
@@ -397,6 +420,93 @@
     $("backToStep1").addEventListener("click", function () {
       goToStep(1);
     });
+
+    // Camera QR Scanner
+    var cameraStream = null;
+    var cameraScanInterval = null;
+
+    function stopCamera() {
+      if (cameraScanInterval) {
+        clearInterval(cameraScanInterval);
+        cameraScanInterval = null;
+      }
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(function (track) { track.stop(); });
+        cameraStream = null;
+      }
+      setModalOpen($("qrScannerModal"), false);
+    }
+
+    function startQrScanner() {
+      setModalOpen($("qrScannerModal"), true);
+      var video = $("qrScanVideo");
+      var canvas = $("qrScanCanvas");
+      var status = $("qrScanStatus");
+      if (!video || !canvas || !status) return;
+
+      status.textContent = "Requesting camera access…";
+
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        status.textContent = "Camera scanning is not supported on this browser/device.";
+        return;
+      }
+
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+        .then(function (stream) {
+          cameraStream = stream;
+          video.srcObject = stream;
+          video.setAttribute("playsinline", true);
+          video.play();
+          status.textContent = "Scanning for QR Code… Point camera at Health Card.";
+
+          cameraScanInterval = setInterval(function () {
+            if (video.readyState === video.HAVE_ENOUGH_DATA) {
+              canvas.width = video.videoWidth;
+              canvas.height = video.videoHeight;
+              var ctx = canvas.getContext("2d");
+              ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+              var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+              var code = null;
+              if (window.jsQR) {
+                code = jsQR(imageData.data, imageData.width, imageData.height, {
+                  inversionAttempts: "dontInvert"
+                });
+              }
+
+              if (code && code.data) {
+                var scannedText = code.data;
+                status.textContent = "QR Code Detected!";
+                showToast("QR Code Scanned successfully!");
+                stopCamera();
+                var scannedId = extractAarogyamId(scannedText);
+                if (page === "create-visit") {
+                  runLookup(scannedId, true);
+                } else {
+                  window.location.href = "create-visit.html?aarogyamId=" + encodeURIComponent(scannedId);
+                }
+              }
+            }
+          }, 300);
+        })
+        .catch(function (err) {
+          status.textContent = "Camera access denied or unavailable: " + err.message;
+        });
+    }
+
+    ["topNavScanQrBtn", "overviewScanQrBtn", "myPatientsScanQrBtn", "scanQrBtn"].forEach(function (id) {
+      var btn = $(id);
+      if (btn) {
+        btn.addEventListener("click", startQrScanner);
+      }
+    });
+
+    if ($("closeQrScannerBtn")) {
+      $("closeQrScannerBtn").addEventListener("click", stopCamera);
+    }
+    if ($("cancelQrScannerBtn")) {
+      $("cancelQrScannerBtn").addEventListener("click", stopCamera);
+    }
 
     $("visitFlowForm").addEventListener("submit", async function (event) {
       event.preventDefault();

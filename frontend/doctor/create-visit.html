@@ -11,6 +11,10 @@
       <a href="create-visit.html">Create Visit</a>
     </nav>
     <div class="pt-actions">
+      <button class="btn btn-ghost btn-sm nav-qr-btn" id="topNavScanQrBtn" type="button" title="Scan Patient QR Code" style="display:inline-flex; align-items:center; gap:6px; color:var(--accent);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 14h3v3h-3z"/><path d="M17 17h4v4h-4z"/></svg>
+        <span>Scan QR</span>
+      </button>
       <div>
         <button class="pt-icon-btn" id="notifBellBtn" type="button" aria-label="Notifications">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
@@ -56,12 +60,16 @@
     <!-- Step 1: find patient -->
     <section class="wizard-panel card" id="panelStep1">
       <div class="card-title">Find patient</div>
-      <div class="card-sub">Enter the patient's Aarogyam ID — their details will load automatically.</div>
+      <div class="card-sub">Enter the patient's Aarogyam ID or scan their Health Card QR Code — their details will load automatically.</div>
       <div class="form-row" id="rowAarogyamId">
         <label for="lookupAarogyamId">Aarogyam ID<span class="req">*</span></label>
         <div class="lookup-row">
           <input id="lookupAarogyamId" placeholder="e.g. AAR-2026-000123" autocomplete="off">
           <button class="btn btn-solid" id="lookupBtn" type="button">Find patient</button>
+          <button class="btn btn-ghost" id="scanQrBtn" type="button" style="display:inline-flex; align-items:center; gap:6px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 14h3v3h-3z"/><path d="M17 17h4v4h-4z"/></svg>
+            Scan QR
+          </button>
         </div>
         <div class="field-error">Enter the patient's Aarogyam ID first.</div>
       </div>
@@ -171,4 +179,35 @@
     </form>
   </div>
 </main>
-<div id="toastHost"></div><script src="app.js"></script><script src="portal.js"></script></body></html>
+
+<div class="modal-overlay" id="qrScannerModal" hidden>
+  <div class="modal" style="max-width: 440px; text-align: center;">
+    <div class="modal-head">
+      <h3>Scan Patient QR Code</h3>
+      <button class="modal-close" type="button" id="closeQrScannerBtn" aria-label="Close">×</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size: 13.5px; color: var(--ink-soft); margin-bottom: 14px;">
+        Point your camera at the patient's Aarogyam Health Card QR Code.
+      </p>
+      <div style="position: relative; width: 100%; border-radius: 12px; overflow: hidden; background: #000; display: grid; place-items: center; min-height: 250px;">
+        <video id="qrScanVideo" playsinline style="width: 100%; height: auto; max-height: 280px; object-fit: cover;"></video>
+        <canvas id="qrScanCanvas" hidden></canvas>
+        <div style="position: absolute; width: 180px; height: 180px; border: 2px dashed #52b788; border-radius: 12px; pointer-events: none;"></div>
+      </div>
+      <div id="qrScanStatus" style="font-size: 13px; color: var(--accent); margin-top: 12px; font-weight: 500;">
+        Initializing camera…
+      </div>
+    </div>
+    <div class="modal-actions" style="justify-content: center; margin-top: 16px;">
+      <button class="btn btn-ghost" type="button" id="cancelQrScannerBtn">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="toastHost"></div>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+<script src="app.js"></script>
+<script src="portal.js"></script>
+</body>
+</html>
