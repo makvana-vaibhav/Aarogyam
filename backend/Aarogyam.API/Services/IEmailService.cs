@@ -6,6 +6,7 @@ public interface IEmailService
         string toEmail,
         string otpCode,
         string subject = "Your Aarogyam verification code",
-        string title = "Verify your email address",
-        string subtitle = "Use the verification code below to complete your email verification.");
+        string title = "Reset your password",
+        string subtitle = "Use the verification code below to set a new password.",
+        string name = "");
 }

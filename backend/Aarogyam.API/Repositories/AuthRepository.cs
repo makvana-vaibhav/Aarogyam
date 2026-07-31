@@ -293,7 +293,8 @@ public class AuthRepository : IAuthRepository
         string email,
         string subject = "Your Aarogyam verification code",
         string title = "Verify your email address",
-        string subtitle = "Use the verification code below to complete your email verification.")
+        string subtitle = "Use the verification code below to complete your email verification.",
+        string name = "")
     {
         var otpCode = Random.Shared.Next(100000, 1000000).ToString();
         var expiresAt = DateTime.UtcNow.AddMinutes(10);
@@ -320,7 +321,7 @@ public class AuthRepository : IAuthRepository
         {
             try
             {
-                await _emailService.SendOtpEmailAsync(email, otpCode, subject, title, subtitle);
+                await _emailService.SendOtpEmailAsync(email, otpCode, subject, title, subtitle, name);
             }
             catch (Exception ex)
             {
