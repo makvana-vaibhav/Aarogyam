@@ -146,4 +146,55 @@ public class AuthController : ControllerBase
 
         return Ok(result);
     }
+
+    [HttpPost("forgot-password")]
+    public async Task<ActionResult<ForgotPasswordResult>> ForgotPassword([FromBody] ForgotPasswordRequest request)
+    {
+        var result = await _authRepository.ForgotPasswordAsync(request);
+
+        if (result is null)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, new ForgotPasswordResult
+            {
+                Success = 0,
+                Message = "Unable to process forgot password request."
+            });
+        }
+
+        if (result.Success == 0)
+        {
+            return BadRequest(result);
+        }
+
+        if (result.UserId.HasValue)
+        {
+            await _auditLogRepository.LogAsync(result.UserId, "FORGOT_PASSWORD_REQUEST", "Users", result.UserId.Value);
+        }
+
+        return Ok(result);
+    }
+
+    [HttpPost("reset-password")]
+    public async Task<ActionResult<SimpleResult>> ResetPassword([FromBody] ResetPasswordRequest request)
+    {
+        var result = await _authRepository.ResetPasswordAsync(request);
+
+        if (result is null)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, new SimpleResult
+            {
+                Success = 0,
+                Message = "Unable to reset password."
+            });
+        }
+
+        if (result.Success == 0)
+        {
+            return BadRequest(result);
+        }
+
+        await _auditLogRepository.LogAsync(request.UserId, "RESET_PASSWORD", "Users", request.UserId);
+
+        return Ok(result);
+    }
 }

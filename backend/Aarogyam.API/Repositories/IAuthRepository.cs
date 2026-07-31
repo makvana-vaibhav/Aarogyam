@@ -14,4 +14,8 @@ public interface IAuthRepository
     Task<LoginResult?> LoginAsync(LoginRequest request);
 
     Task<ResendOtpResult?> ResendOtpAsync(ResendOtpRequest request);
+
+    Task<ForgotPasswordResult?> ForgotPasswordAsync(ForgotPasswordRequest request);
+
+    Task<SimpleResult?> ResetPasswordAsync(ResetPasswordRequest request);
 }

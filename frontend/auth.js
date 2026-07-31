@@ -134,6 +134,12 @@
     resendOtp: function (payload) {
       return apiRequest("/auth/resend-otp", { method: "POST", body: payload });
     },
+    forgotPassword: function (payload) {
+      return apiRequest("/auth/forgot-password", { method: "POST", body: payload });
+    },
+    resetPassword: function (payload) {
+      return apiRequest("/auth/reset-password", { method: "POST", body: payload });
+    },
     countries: function () {
       return apiRequest("/lookup/countries");
     },
