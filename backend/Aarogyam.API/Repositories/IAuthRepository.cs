@@ -17,5 +17,7 @@ public interface IAuthRepository
 
     Task<ForgotPasswordResult?> ForgotPasswordAsync(ForgotPasswordRequest request);
 
+    Task<SimpleResult?> VerifyForgotOtpAsync(VerifyForgotOtpRequest request);
+
     Task<SimpleResult?> ResetPasswordAsync(ResetPasswordRequest request);
 }

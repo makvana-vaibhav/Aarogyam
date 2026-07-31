@@ -255,6 +255,21 @@ public class AuthRepository : IAuthRepository
         };
     }
 
+    public async Task<SimpleResult?> VerifyForgotOtpAsync(VerifyForgotOtpRequest request)
+    {
+        var parameters = new[]
+        {
+            new SqlParameter("@UserId", request.UserId),
+            new SqlParameter("@OtpCode", request.OtpCode)
+        };
+
+        var results = await _context.SimpleResults
+            .FromSqlRaw("EXEC dbo.spVerifyForgotOtp @UserId, @OtpCode", parameters)
+            .ToListAsync();
+
+        return results.FirstOrDefault();
+    }
+
     public async Task<SimpleResult?> ResetPasswordAsync(ResetPasswordRequest request)
     {
         var passwordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);

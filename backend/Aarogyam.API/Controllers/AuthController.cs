@@ -174,6 +174,28 @@ public class AuthController : ControllerBase
         return Ok(result);
     }
 
+    [HttpPost("verify-forgot-otp")]
+    public async Task<ActionResult<SimpleResult>> VerifyForgotOtp([FromBody] VerifyForgotOtpRequest request)
+    {
+        var result = await _authRepository.VerifyForgotOtpAsync(request);
+
+        if (result is null)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, new SimpleResult
+            {
+                Success = 0,
+                Message = "Unable to verify OTP code."
+            });
+        }
+
+        if (result.Success == 0)
+        {
+            return BadRequest(result);
+        }
+
+        return Ok(result);
+    }
+
     [HttpPost("reset-password")]
     public async Task<ActionResult<SimpleResult>> ResetPassword([FromBody] ResetPasswordRequest request)
     {

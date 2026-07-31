@@ -137,6 +137,9 @@
     forgotPassword: function (payload) {
       return apiRequest("/auth/forgot-password", { method: "POST", body: payload });
     },
+    verifyForgotOtp: function (payload) {
+      return apiRequest("/auth/verify-forgot-otp", { method: "POST", body: payload });
+    },
     resetPassword: function (payload) {
       return apiRequest("/auth/reset-password", { method: "POST", body: payload });
     },
