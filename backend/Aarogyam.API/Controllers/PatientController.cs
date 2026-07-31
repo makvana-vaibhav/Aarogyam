@@ -17,12 +17,14 @@ public class PatientController : ControllerBase
     private readonly IPatientRepository _patientRepository;
     private readonly IFileStorageService _fileStorage;
     private readonly IPdfService _pdfService;
+    private readonly IAuditLogRepository _auditLogRepository;
 
-    public PatientController(IPatientRepository patientRepository, IFileStorageService fileStorage, IPdfService pdfService)
+    public PatientController(IPatientRepository patientRepository, IFileStorageService fileStorage, IPdfService pdfService, IAuditLogRepository auditLogRepository)
     {
         _patientRepository = patientRepository;
         _fileStorage = fileStorage;
         _pdfService = pdfService;
+        _auditLogRepository = auditLogRepository;
     }
 
     // ================= Dashboard =================
@@ -62,14 +64,25 @@ public class PatientController : ControllerBase
         if (patient is null) return PatientNotFound();
 
         var result = await _patientRepository.UpdateProfileAsync(patient.PatientId, request);
-        return result?.Success == 1 ? Ok(result) : BadRequest(result);
+        if (result?.Success == 1)
+        {
+            await _auditLogRepository.LogAsync(GetCurrentUserId(), "UPDATE_PROFILE", "Patients", patient.PatientId);
+            return Ok(result);
+        }
+        return BadRequest(result);
     }
 
     [HttpPut("change-password")]
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
     {
-        var result = await _patientRepository.ChangePasswordAsync(GetCurrentUserId(), request.CurrentPassword, request.NewPassword);
-        return result?.Success == 1 ? Ok(result) : BadRequest(result);
+        var userId = GetCurrentUserId();
+        var result = await _patientRepository.ChangePasswordAsync(userId, request.CurrentPassword, request.NewPassword);
+        if (result?.Success == 1)
+        {
+            await _auditLogRepository.LogAsync(userId, "CHANGE_PASSWORD", "Users", userId);
+            return Ok(result);
+        }
+        return BadRequest(result);
     }
 
     // ================= Medical History =================
@@ -140,6 +153,11 @@ public class PatientController : ControllerBase
             return BadRequest(result);
         }
 
+        if (result.ReportId.HasValue)
+        {
+            await _auditLogRepository.LogAsync(GetCurrentUserId(), "UPLOAD_REPORT", "MedicalReports", result.ReportId.Value);
+        }
+
         return Ok(result);
     }
 
@@ -159,6 +177,7 @@ public class PatientController : ControllerBase
         if (result?.Success == 1)
         {
             _fileStorage.Delete(report.FilePath);
+            await _auditLogRepository.LogAsync(GetCurrentUserId(), "DELETE_REPORT", "MedicalReports", id);
         }
 
         return result?.Success == 1 ? Ok(result) : BadRequest(result);

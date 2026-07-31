@@ -62,7 +62,7 @@
       <input type="text" id="userIdFilter" placeholder="Filter by user ID…" inputmode="numeric" style="max-width:200px">
       <button class="btn btn-ghost btn-sm" id="clearFilter" type="button">Clear</button>
       <div class="spacer"></div>
-      <input type="search" id="logSearch" placeholder="Search action or entity…">
+      <input type="search" id="logSearch" placeholder="Search action, entity, user name or email…">
     </div>
 
     <div class="table-wrap">
@@ -100,7 +100,9 @@
       var rows = allLogs.filter(function (r) {
         if (!term) return true;
         return String(r.action).toLowerCase().indexOf(term) !== -1 ||
-          String(r.entityName).toLowerCase().indexOf(term) !== -1;
+          String(r.entityName).toLowerCase().indexOf(term) !== -1 ||
+          String(r.userName || "").toLowerCase().indexOf(term) !== -1 ||
+          String(r.userEmail || "").toLowerCase().indexOf(term) !== -1;
       });
 
       if (!rows.length) {
@@ -109,9 +111,12 @@
       }
 
       tbody.innerHTML = rows.map(function (r) {
+        var userCell = r.userId != null
+          ? '<div class="row-title">' + esc(r.userName || "User #" + r.userId) + '</div><div class="row-sub">' + esc([r.roleName, r.userEmail].filter(Boolean).join(" • ")) + '</div>'
+          : '<div class="row-sub">System</div>';
         return "<tr>" +
           "<td>" + AdminUtil.formatDateTime(r.createdAt) + "</td>" +
-          '<td class="mono">' + (r.userId != null ? "#" + r.userId : "—") + "</td>" +
+          "<td>" + userCell + "</td>" +
           "<td>" + esc(r.action) + "</td>" +
           "<td>" + esc(r.entityName) + "</td>" +
           '<td class="mono">#' + r.entityId + "</td>" +

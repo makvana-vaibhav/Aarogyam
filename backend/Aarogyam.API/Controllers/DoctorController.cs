@@ -15,11 +15,13 @@ public class DoctorController : ControllerBase
 {
     private readonly IDoctorRepository _doctorRepository;
     private readonly IFileStorageService _fileStorage;
+    private readonly IAuditLogRepository _auditLogRepository;
 
-    public DoctorController(IDoctorRepository doctorRepository, IFileStorageService fileStorage)
+    public DoctorController(IDoctorRepository doctorRepository, IFileStorageService fileStorage, IAuditLogRepository auditLogRepository)
     {
         _doctorRepository = doctorRepository;
         _fileStorage = fileStorage;
+        _auditLogRepository = auditLogRepository;
     }
 
     [HttpGet("profile")]
@@ -36,14 +38,25 @@ public class DoctorController : ControllerBase
         if (doctor is null) return NotFound(new { success = 0, message = "Doctor profile not found." });
 
         var result = await _doctorRepository.UpdateProfileAsync(doctor.DoctorId, request);
-        return result?.Success == 1 ? Ok(result) : BadRequest(result);
+        if (result?.Success == 1)
+        {
+            await _auditLogRepository.LogAsync(GetCurrentUserId(), "UPDATE_PROFILE", "Doctors", doctor.DoctorId);
+            return Ok(result);
+        }
+        return BadRequest(result);
     }
 
     [HttpPut("change-password")]
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
     {
-        var result = await _doctorRepository.ChangePasswordAsync(GetCurrentUserId(), request.CurrentPassword, request.NewPassword);
-        return result?.Success == 1 ? Ok(result) : BadRequest(result);
+        var userId = GetCurrentUserId();
+        var result = await _doctorRepository.ChangePasswordAsync(userId, request.CurrentPassword, request.NewPassword);
+        if (result?.Success == 1)
+        {
+            await _auditLogRepository.LogAsync(userId, "CHANGE_PASSWORD", "Users", userId);
+            return Ok(result);
+        }
+        return BadRequest(result);
     }
 
     [HttpGet("dashboard")]
@@ -120,6 +133,10 @@ public class DoctorController : ControllerBase
 
         var result = await _doctorRepository.CreateVisitAsync(doctor.DoctorId, request);
         if (result is null) return BadRequest(new { success = 0, message = "Unable to create visit. Please try again." });
+        if (result.Success == 1 && result.VisitId.HasValue)
+        {
+            await _auditLogRepository.LogAsync(GetCurrentUserId(), "CREATE_VISIT", "Visits", result.VisitId.Value);
+        }
         return result.Success == 1 ? Ok(result) : BadRequest(result);
     }
 
@@ -131,6 +148,10 @@ public class DoctorController : ControllerBase
 
         var result = await _doctorRepository.CreateDiagnosisAsync(doctor.DoctorId, request);
         if (result is null) return BadRequest(new { success = 0, message = "Unable to create diagnosis. Please try again." });
+        if (result.Success == 1 && result.DiagnosisId.HasValue)
+        {
+            await _auditLogRepository.LogAsync(GetCurrentUserId(), "CREATE_DIAGNOSIS", "Diagnoses", result.DiagnosisId.Value);
+        }
         return result.Success == 1 ? Ok(result) : BadRequest(result);
     }
 
@@ -142,6 +163,10 @@ public class DoctorController : ControllerBase
 
         var result = await _doctorRepository.CreatePrescriptionAsync(doctor.DoctorId, request);
         if (result is null) return BadRequest(new { success = 0, message = "Unable to create prescription. Please try again." });
+        if (result.Success == 1 && result.PrescriptionId.HasValue)
+        {
+            await _auditLogRepository.LogAsync(GetCurrentUserId(), "CREATE_PRESCRIPTION", "Prescriptions", result.PrescriptionId.Value);
+        }
         return result.Success == 1 ? Ok(result) : BadRequest(result);
     }
 
@@ -167,6 +192,11 @@ public class DoctorController : ControllerBase
         {
             _fileStorage.Delete(relativePath);
             return BadRequest(result);
+        }
+
+        if (result.ReportId.HasValue)
+        {
+            await _auditLogRepository.LogAsync(GetCurrentUserId(), "UPLOAD_REPORT", "MedicalReports", result.ReportId.Value);
         }
 
         return Ok(result);

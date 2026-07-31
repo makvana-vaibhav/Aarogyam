@@ -10,11 +10,12 @@ namespace Aarogyam.API.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IAuthRepository _authRepository;
+    private readonly IAuditLogRepository _auditLogRepository;
 
-
-    public AuthController(IAuthRepository authRepository)
+    public AuthController(IAuthRepository authRepository, IAuditLogRepository auditLogRepository)
     {
         _authRepository = authRepository;
+        _auditLogRepository = auditLogRepository;
     }
 
     [HttpPost("register/patient")]
@@ -36,6 +37,11 @@ public class AuthController : ControllerBase
         if (result.Success == 0)
         {
             return BadRequest(result);
+        }
+
+        if (result.UserId.HasValue)
+        {
+            await _auditLogRepository.LogAsync(result.UserId, "REGISTER", "Patients", result.UserId.Value);
         }
 
         return Ok(result);
@@ -60,6 +66,11 @@ public class AuthController : ControllerBase
             return BadRequest(result);
         }
 
+        if (result.UserId.HasValue)
+        {
+            await _auditLogRepository.LogAsync(result.UserId, "REGISTER", "Doctors", result.UserId.Value);
+        }
+
         return Ok(result);
     }
 
@@ -82,6 +93,8 @@ public class AuthController : ControllerBase
             return BadRequest(result);
         }
 
+        await _auditLogRepository.LogAsync(request.UserId, "VERIFY_OTP", "Users", request.UserId);
+
         return Ok(result);
     }
 
@@ -102,6 +115,11 @@ public class AuthController : ControllerBase
         if (result.Success == 0)
         {
             return Unauthorized(result);
+        }
+
+        if (result.UserId.HasValue)
+        {
+            await _auditLogRepository.LogAsync(result.UserId, "LOGIN", "Users", result.UserId.Value);
         }
 
         return Ok(result);

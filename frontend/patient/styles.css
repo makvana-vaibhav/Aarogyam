@@ -1166,6 +1166,8 @@ a.list-item:hover,
 }
 .form-row.invalid .field-error { display: block; }
 
+.req { color: var(--danger); margin-left: 3px; }
+
 /* Step wizard (doctor create-visit and similar guided flows) */
 .wizard-steps {
   display: flex;

@@ -58,7 +58,7 @@
       <div class="card-title">Find patient</div>
       <div class="card-sub">Enter the patient's Aarogyam ID — their details will load automatically.</div>
       <div class="form-row" id="rowAarogyamId">
-        <label for="lookupAarogyamId">Aarogyam ID</label>
+        <label for="lookupAarogyamId">Aarogyam ID<span class="req">*</span></label>
         <div class="lookup-row">
           <input id="lookupAarogyamId" placeholder="e.g. AAR-2026-000123" autocomplete="off">
           <button class="btn btn-solid" id="lookupBtn" type="button">Find patient</button>
@@ -89,7 +89,7 @@
         <div class="card-title">Visit details</div>
         <div class="card-sub">This date is reused for the diagnosis and prescription below — no need to enter it again.</div>
         <div class="form-row" id="rowVisitDate">
-          <label for="visitDate">Visit date &amp; time</label>
+          <label for="visitDate">Visit date &amp; time<span class="req">*</span></label>
           <input id="visitDate" type="datetime-local" required>
           <div class="field-error">Visit date &amp; time is required.</div>
         </div>
@@ -107,12 +107,12 @@
         <div class="optional-body">
           <div class="form-row-2col">
             <div class="form-row" id="rowDiagnosisType">
-              <label for="diagnosisTypeId">Diagnosis type</label>
+              <label for="diagnosisTypeId">Diagnosis type<span class="req">*</span></label>
               <select id="diagnosisTypeId"><option value="">Select diagnosis type</option></select>
               <div class="field-error">Choose a diagnosis type.</div>
             </div>
             <div class="form-row" id="rowDiagnosisTitle">
-              <label for="diagnosisTitle">Diagnosis title</label>
+              <label for="diagnosisTitle">Diagnosis title<span class="req">*</span></label>
               <input id="diagnosisTitle" placeholder="e.g. Seasonal flu">
               <div class="field-error">Diagnosis title is required.</div>
             </div>
@@ -131,7 +131,7 @@
         </div>
         <div class="optional-body">
           <div class="form-row" id="rowPrescriptionText">
-            <label for="prescriptionText">Medicines &amp; instructions</label>
+            <label for="prescriptionText">Medicines &amp; instructions<span class="req">*</span></label>
             <textarea id="prescriptionText" placeholder="Medicines, dosage, frequency, instructions"></textarea>
             <div class="field-error">Add the prescription text, or collapse this section.</div>
           </div>
@@ -146,7 +146,7 @@
         <div class="optional-body">
           <div class="form-row-2col">
             <div class="form-row" id="rowReportTitle">
-              <label for="reportTitle">Report title</label>
+              <label for="reportTitle">Report title<span class="req">*</span></label>
               <input id="reportTitle" placeholder="e.g. Blood test">
               <div class="field-error">Report title is required.</div>
             </div>
@@ -156,7 +156,7 @@
             </div>
           </div>
           <div class="form-row" id="rowReportFile">
-            <label for="reportFile">File</label>
+            <label for="reportFile">File<span class="req">*</span></label>
             <input id="reportFile" type="file">
             <div class="field-error">Choose a file to attach, or collapse this section.</div>
           </div>
