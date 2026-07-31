@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css?v=5">
 </head>
 <body data-page="overview">
 <header class="pt-topnav">
@@ -54,16 +54,33 @@
     <div class="page-head-row"><div><h2 id="welcomeHeading">Good day</h2><p>A quick snapshot of your health record.</p></div></div>
     <div class="stat-grid" id="statGrid"><div class="table-loading">Loading dashboard…</div></div>
 
-    <div class="grid-2 dashboard-grid-equal">
-      <div class="card">
-        <div class="hero-head"><div class="avatar-circle" id="patientInitials">P</div><div><div class="card-title" id="profileName">Loading profile…</div><div class="card-sub" id="profileMeta"></div></div></div>
-        <div class="detail-grid compact-top" id="profileDetails"></div>
-        <div class="qa-row"><a class="btn btn-ghost btn-sm" href="profile.html">View full profile</a></div>
-      </div>
+    <div class="grid-2 grid-2-equal dashboard-grid">
       <div class="card">
         <div class="card-title">Aarogyam health card</div>
         <div class="card-sub">Scan this at any registered facility.</div>
         <div class="health-card compact-top"><div class="hc-head"><b>AAROGYAM · HEALTH IDENTITY</b></div><div class="hc-body"><div class="hc-info" id="healthCardInfo"></div><div class="hc-qr"><img id="healthCardQr" alt="Patient health card QR code"></div></div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Quick actions</div>
+        <div class="card-sub">Manage your Aarogyam ID and profile.</div>
+        <div class="quick-actions compact-top">
+          <button class="quick-action-btn" id="downloadCardBtn" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12m0 0l-4-4m4 4l4-4"/><path d="M4 18v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1"/></svg>
+            Download Aarogyam card
+          </button>
+          <button class="quick-action-btn" id="copyAarogyamIdBtn" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M4 16V5a1 1 0 0 1 1-1h11"/></svg>
+            Copy Aarogyam ID
+          </button>
+          <button class="quick-action-btn" id="downloadProfilePdfBtn" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h6"/></svg>
+            Download profile PDF
+          </button>
+          <a class="quick-action-btn" href="profile.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m0 0l-5-5m5 5l-5 5"/></svg>
+            View full profile
+          </a>
+        </div>
       </div>
     </div>
 
@@ -74,7 +91,7 @@
   </div>
 </main>
 <div id="toastHost"></div>
-<script src="app.js"></script>
-<script src="portal.js"></script>
+<script src="app.js?v=3"></script>
+<script src="portal.js?v=3"></script>
 </body>
 </html>

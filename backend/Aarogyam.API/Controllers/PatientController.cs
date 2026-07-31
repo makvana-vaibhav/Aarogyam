@@ -16,11 +16,13 @@ public class PatientController : ControllerBase
 {
     private readonly IPatientRepository _patientRepository;
     private readonly IFileStorageService _fileStorage;
+    private readonly IPdfService _pdfService;
 
-    public PatientController(IPatientRepository patientRepository, IFileStorageService fileStorage)
+    public PatientController(IPatientRepository patientRepository, IFileStorageService fileStorage, IPdfService pdfService)
     {
         _patientRepository = patientRepository;
         _fileStorage = fileStorage;
+        _pdfService = pdfService;
     }
 
     // ================= Dashboard =================
@@ -41,6 +43,16 @@ public class PatientController : ControllerBase
     {
         var patient = await GetCurrentPatientAsync();
         return patient is null ? PatientNotFound() : Ok(patient);
+    }
+
+    [HttpGet("profile/pdf")]
+    public async Task<IActionResult> GetProfilePdf()
+    {
+        var patient = await GetCurrentPatientAsync();
+        if (patient is null) return PatientNotFound();
+
+        var pdfBytes = _pdfService.GeneratePatientProfilePdf(patient);
+        return File(pdfBytes, "application/pdf", $"aarogyam-profile-{patient.AarogyamId}.pdf");
     }
 
     [HttpPut("profile")]

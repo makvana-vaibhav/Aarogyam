@@ -131,6 +131,7 @@
     dashboard: function () { return apiRequest("/patient/dashboard"); },
     profile: function () { return apiRequest("/patient/profile"); },
     updateProfile: function (payload) { return apiRequest("/patient/profile", { method: "PUT", body: payload }); },
+    downloadProfilePdf: function () { return apiRequest("/patient/profile/pdf", { responseType: "blob" }); },
     changePassword: function (payload) { return apiRequest("/patient/change-password", { method: "PUT", body: payload }); },
     countries: function () { return apiRequest("/lookup/countries"); },
     states: function (countryId) { return apiRequest("/lookup/states" + qs({ countryId: countryId })); },

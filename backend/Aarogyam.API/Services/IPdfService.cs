@@ -1,3 +1,5 @@
+using Aarogyam.API.Models.Responses;
+
 namespace Aarogyam.API.Services;
 
 public interface IPdfService
@@ -8,4 +10,6 @@ public interface IPdfService
         string diagnosisTitle,
         DateTime prescriptionDate,
         string prescriptionText);
+
+    byte[] GeneratePatientProfilePdf(PatientMasterRow patient);
 }

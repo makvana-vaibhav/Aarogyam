@@ -659,7 +659,9 @@ table.data-table { width: 100%; border-collapse: collapse; min-width: 560px; }
   margin-bottom: 14px;
 }
 
-.grid-2 { display: grid; grid-template-columns: 1.4fr 1fr; gap: 16px; align-items: start; }
+.grid-2 { display: grid; grid-template-columns: 1.4fr 1fr; gap: 16px; align-items: stretch; }
+.grid-2 > .card { display: flex; flex-direction: column; height: 100%; box-sizing: border-box; }
+.grid-2-equal { grid-template-columns: 1fr 1fr; }
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 
 .avatar-circle {
@@ -748,9 +750,25 @@ table.data-table { width: 100%; border-collapse: collapse; min-width: 560px; }
 .qa-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
 
 .dashboard-grid { margin-top: 4px; }
-.dashboard-grid-equal { margin-top: 4px; grid-template-columns: 1fr 1fr; align-items: stretch; }
-.dashboard-grid-equal .card { display: flex; flex-direction: column; }
-.dashboard-grid-equal .health-card { margin-top: auto; }
+
+.quick-actions { display: flex; flex-direction: column; gap: 10px; }
+.quick-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg-card);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+.quick-action-btn svg { width: 16px; height: 16px; color: var(--accent); flex: none; }
+.quick-action-btn:hover { border-color: var(--accent); background: var(--bg-raised); }
 
 .sidebar-profile {
   display: flex;

@@ -65,10 +65,89 @@
     }
     try {
       var qr = await PatientAPI.healthCardQr();
+      state.qrBlob = qr.blob;
       state.qrUrl = URL.createObjectURL(qr.blob);
       qrImg.src = state.qrUrl;
     } catch (err) {
       qrImg.alt = err.message;
+    }
+  }
+
+  function loadImageElement(url) {
+    return new Promise(function (resolve, reject) {
+      var img = new Image();
+      img.onload = function () { resolve(img); };
+      img.onerror = reject;
+      img.src = url;
+    });
+  }
+
+  async function downloadFullHealthCard() {
+    if (!state.profile || !state.qrUrl) {
+      showToast("Health card is still loading.", true);
+      return;
+    }
+    try {
+      var qrImg = await loadImageElement(state.qrUrl);
+      var scale = 2;
+      var width = 900, height = 380;
+      var canvas = document.createElement("canvas");
+      canvas.width = width * scale;
+      canvas.height = height * scale;
+      var ctx = canvas.getContext("2d");
+      ctx.scale(scale, scale);
+
+      ctx.fillStyle = "#fffbf3";
+      ctx.fillRect(0, 0, width, height);
+      ctx.strokeStyle = "#1b4332";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(6, 6, width - 12, height - 12);
+
+      ctx.fillStyle = "#16301f";
+      ctx.font = "700 22px Arial";
+      ctx.fillText("AAROGYAM · HEALTH IDENTITY", 36, 58);
+      ctx.strokeStyle = "rgba(19, 42, 30, 0.2)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(36, 76);
+      ctx.lineTo(width - 36, 76);
+      ctx.stroke();
+
+      function label(text, x, y) {
+        ctx.fillStyle = "#829a8b";
+        ctx.font = "600 12px Arial";
+        ctx.fillText(text.toUpperCase(), x, y);
+      }
+      function value(text, x, y, size) {
+        ctx.fillStyle = "#16301f";
+        ctx.font = (size || 18) + "px Arial";
+        ctx.fillText(text, x, y);
+      }
+
+      var p = state.profile;
+      var fullName = joinName(p);
+      var leftX = 36;
+      label("Patient", leftX, 112);
+      value(fullName, leftX, 138, 22);
+      label("Aarogyam ID", leftX, 176);
+      value(p.aarogyamId, leftX, 200, 17);
+      label("Blood group", leftX, 238);
+      value(p.bloodGroup || "Not set", leftX, 262, 19);
+      label("Emergency contact", leftX, 300);
+      value(p.emergencyContact || "Not added", leftX, 324, 19);
+
+      var qrSize = 220;
+      var qrX = width - qrSize - 40;
+      var qrY = (height - qrSize) / 2;
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(qrX - 8, qrY - 8, qrSize + 16, qrSize + 16);
+      ctx.drawImage(qrImg, qrX, qrY, qrSize, qrSize);
+
+      canvas.toBlob(function (blob) {
+        PatientUtil.downloadBlob(blob, "aarogyam-health-card-" + p.aarogyamId + ".png");
+      }, "image/png");
+    } catch (err) {
+      showToast("Could not generate the health card image.", true);
     }
   }
 
@@ -101,7 +180,7 @@
       { label: "Total visits", value: stats.totalVisits, note: stats.lastVisitDate ? "Last visit " + PatientUtil.formatDate(stats.lastVisitDate) : "No visits yet" },
       { label: "Prescriptions", value: stats.totalPrescriptions, note: "Issued during consultations" },
       { label: "Reports", value: stats.totalReports, note: stats.reportsThisMonth + " added this month" },
-      { label: "Unread alerts", value: stats.unreadNotifications, note: "Waiting for your review", warn: stats.unreadNotifications > 0 }
+      { label: "Diagnoses", value: stats.totalDiagnoses, note: "Recorded on your history" }
     ];
     statGrid.innerHTML = cards.map(function (card) {
       return '<div class="stat-card' + (card.warn ? " warn" : "") + '">' +
@@ -280,14 +359,6 @@
       renderOverviewStats(responses[0]);
       renderProfileBadge(state.profile);
       $("welcomeHeading").textContent = "Good day, " + state.profile.firstName;
-      $("profileName").textContent = joinName(state.profile);
-      $("profileMeta").textContent = "Aarogyam ID " + state.profile.aarogyamId + " • " + state.profile.gender + " • DOB " + PatientUtil.formatDate(state.profile.dateOfBirth);
-      $("patientInitials").textContent = PatientUtil.initials(state.profile.firstName, state.profile.lastName);
-      $("profileDetails").innerHTML = [
-        detailCell("Blood group", state.profile.bloodGroup || "Not set"),
-        detailCell("Emergency contact", state.profile.emergencyContact || "Not added"),
-        detailCell("Member since", PatientUtil.formatDate(state.profile.createdAt))
-      ].join("");
       renderHealthCardBlock(state.profile, "healthCardInfo");
       loadQrImage();
       renderTimeline(state.visits, state.diagnoses, 3, "timelineList");
@@ -295,6 +366,25 @@
       ui.statGrid.innerHTML = '<div class="form-alert error">' + esc(err.message) + '</div>';
       ui.timelineList.innerHTML = '<div class="empty-state">' + esc(err.message) + '</div>';
     }
+
+    $("downloadCardBtn").addEventListener("click", downloadFullHealthCard);
+    $("copyAarogyamIdBtn").addEventListener("click", async function () {
+      if (!state.profile) return;
+      try {
+        await navigator.clipboard.writeText(state.profile.aarogyamId);
+        showToast("Aarogyam ID copied.");
+      } catch (err) {
+        showToast("Could not copy — " + state.profile.aarogyamId, true);
+      }
+    });
+    $("downloadProfilePdfBtn").addEventListener("click", async function () {
+      try {
+        var file = await PatientAPI.downloadProfilePdf();
+        PatientUtil.downloadBlob(file.blob, file.fileName || "aarogyam-profile.pdf");
+      } catch (err) {
+        showToast(err.message, true);
+      }
+    });
   }
 
   async function initProfile() {
@@ -338,6 +428,7 @@
       ui.profileAlert.hidden = false;
     }
 
+    $("downloadCardBtn").addEventListener("click", downloadFullHealthCard);
     $("editProfileBtn").addEventListener("click", showEdit);
     $("cancelEditBtn").addEventListener("click", async function () {
       try {

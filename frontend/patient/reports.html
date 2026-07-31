@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css?v=5">
 </head>
 <body data-page="reports">
 <header class="pt-topnav">
@@ -57,7 +57,7 @@
 </main>
 <div class="modal-overlay" id="uploadModal" hidden><div class="modal"><div class="modal-head"><h3>Upload medical report</h3><button class="modal-close" type="button" data-close-modal="uploadModal" aria-label="Close">×</button></div><div class="modal-body"><div id="uploadAlert" class="form-alert error" hidden></div><form id="uploadForm" novalidate><div class="form-row"><label for="reportTitle">Title</label><input id="reportTitle" type="text" maxlength="200" required></div><div class="form-row-2col"><div class="form-row"><label for="reportType">Report type</label><input id="reportType" type="text" maxlength="50" required></div><div class="form-row"><label for="reportDate">Report date</label><input id="reportDate" type="date"></div></div><div class="form-row"><label for="reportVisitId">Link to visit</label><select id="reportVisitId"><option value="">None</option></select></div><div class="form-row"><label>File</label><label class="dropzone" id="reportDropzone"><input id="reportFile" type="file" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"><span>Drop a file here or click to browse.</span><div class="filename" id="reportFilename">No file selected</div></label></div><div class="modal-actions"><button class="btn btn-ghost" type="button" data-close-modal="uploadModal">Cancel</button><button class="btn btn-solid" id="uploadSubmitBtn" type="submit">Upload report</button></div></form></div></div></div>
 <div id="toastHost"></div>
-<script src="app.js"></script>
-<script src="portal.js"></script>
+<script src="app.js?v=3"></script>
+<script src="portal.js?v=3"></script>
 </body>
 </html>
