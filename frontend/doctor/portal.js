@@ -7,8 +7,7 @@
 
   var page = document.body.getAttribute("data-page");
   var state = {
-    profile: null,
-    notifications: []
+    profile: null
   };
 
   function $(id) { return document.getElementById(id); }
@@ -63,52 +62,14 @@
     if (hero) hero.textContent = fullName;
   }
 
-  async function refreshNotificationBadge() {
-    var badge = $("navNotificationCount");
-    if (!badge) return;
-    try {
-      state.notifications = await DoctorAPI.notifications(true);
-      if (state.notifications.length) {
-        badge.textContent = state.notifications.length;
-        badge.hidden = false;
-      } else {
-        badge.hidden = true;
-      }
-    } catch (err) {
-      badge.hidden = true;
-    }
-  }
-
-  function renderNotifications(mountId, rows, limit) {
-    var mount = $(mountId);
-    if (!mount) return;
-    var list = limit ? rows.slice(0, limit) : rows;
-    if (!list.length) {
-      mount.innerHTML = '<div class="empty-state">No notifications right now.</div>';
-      return;
-    }
-    mount.innerHTML = list.map(function (item) {
-      return '<article class="list-item' + (item.isRead ? "" : " unread") + '">' +
-        '<div class="list-item-main">' +
-          '<div class="row-title">' + esc(item.title) + '</div>' +
-          '<div class="row-sub pre-wrap">' + esc(item.message) + '</div>' +
-          '<div class="list-meta">' + esc(DoctorUtil.formatRelativeTime(item.createdAt)) + '</div>' +
-        '</div>' +
-        (!item.isRead ? '<button class="btn btn-ghost btn-sm" data-read="' + item.notificationId + '" type="button">Mark read</button>' : '') +
-      '</article>';
-    }).join("");
-  }
-
   async function initOverview() {
     try {
       var responses = await Promise.all([
         DoctorAPI.dashboard(),
-        DoctorAPI.myPatients(),
-        DoctorAPI.notifications()
+        DoctorAPI.myPatients()
       ]);
       var stats = responses[0];
       var recentPatients = responses[1] || [];
-      state.notifications = responses[2] || [];
 
       $("statGrid").innerHTML = [
         card("Patients treated", stats.patientsTreated, "Unique patients"),
@@ -119,10 +80,33 @@
       ].join("");
 
       renderPatientsTable("recentPatientsBody", recentPatients.slice(0, 5));
-      renderNotifications("notificationList", state.notifications, 4);
     } catch (err) {
       $("statGrid").innerHTML = '<div class="form-alert error">' + esc(err.message) + '</div>';
     }
+
+    initSearchSection();
+  }
+
+  function initSearchSection() {
+    var form = $("searchForm");
+    var body = $("searchResults");
+    if (!form || !body) return;
+    form.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      body.innerHTML = '<div class="table-loading">Searching…</div>';
+      try {
+        var rows = await DoctorAPI.searchPatients($("aarogyamId").value.trim(), $("searchName").value.trim());
+        if (!rows.length) {
+          body.innerHTML = '<div class="empty-state">No patient matched that search.</div>';
+          return;
+        }
+        body.innerHTML = rows.map(function (row) {
+          return '<div class="card result-card"><div class="result-copy"><div class="row-title">' + esc(joinName(row)) + '</div><div class="row-sub">AAID ' + esc(row.aarogyamId) + ' • ' + esc(row.gender) + ' • ' + esc(row.bloodGroup || "Blood group not set") + '</div></div><a class="btn btn-solid btn-sm" href="patient.html?patientId=' + row.patientId + '">View record</a></div>';
+        }).join("");
+      } catch (err) {
+        body.innerHTML = '<div class="form-alert error">' + esc(err.message) + '</div>';
+      }
+    });
   }
 
   function card(label, value, note) {
@@ -144,27 +128,6 @@
         '<td class="actions"><a class="btn btn-ghost btn-sm" href="patient.html?patientId=' + row.patientId + '">Open</a></td>' +
       '</tr>';
     }).join("");
-  }
-
-  async function initSearch() {
-    var form = $("searchForm");
-    var body = $("searchResults");
-    form.addEventListener("submit", async function (event) {
-      event.preventDefault();
-      body.innerHTML = '<div class="table-loading">Searching…</div>';
-      try {
-        var rows = await DoctorAPI.searchPatients($("aarogyamId").value.trim(), $("searchName").value.trim());
-        if (!rows.length) {
-          body.innerHTML = '<div class="empty-state">No patient matched that search.</div>';
-          return;
-        }
-        body.innerHTML = rows.map(function (row) {
-          return '<div class="card result-card"><div class="result-copy"><div class="row-title">' + esc(joinName(row)) + '</div><div class="row-sub">AAID ' + esc(row.aarogyamId) + ' • ' + esc(row.gender) + ' • ' + esc(row.bloodGroup || "Blood group not set") + '</div></div><a class="btn btn-solid btn-sm" href="patient.html?patientId=' + row.patientId + '">View record</a></div>';
-        }).join("");
-      } catch (err) {
-        body.innerHTML = '<div class="form-alert error">' + esc(err.message) + '</div>';
-      }
-    });
   }
 
   async function initMyPatients() {
@@ -524,32 +487,167 @@
     });
   }
 
-  async function initNotifications() {
-    try {
-      state.notifications = await DoctorAPI.notifications();
-      renderNotifications("notificationList", state.notifications);
-      $("notificationList").addEventListener("click", async function (event) {
-        var id = event.target.getAttribute("data-read");
-        if (!id) return;
-        try {
-          await DoctorAPI.markNotificationRead(id);
-          state.notifications = await DoctorAPI.notifications();
-          renderNotifications("notificationList", state.notifications);
-          refreshNotificationBadge();
-        } catch (err) {
-          showToast(err.message, true);
-        }
-      });
-    } catch (err) {
-      $("notificationList").innerHTML = '<div class="form-alert error">' + esc(err.message) + '</div>';
-    }
+  function nameById(list, idField, nameField, id) {
+    var item = list.find(function (row) { return row[idField] === id; });
+    return item ? item[nameField] : "—";
   }
 
-  loadSharedProfile().then(refreshNotificationBadge);
+  async function populateStateOptions(countryId, selectedStateId) {
+    if (!countryId) {
+      $("stateId").innerHTML = '<option value="">Select state</option>';
+      return;
+    }
+    var states = await DoctorAPI.states(countryId);
+    $("stateId").innerHTML = '<option value="">Select state</option>' + states.map(function (item) {
+      return '<option value="' + item.stateId + '"' + (item.stateId === selectedStateId ? " selected" : "") + '>' + esc(item.stateName) + '</option>';
+    }).join("");
+  }
+
+  async function populateCityOptions(stateId, selectedCityId) {
+    if (!stateId) {
+      $("cityId").innerHTML = '<option value="">Select city</option>';
+      return;
+    }
+    var cities = await DoctorAPI.cities(stateId);
+    $("cityId").innerHTML = '<option value="">Select city</option>' + cities.map(function (item) {
+      return '<option value="' + item.cityId + '"' + (item.cityId === selectedCityId ? " selected" : "") + '>' + esc(item.cityName) + '</option>';
+    }).join("");
+  }
+
+  async function initProfile() {
+    var ui = {
+      profileAlert: $("profileAlert"),
+      passwordAlert: $("passwordAlert"),
+      profileView: $("profileView"),
+      profileForm: $("profileForm"),
+      passwordForm: $("passwordForm")
+    };
+    var lookups = { hospitals: [], specializations: [], countries: [] };
+    var doctor = null;
+
+    function showView() {
+      ui.profileView.hidden = false;
+      ui.profileForm.hidden = true;
+      $("editProfileBtn").hidden = false;
+    }
+    function showEdit() {
+      ui.profileView.hidden = true;
+      ui.profileForm.hidden = false;
+      $("editProfileBtn").hidden = true;
+    }
+
+    function renderProfileView() {
+      $("licenseValue").textContent = doctor.licenseNumber;
+      ui.profileView.innerHTML = [
+        detailCell("Name", "Dr. " + joinName(doctor)),
+        detailCell("Hospital", nameById(lookups.hospitals, "hospitalId", "hospitalName", doctor.hospitalId)),
+        detailCell("Specialization", nameById(lookups.specializations, "specializationId", "specializationName", doctor.specializationId)),
+        detailCell("Approval status", doctor.approvalStatus),
+        detailCell("Address", doctor.address, true)
+      ].join("");
+    }
+
+    function populateProfileForm() {
+      $("firstName").value = doctor.firstName || "";
+      $("middleName").value = doctor.middleName || "";
+      $("lastName").value = doctor.lastName || "";
+      $("address").value = doctor.address || "";
+      $("hospitalId").innerHTML = lookups.hospitals.map(function (item) {
+        return '<option value="' + item.hospitalId + '"' + (item.hospitalId === doctor.hospitalId ? " selected" : "") + '>' + esc(item.hospitalName) + '</option>';
+      }).join("");
+      $("specializationId").innerHTML = lookups.specializations.map(function (item) {
+        return '<option value="' + item.specializationId + '"' + (item.specializationId === doctor.specializationId ? " selected" : "") + '>' + esc(item.specializationName) + '</option>';
+      }).join("");
+      $("countryId").innerHTML = lookups.countries.map(function (item) {
+        return '<option value="' + item.countryId + '"' + (item.countryId === doctor.countryId ? " selected" : "") + '>' + esc(item.countryName) + '</option>';
+      }).join("");
+    }
+
+    try {
+      var responses = await Promise.all([
+        DoctorAPI.profile(),
+        DoctorAPI.hospitals(),
+        DoctorAPI.specializations(),
+        DoctorAPI.countries()
+      ]);
+      doctor = responses[0];
+      lookups.hospitals = responses[1] || [];
+      lookups.specializations = responses[2] || [];
+      lookups.countries = responses[3] || [];
+
+      renderProfileView();
+      populateProfileForm();
+      await populateStateOptions(doctor.countryId, doctor.stateId);
+      await populateCityOptions(doctor.stateId, doctor.cityId);
+    } catch (err) {
+      ui.profileAlert.textContent = err.message;
+      ui.profileAlert.hidden = false;
+    }
+
+    $("editProfileBtn").addEventListener("click", showEdit);
+    $("cancelEditBtn").addEventListener("click", async function () {
+      populateProfileForm();
+      await populateStateOptions(doctor.countryId, doctor.stateId);
+      await populateCityOptions(doctor.stateId, doctor.cityId);
+      showView();
+    });
+
+    $("countryId").addEventListener("change", function () {
+      populateStateOptions($("countryId").value, null);
+      $("cityId").innerHTML = '<option value="">Select city</option>';
+    });
+    $("stateId").addEventListener("change", function () {
+      populateCityOptions($("stateId").value, null);
+    });
+
+    ui.profileForm.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      ui.profileAlert.hidden = true;
+      var payload = {
+        firstName: $("firstName").value.trim(),
+        middleName: $("middleName").value.trim() || null,
+        lastName: $("lastName").value.trim(),
+        hospitalId: Number($("hospitalId").value),
+        specializationId: Number($("specializationId").value),
+        address: $("address").value.trim(),
+        countryId: Number($("countryId").value),
+        stateId: Number($("stateId").value),
+        cityId: Number($("cityId").value)
+      };
+      try {
+        await DoctorAPI.updateProfile(payload);
+        showToast("Profile updated successfully.");
+        doctor = await DoctorAPI.profile();
+        renderProfileView();
+        loadSharedProfile();
+        showView();
+      } catch (err) {
+        ui.profileAlert.textContent = err.message;
+        ui.profileAlert.hidden = false;
+      }
+    });
+
+    ui.passwordForm.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      ui.passwordAlert.hidden = true;
+      try {
+        await DoctorAPI.changePassword({
+          currentPassword: $("currentPassword").value,
+          newPassword: $("newPassword").value
+        });
+        ui.passwordForm.reset();
+        showToast("Password updated successfully.");
+      } catch (err) {
+        ui.passwordAlert.textContent = err.message;
+        ui.passwordAlert.hidden = false;
+      }
+    });
+  }
+
+  loadSharedProfile();
   if (page === "overview") initOverview();
-  if (page === "search") initSearch();
   if (page === "patients") initMyPatients();
   if (page === "patient") initPatientDetail();
   if (page === "create-visit") initCreateVisit();
-  if (page === "notifications") initNotifications();
+  if (page === "profile") initProfile();
 })();

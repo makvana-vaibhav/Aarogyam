@@ -933,6 +933,24 @@ table.data-table { width: 100%; border-collapse: collapse; min-width: 560px; }
   border: 2px solid var(--bg-card);
 }
 
+.pt-count {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 20px;
+  background: var(--accent);
+  color: var(--btn-solid-text);
+  font-family: var(--mono);
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--bg-card);
+}
+
 .pt-avatar-btn {
   width: 38px;
   height: 38px;

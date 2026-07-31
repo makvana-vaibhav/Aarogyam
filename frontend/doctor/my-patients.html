@@ -1,8 +1,51 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>My Patients — Aarogyam Doctor</title><meta name="robots" content="noindex, nofollow"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"><link rel="stylesheet" href="../patient/styles.css"></head>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>My Patients — Aarogyam Doctor</title><meta name="robots" content="noindex, nofollow"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"><link rel="stylesheet" href="../patient/styles.css?v=5"></head>
 <body data-page="patients">
-<div class="sidebar-scrim" id="sidebarScrim"></div>
-<aside class="admin-sidebar"><div class="sidebar-brand"><svg width="24" height="24" viewBox="0 0 32 32" fill="none"><rect x="1.5" y="1.5" width="29" height="29" rx="8.5" stroke="#2d6a4f" stroke-width="1.5"/><path d="M7 17h5l2.5-6 3.5 10 2.5-6.5L22 17h3" stroke="#40916c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Aarogyam <small>Doctor</small></div><nav class="admin-nav"><div class="nav-label">Doctor module</div><a href="overview.html">Overview</a><a href="search.html">Patient search</a><a href="my-patients.html">My patients</a><a href="create-visit.html">Create visit</a><a href="notifications.html">Notifications<span class="nav-count" id="navNotificationCount" hidden>0</span></a></nav><div class="sidebar-foot"><div class="sidebar-profile"><div class="avatar-circle small" id="sidebarInitials">D</div><div><div class="row-title" id="sidebarProfileName">Doctor</div><div class="row-sub" id="sidebarProfileMeta">License</div></div></div></div></aside>
-<div class="admin-main"><header class="admin-topbar"><button class="sidebar-toggle" id="sidebarToggle" aria-label="Menu"><span></span></button><h1>My Patients</h1><div class="topbar-actions"><span class="admin-user"><span class="dot"></span><span id="doctorEmail">—</span></span><button class="btn btn-ghost btn-sm" id="logoutBtn" type="button">Log out</button></div></header><main class="admin-content"><div class="page-head-row"><div><h2>My patients</h2><p>Patients you have already treated through Aarogyam.</p></div></div><div class="toolbar"><input id="patientSearch" type="search" placeholder="Search by name or Aarogyam ID"></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Patient</th><th>Aarogyam ID</th><th>Total visits</th><th>Last visit</th><th></th></tr></thead><tbody id="patientsBody"><tr><td colspan="5" class="table-loading">Loading…</td></tr></tbody></table></div></main></div>
+<header class="pt-topnav">
+  <div class="pt-topnav-inner">
+    <a class="pt-brand" href="overview.html"><svg width="24" height="24" viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect x="1.5" y="1.5" width="29" height="29" rx="8.5" stroke="#2d6a4f" stroke-width="1.5"/><path d="M7 17h5l2.5-6 3.5 10 2.5-6.5L22 17h3" stroke="#40916c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Aarogyam</a>
+    <nav class="pt-links">
+      <a href="overview.html">Overview</a>
+      <a href="my-patients.html">My Patients</a>
+      <a href="create-visit.html">Create Visit</a>
+    </nav>
+    <div class="pt-actions">
+      <div>
+        <button class="pt-icon-btn" id="notifBellBtn" type="button" aria-label="Notifications">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+          <span class="pt-dot" id="notifDot" hidden></span>
+        </button>
+        <div class="pt-popover" id="notifPopover" hidden>
+          <div class="pt-popover-head">Unread notifications</div>
+          <div class="pt-popover-list" id="notifPopoverList"><div class="table-loading">Loading…</div></div>
+        </div>
+      </div>
+      <div>
+        <button class="pt-avatar-btn" id="avatarBtn" type="button" aria-label="Account"><span class="avatar-circle small" id="sidebarInitials">D</span></button>
+        <div class="pt-popover" id="avatarPopover" hidden>
+          <div class="pt-account-card"><div class="pt-account-name" id="sidebarProfileName">Doctor</div><div class="pt-account-meta" id="sidebarProfileMeta">License</div></div>
+          <div class="pt-popover-menu">
+            <a href="profile.html">Profile &amp; settings</a>
+            <button class="danger" id="logoutBtn" type="button">Log out</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="pt-mobile-toggle" id="mobileNavToggle" type="button" aria-label="Menu"><span></span></button>
+  </div>
+  <nav class="pt-mobile-links">
+    <a href="overview.html">Overview</a>
+    <a href="my-patients.html">My Patients</a>
+    <a href="create-visit.html">Create Visit</a>
+  </nav>
+</header>
+
+<main class="pt-main">
+  <div class="pt-content">
+    <div class="page-head-row"><div><h2>My patients</h2><p>Patients you have already treated through Aarogyam.</p></div></div>
+    <div class="toolbar"><input id="patientSearch" type="search" placeholder="Search by name or Aarogyam ID"></div>
+    <div class="table-wrap"><table class="data-table"><thead><tr><th>Patient</th><th>Aarogyam ID</th><th>Total visits</th><th>Last visit</th><th></th></tr></thead><tbody id="patientsBody"><tr><td colspan="5" class="table-loading">Loading…</td></tr></tbody></table></div>
+  </div>
+</main>
 <div id="toastHost"></div><script src="app.js"></script><script src="portal.js"></script></body></html>

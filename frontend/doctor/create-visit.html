@@ -1,138 +1,174 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Create Visit — Aarogyam Doctor</title><meta name="robots" content="noindex, nofollow"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"><link rel="stylesheet" href="../patient/styles.css"></head>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Create Visit — Aarogyam Doctor</title><meta name="robots" content="noindex, nofollow"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"><link rel="stylesheet" href="../patient/styles.css?v=5"></head>
 <body data-page="create-visit">
-<div class="sidebar-scrim" id="sidebarScrim"></div>
-<aside class="admin-sidebar"><div class="sidebar-brand"><svg width="24" height="24" viewBox="0 0 32 32" fill="none"><rect x="1.5" y="1.5" width="29" height="29" rx="8.5" stroke="#2d6a4f" stroke-width="1.5"/><path d="M7 17h5l2.5-6 3.5 10 2.5-6.5L22 17h3" stroke="#40916c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Aarogyam <small>Doctor</small></div><nav class="admin-nav"><div class="nav-label">Doctor module</div><a href="overview.html">Overview</a><a href="search.html">Patient search</a><a href="my-patients.html">My patients</a><a href="create-visit.html">Create visit</a><a href="notifications.html">Notifications<span class="nav-count" id="navNotificationCount" hidden>0</span></a></nav><div class="sidebar-foot"><div class="sidebar-profile"><div class="avatar-circle small" id="sidebarInitials">D</div><div><div class="row-title" id="sidebarProfileName">Doctor</div><div class="row-sub" id="sidebarProfileMeta">License</div></div></div></div></aside>
-<div class="admin-main">
-<header class="admin-topbar"><button class="sidebar-toggle" id="sidebarToggle" aria-label="Menu"><span></span></button><h1>Create Visit</h1><div class="topbar-actions"><span class="admin-user"><span class="dot"></span><span id="doctorEmail">—</span></span><button class="btn btn-ghost btn-sm" id="logoutBtn" type="button">Log out</button></div></header>
-<main class="admin-content">
-  <div class="page-head-row"><div><h2>New visit</h2><p>Find the patient by their Aarogyam ID, then record the visit — diagnosis, prescription and a report are optional add-ons.</p></div></div>
-
-  <div class="wizard-steps">
-    <div class="wizard-step-pill active" id="stepPill1"><span class="num">1</span>Find patient</div>
-    <div class="wizard-connector"></div>
-    <div class="wizard-step-pill" id="stepPill2"><span class="num">2</span>Visit details</div>
-  </div>
-
-  <div id="flowAlert" class="form-alert error" hidden></div>
-
-  <!-- Step 1: find patient -->
-  <section class="wizard-panel card" id="panelStep1">
-    <div class="card-title">Find patient</div>
-    <div class="card-sub">Enter the patient's Aarogyam ID — their details will load automatically.</div>
-    <div class="form-row" id="rowAarogyamId">
-      <label for="lookupAarogyamId">Aarogyam ID</label>
-      <div class="lookup-row">
-        <input id="lookupAarogyamId" placeholder="e.g. AAR-2026-000123" autocomplete="off">
-        <button class="btn btn-solid" id="lookupBtn" type="button">Find patient</button>
-      </div>
-      <div class="field-error">Enter the patient's Aarogyam ID first.</div>
-    </div>
-    <div id="lookupResult"></div>
-    <div class="modal-actions" style="justify-content: flex-start;">
-      <button class="btn btn-solid" id="continueToStep2" type="button" disabled>Continue</button>
-    </div>
-  </section>
-
-  <!-- Step 2: visit + optional add-ons -->
-  <form id="visitFlowForm" class="wizard-panel" hidden>
-    <div class="card">
-      <div class="card-title">Patient</div>
-      <div class="patient-found-card">
-        <div class="avatar-circle small" id="pfInitials">P</div>
-        <div class="pf-main">
-          <div class="row-title" id="pfName">—</div>
-          <div class="row-sub mono" id="pfMeta">—</div>
+<header class="pt-topnav">
+  <div class="pt-topnav-inner">
+    <a class="pt-brand" href="overview.html"><svg width="24" height="24" viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect x="1.5" y="1.5" width="29" height="29" rx="8.5" stroke="#2d6a4f" stroke-width="1.5"/><path d="M7 17h5l2.5-6 3.5 10 2.5-6.5L22 17h3" stroke="#40916c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Aarogyam</a>
+    <nav class="pt-links">
+      <a href="overview.html">Overview</a>
+      <a href="my-patients.html">My Patients</a>
+      <a href="create-visit.html">Create Visit</a>
+    </nav>
+    <div class="pt-actions">
+      <div>
+        <button class="pt-icon-btn" id="notifBellBtn" type="button" aria-label="Notifications">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+          <span class="pt-dot" id="notifDot" hidden></span>
+        </button>
+        <div class="pt-popover" id="notifPopover" hidden>
+          <div class="pt-popover-head">Unread notifications</div>
+          <div class="pt-popover-list" id="notifPopoverList"><div class="table-loading">Loading…</div></div>
         </div>
-        <button class="btn btn-ghost btn-sm" id="changePatientBtn" type="button">Change</button>
+      </div>
+      <div>
+        <button class="pt-avatar-btn" id="avatarBtn" type="button" aria-label="Account"><span class="avatar-circle small" id="sidebarInitials">D</span></button>
+        <div class="pt-popover" id="avatarPopover" hidden>
+          <div class="pt-account-card"><div class="pt-account-name" id="sidebarProfileName">Doctor</div><div class="pt-account-meta" id="sidebarProfileMeta">License</div></div>
+          <div class="pt-popover-menu">
+            <a href="profile.html">Profile &amp; settings</a>
+            <button class="danger" id="logoutBtn" type="button">Log out</button>
+          </div>
+        </div>
       </div>
     </div>
+    <button class="pt-mobile-toggle" id="mobileNavToggle" type="button" aria-label="Menu"><span></span></button>
+  </div>
+  <nav class="pt-mobile-links">
+    <a href="overview.html">Overview</a>
+    <a href="my-patients.html">My Patients</a>
+    <a href="create-visit.html">Create Visit</a>
+  </nav>
+</header>
 
-    <div class="card">
-      <div class="card-title">Visit details</div>
-      <div class="card-sub">This date is reused for the diagnosis and prescription below — no need to enter it again.</div>
-      <div class="form-row" id="rowVisitDate">
-        <label for="visitDate">Visit date &amp; time</label>
-        <input id="visitDate" type="datetime-local" required>
-        <div class="field-error">Visit date &amp; time is required.</div>
-      </div>
-      <div class="form-row">
-        <label for="visitNotes">Consultation notes</label>
-        <textarea id="visitNotes" placeholder="Symptoms, observations, advice given…"></textarea>
-      </div>
+<main class="pt-main">
+  <div class="pt-content">
+    <div class="page-head-row"><div><h2>New visit</h2><p>Find the patient by their Aarogyam ID, then record the visit — diagnosis, prescription and a report are optional add-ons.</p></div></div>
+
+    <div class="wizard-steps">
+      <div class="wizard-step-pill active" id="stepPill1"><span class="num">1</span>Find patient</div>
+      <div class="wizard-connector"></div>
+      <div class="wizard-step-pill" id="stepPill2"><span class="num">2</span>Visit details</div>
     </div>
 
-    <div class="card optional-section" id="sectionDiagnosis">
-      <div class="optional-toggle" data-toggle="sectionDiagnosis">
-        <div><div class="card-title" style="margin-bottom:0;">+ Add diagnosis</div><div class="card-sub" style="margin-bottom:0;">Optional — useful for patient history and prescription context.</div></div>
-        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 9l6 6 6-6"/></svg>
+    <div id="flowAlert" class="form-alert error" hidden></div>
+
+    <!-- Step 1: find patient -->
+    <section class="wizard-panel card" id="panelStep1">
+      <div class="card-title">Find patient</div>
+      <div class="card-sub">Enter the patient's Aarogyam ID — their details will load automatically.</div>
+      <div class="form-row" id="rowAarogyamId">
+        <label for="lookupAarogyamId">Aarogyam ID</label>
+        <div class="lookup-row">
+          <input id="lookupAarogyamId" placeholder="e.g. AAR-2026-000123" autocomplete="off">
+          <button class="btn btn-solid" id="lookupBtn" type="button">Find patient</button>
+        </div>
+        <div class="field-error">Enter the patient's Aarogyam ID first.</div>
       </div>
-      <div class="optional-body">
-        <div class="form-row-2col">
-          <div class="form-row" id="rowDiagnosisType">
-            <label for="diagnosisTypeId">Diagnosis type</label>
-            <select id="diagnosisTypeId"><option value="">Select diagnosis type</option></select>
-            <div class="field-error">Choose a diagnosis type.</div>
+      <div id="lookupResult"></div>
+      <div class="modal-actions" style="justify-content: flex-start;">
+        <button class="btn btn-solid" id="continueToStep2" type="button" disabled>Continue</button>
+      </div>
+    </section>
+
+    <!-- Step 2: visit + optional add-ons -->
+    <form id="visitFlowForm" class="wizard-panel" hidden>
+      <div class="card">
+        <div class="card-title">Patient</div>
+        <div class="patient-found-card">
+          <div class="avatar-circle small" id="pfInitials">P</div>
+          <div class="pf-main">
+            <div class="row-title" id="pfName">—</div>
+            <div class="row-sub mono" id="pfMeta">—</div>
           </div>
-          <div class="form-row" id="rowDiagnosisTitle">
-            <label for="diagnosisTitle">Diagnosis title</label>
-            <input id="diagnosisTitle" placeholder="e.g. Seasonal flu">
-            <div class="field-error">Diagnosis title is required.</div>
-          </div>
+          <button class="btn btn-ghost btn-sm" id="changePatientBtn" type="button">Change</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Visit details</div>
+        <div class="card-sub">This date is reused for the diagnosis and prescription below — no need to enter it again.</div>
+        <div class="form-row" id="rowVisitDate">
+          <label for="visitDate">Visit date &amp; time</label>
+          <input id="visitDate" type="datetime-local" required>
+          <div class="field-error">Visit date &amp; time is required.</div>
         </div>
         <div class="form-row">
-          <label for="diagnosisDescription">Description</label>
-          <textarea id="diagnosisDescription" placeholder="Clinical findings, notes"></textarea>
+          <label for="visitNotes">Consultation notes</label>
+          <textarea id="visitNotes" placeholder="Symptoms, observations, advice given…"></textarea>
         </div>
       </div>
-    </div>
 
-    <div class="card optional-section" id="sectionPrescription">
-      <div class="optional-toggle" data-toggle="sectionPrescription">
-        <div><div class="card-title" style="margin-bottom:0;">+ Add prescription</div><div class="card-sub" style="margin-bottom:0;">Optional free-text prescription for the patient record.</div></div>
-        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 9l6 6 6-6"/></svg>
-      </div>
-      <div class="optional-body">
-        <div class="form-row" id="rowPrescriptionText">
-          <label for="prescriptionText">Medicines &amp; instructions</label>
-          <textarea id="prescriptionText" placeholder="Medicines, dosage, frequency, instructions"></textarea>
-          <div class="field-error">Add the prescription text, or collapse this section.</div>
+      <div class="card optional-section" id="sectionDiagnosis">
+        <div class="optional-toggle" data-toggle="sectionDiagnosis">
+          <div><div class="card-title" style="margin-bottom:0;">+ Add diagnosis</div><div class="card-sub" style="margin-bottom:0;">Optional — useful for patient history and prescription context.</div></div>
+          <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 9l6 6 6-6"/></svg>
         </div>
-      </div>
-    </div>
-
-    <div class="card optional-section" id="sectionReport">
-      <div class="optional-toggle" data-toggle="sectionReport">
-        <div><div class="card-title" style="margin-bottom:0;">+ Attach report</div><div class="card-sub" style="margin-bottom:0;">Optional doctor-uploaded report for this visit.</div></div>
-        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 9l6 6 6-6"/></svg>
-      </div>
-      <div class="optional-body">
-        <div class="form-row-2col">
-          <div class="form-row" id="rowReportTitle">
-            <label for="reportTitle">Report title</label>
-            <input id="reportTitle" placeholder="e.g. Blood test">
-            <div class="field-error">Report title is required.</div>
+        <div class="optional-body">
+          <div class="form-row-2col">
+            <div class="form-row" id="rowDiagnosisType">
+              <label for="diagnosisTypeId">Diagnosis type</label>
+              <select id="diagnosisTypeId"><option value="">Select diagnosis type</option></select>
+              <div class="field-error">Choose a diagnosis type.</div>
+            </div>
+            <div class="form-row" id="rowDiagnosisTitle">
+              <label for="diagnosisTitle">Diagnosis title</label>
+              <input id="diagnosisTitle" placeholder="e.g. Seasonal flu">
+              <div class="field-error">Diagnosis title is required.</div>
+            </div>
           </div>
           <div class="form-row">
-            <label for="reportType">Report type</label>
-            <input id="reportType" placeholder="Clinical / Lab / Imaging">
+            <label for="diagnosisDescription">Description</label>
+            <textarea id="diagnosisDescription" placeholder="Clinical findings, notes"></textarea>
           </div>
         </div>
-        <div class="form-row" id="rowReportFile">
-          <label for="reportFile">File</label>
-          <input id="reportFile" type="file">
-          <div class="field-error">Choose a file to attach, or collapse this section.</div>
+      </div>
+
+      <div class="card optional-section" id="sectionPrescription">
+        <div class="optional-toggle" data-toggle="sectionPrescription">
+          <div><div class="card-title" style="margin-bottom:0;">+ Add prescription</div><div class="card-sub" style="margin-bottom:0;">Optional free-text prescription for the patient record.</div></div>
+          <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="optional-body">
+          <div class="form-row" id="rowPrescriptionText">
+            <label for="prescriptionText">Medicines &amp; instructions</label>
+            <textarea id="prescriptionText" placeholder="Medicines, dosage, frequency, instructions"></textarea>
+            <div class="field-error">Add the prescription text, or collapse this section.</div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="wizard-nav">
-      <button class="btn btn-ghost" id="backToStep1" type="button">Back</button>
-      <span class="spacer"></span>
-      <button class="btn btn-solid" type="submit">Create visit</button>
-    </div>
-  </form>
+      <div class="card optional-section" id="sectionReport">
+        <div class="optional-toggle" data-toggle="sectionReport">
+          <div><div class="card-title" style="margin-bottom:0;">+ Attach report</div><div class="card-sub" style="margin-bottom:0;">Optional doctor-uploaded report for this visit.</div></div>
+          <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="optional-body">
+          <div class="form-row-2col">
+            <div class="form-row" id="rowReportTitle">
+              <label for="reportTitle">Report title</label>
+              <input id="reportTitle" placeholder="e.g. Blood test">
+              <div class="field-error">Report title is required.</div>
+            </div>
+            <div class="form-row">
+              <label for="reportType">Report type</label>
+              <input id="reportType" placeholder="Clinical / Lab / Imaging">
+            </div>
+          </div>
+          <div class="form-row" id="rowReportFile">
+            <label for="reportFile">File</label>
+            <input id="reportFile" type="file">
+            <div class="field-error">Choose a file to attach, or collapse this section.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="wizard-nav">
+        <button class="btn btn-ghost" id="backToStep1" type="button">Back</button>
+        <span class="spacer"></span>
+        <button class="btn btn-solid" type="submit">Create visit</button>
+      </div>
+    </form>
+  </div>
 </main>
-</div>
 <div id="toastHost"></div><script src="app.js"></script><script src="portal.js"></script></body></html>
