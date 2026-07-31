@@ -31,6 +31,67 @@ public class DoctorRepository : IDoctorRepository
         return rows.FirstOrDefault();
     }
 
+    public async Task<SimpleResult?> UpdateProfileAsync(int doctorId, UpdateDoctorProfileRequest request)
+    {
+        // Only touches the fields a doctor can edit - LicenseNumber, DegreeId,
+        // document paths and approval status are untouched by the SP itself.
+        var parameters = new[]
+        {
+            new SqlParameter("@DoctorId", doctorId),
+            new SqlParameter("@FirstName", request.FirstName),
+            new SqlParameter("@MiddleName", (object?)request.MiddleName ?? DBNull.Value),
+            new SqlParameter("@LastName", request.LastName),
+            new SqlParameter("@HospitalId", request.HospitalId),
+            new SqlParameter("@SpecializationId", request.SpecializationId),
+            new SqlParameter("@Address", request.Address),
+            new SqlParameter("@CountryId", request.CountryId),
+            new SqlParameter("@StateId", request.StateId),
+            new SqlParameter("@CityId", request.CityId)
+        };
+
+        var results = await _context.SimpleResults
+            .FromSqlRaw("EXEC dbo.spDoctorsUpdateProfile @DoctorId, @FirstName, @MiddleName, @LastName, @HospitalId, @SpecializationId, @Address, @CountryId, @StateId, @CityId", parameters)
+            .ToListAsync();
+        return results.FirstOrDefault();
+    }
+
+    public async Task<SimpleResult?> ChangePasswordAsync(int userId, string currentPassword, string newPassword)
+    {
+        var userParameters = new[]
+        {
+            new SqlParameter("@UserId", userId),
+            new SqlParameter("@Email", DBNull.Value)
+        };
+
+        var users = await _context.UserMasterRows
+            .FromSqlRaw("EXEC dbo.spUsersGet @UserId, @Email", userParameters)
+            .ToListAsync();
+        var user = users.FirstOrDefault();
+
+        if (user is null)
+        {
+            return new SimpleResult { Success = 0, Message = "User not found." };
+        }
+
+        if (!BCrypt.Net.BCrypt.Verify(currentPassword, user.PasswordHash))
+        {
+            return new SimpleResult { Success = 0, Message = "Current password is incorrect." };
+        }
+
+        var newHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+
+        var parameters = new[]
+        {
+            new SqlParameter("@UserId", userId),
+            new SqlParameter("@PasswordHash", newHash)
+        };
+
+        var results = await _context.SimpleResults
+            .FromSqlRaw("EXEC dbo.spUsersSetPassword @UserId, @PasswordHash", parameters)
+            .ToListAsync();
+        return results.FirstOrDefault();
+    }
+
     public async Task<DoctorDashboardStatsResult?> GetDashboardStatsAsync(int doctorId)
     {
         var rows = await _context.DoctorDashboardStatsResults

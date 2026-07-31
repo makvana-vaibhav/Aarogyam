@@ -29,6 +29,23 @@ public class DoctorController : ControllerBase
         return doctor is null ? NotFound(new { success = 0, message = "Doctor profile not found." }) : Ok(doctor);
     }
 
+    [HttpPut("profile")]
+    public async Task<IActionResult> UpdateProfile([FromBody] UpdateDoctorProfileRequest request)
+    {
+        var doctor = await GetCurrentDoctorAsync();
+        if (doctor is null) return NotFound(new { success = 0, message = "Doctor profile not found." });
+
+        var result = await _doctorRepository.UpdateProfileAsync(doctor.DoctorId, request);
+        return result?.Success == 1 ? Ok(result) : BadRequest(result);
+    }
+
+    [HttpPut("change-password")]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
+    {
+        var result = await _doctorRepository.ChangePasswordAsync(GetCurrentUserId(), request.CurrentPassword, request.NewPassword);
+        return result?.Success == 1 ? Ok(result) : BadRequest(result);
+    }
+
     [HttpGet("dashboard")]
     public async Task<IActionResult> GetDashboard()
     {

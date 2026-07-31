@@ -6,6 +6,8 @@ namespace Aarogyam.API.Repositories;
 public interface IDoctorRepository
 {
     Task<DoctorMasterRow?> GetProfileByUserIdAsync(int userId);
+    Task<SimpleResult?> UpdateProfileAsync(int doctorId, UpdateDoctorProfileRequest request);
+    Task<SimpleResult?> ChangePasswordAsync(int userId, string currentPassword, string newPassword);
     Task<DoctorDashboardStatsResult?> GetDashboardStatsAsync(int doctorId);
     Task<List<DoctorPatientRow>> GetMyPatientsAsync(int doctorId, string? search);
     Task<List<PatientMasterRow>> SearchPatientsAsync(string? aarogyamId, string? searchName);
