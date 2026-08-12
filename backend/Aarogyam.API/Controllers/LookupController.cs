@@ -48,9 +48,9 @@ public class LookupController : ControllerBase
     }
 
     [HttpGet("specializations")]
-    public async Task<IActionResult> GetSpecializations()
+    public async Task<IActionResult> GetSpecializations([FromQuery] int? degreeId)
     {
-        return Ok(await _adminRepository.GetSpecializationsAsync());
+        return Ok(await _adminRepository.GetSpecializationsAsync(degreeId));
     }
 
     [HttpGet("diagnosis-types")]

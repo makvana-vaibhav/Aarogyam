@@ -3,6 +3,7 @@ import { useOutletContext } from "react-router-dom";
 import { useDocumentTitle } from "../../lib/useDocumentTitle.js";
 import { DoctorAPI } from "../../lib/doctorApi.js";
 import { useLocationCascade } from "../../lib/useLocationCascade.js";
+import PasswordField from "../../components/PasswordField.jsx";
 import { useToast } from "../../context/ToastContext.jsx";
 
 function joinName(row) {
@@ -51,12 +52,18 @@ export default function Profile() {
   }
 
   useEffect(() => {
-    Promise.all([DoctorAPI.profile(), DoctorAPI.hospitals(), DoctorAPI.specializations()])
-      .then(([doctorData, hospitalRows, specializationRows]) => {
+    DoctorAPI.profile()
+      .then((doctorData) => {
         setDoctor(doctorData);
+        populateForm(doctorData);
+        return Promise.all([
+          DoctorAPI.hospitals(),
+          doctorData?.degreeId ? DoctorAPI.specializations(doctorData.degreeId) : DoctorAPI.specializations()
+        ]);
+      })
+      .then(([hospitalRows, specializationRows]) => {
         setHospitals(hospitalRows || []);
         setSpecializations(specializationRows || []);
-        populateForm(doctorData);
       })
       .catch((err) => setError(err.message));
   }, []);
@@ -215,8 +222,8 @@ export default function Profile() {
         <div className="card-sub">Update your password securely.</div>
         {passwordAlert ? <div className="form-alert error">{passwordAlert}</div> : null}
         <form id="passwordForm" noValidate onSubmit={handlePasswordSubmit}>
-          <div className="form-row"><label htmlFor="currentPassword">Current password<span className="req">*</span></label><input id="currentPassword" type="password" required value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} /></div>
-          <div className="form-row"><label htmlFor="newPassword">New password<span className="req">*</span></label><input id="newPassword" type="password" required minLength={8} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} /></div>
+          <div className="form-row"><label htmlFor="currentPassword">Current password<span className="req">*</span></label><PasswordField id="currentPassword" required value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} /></div>
+          <div className="form-row"><label htmlFor="newPassword">New password<span className="req">*</span></label><PasswordField id="newPassword" required minLength={8} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} /></div>
           <button className="btn btn-solid" type="submit" disabled={savingPassword}>{savingPassword ? "Updating…" : "Update password"}</button>
         </form>
       </div>

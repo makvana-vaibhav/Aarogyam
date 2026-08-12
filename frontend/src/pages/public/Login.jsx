@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useDocumentTitle } from "../../lib/useDocumentTitle.js";
 import { AarogyamAuth, isLoggedIn, getDashboardHref } from "../../lib/publicAuth.js";
 import { saveSession } from "../../lib/session.js";
+import PasswordField from "../../components/PasswordField.jsx";
 
 export default function Login() {
   useDocumentTitle("Log in — Aarogyam");
@@ -13,6 +14,18 @@ export default function Login() {
   const [error, setError] = useState(null);
   const [resendEmail, setResendEmail] = useState(null);
   const [resending, setResending] = useState(false);
+  const alertRef = useRef(null);
+
+  useEffect(() => {
+    if (error) {
+      setTimeout(() => {
+        if (alertRef.current) {
+          alertRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+          alertRef.current.focus?.();
+        }
+      }, 50);
+    }
+  }, [error]);
 
   useEffect(() => {
     if (isLoggedIn()) {
@@ -66,7 +79,7 @@ export default function Login() {
 
         <div className="auth-card">
           {error ? (
-            <div className="form-alert error">
+            <div ref={alertRef} id="loginAlert" className="form-alert error" tabIndex={-1} style={{ outline: "none" }}>
               {error}
               {resendEmail ? (
                 <>
@@ -89,7 +102,7 @@ export default function Login() {
                 <label htmlFor="password" style={{ marginBottom: 0 }}>Password<span className="req">*</span></label>
                 <Link to="/forgot-password" style={{ fontSize: "12px", color: "var(--accent)", textDecoration: "none" }}>Forgot password?</Link>
               </div>
-              <input id="password" name="password" type="password" placeholder="••••••••" required value={password} onChange={(e) => setPassword(e.target.value)} />
+              <PasswordField id="password" name="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
             </div>
             <button id="loginSubmit" className="btn btn-solid btn-block" type="submit" disabled={submitting}>
               {submitting ? "Signing in…" : "Log in"}

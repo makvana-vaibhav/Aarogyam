@@ -7,4 +7,6 @@ public class DoctorApprovalResult
     public int UserId { get; set; }
 
     public string ApprovalStatus { get; set; } = string.Empty;
+
+    public string? RejectionReason { get; set; }
 }

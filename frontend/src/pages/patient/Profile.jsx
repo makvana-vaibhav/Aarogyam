@@ -4,6 +4,7 @@ import { useDocumentTitle } from "../../lib/useDocumentTitle.js";
 import { PatientAPI } from "../../lib/patientApi.js";
 import { formatDate } from "../../lib/format.js";
 import { useLocationCascade } from "../../lib/useLocationCascade.js";
+import PasswordField from "../../components/PasswordField.jsx";
 import { useHealthCard } from "../../lib/useHealthCard.js";
 import { useToast } from "../../context/ToastContext.jsx";
 
@@ -246,8 +247,8 @@ export default function Profile() {
           <div className="card-sub">Update your password securely.</div>
           {passwordAlert ? <div className="form-alert error">{passwordAlert}</div> : null}
           <form id="passwordForm" noValidate onSubmit={handlePasswordSubmit}>
-            <div className="form-row"><label htmlFor="currentPassword">Current password<span className="req">*</span></label><input id="currentPassword" type="password" required value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} /></div>
-            <div className="form-row"><label htmlFor="newPassword">New password<span className="req">*</span></label><input id="newPassword" type="password" required minLength={8} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} /></div>
+            <div className="form-row"><label htmlFor="currentPassword">Current password<span className="req">*</span></label><PasswordField id="currentPassword" required value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} /></div>
+            <div className="form-row"><label htmlFor="newPassword">New password<span className="req">*</span></label><PasswordField id="newPassword" required minLength={8} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} /></div>
             <button className="btn btn-solid" type="submit" disabled={savingPassword}>{savingPassword ? "Updating…" : "Update password"}</button>
           </form>
         </div>

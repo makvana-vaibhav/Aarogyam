@@ -172,21 +172,8 @@ public class AuthRepository : IAuthRepository
                 };
             }
 
-            if (!string.Equals(doctor.ApprovalStatus, "Approved", StringComparison.OrdinalIgnoreCase))
-            {
-                return new LoginResult
-                {
-                    Success = 0,
-                    Message = "Doctor account is waiting for approval.",
-                    UserId = loginResult.UserId,
-                    Email = loginResult.Email,
-                    RoleName = loginResult.RoleName,
-                    IsEmailVerified = loginResult.IsEmailVerified,
-                    ApprovalStatus = doctor.ApprovalStatus
-                };
-            }
-
             loginResult.ApprovalStatus = doctor.ApprovalStatus;
+            loginResult.RejectionReason = doctor.RejectionReason;
         }
 
         loginResult.Token = _tokenService.GenerateToken(loginResult.UserId!.Value, loginResult.Email!, loginResult.RoleName!);

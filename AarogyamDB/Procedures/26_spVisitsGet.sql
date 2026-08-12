@@ -7,9 +7,10 @@ BEGIN
     IF @VisitId IS NOT NULL
         SELECT * FROM dbo.Visits WHERE VisitId = @VisitId;
     ELSE IF @PatientId IS NOT NULL
-        SELECT * FROM dbo.Visits WHERE PatientId = @PatientId ORDER BY VisitDate DESC;
+        SELECT * FROM dbo.Visits WHERE PatientId = @PatientId ORDER BY VisitDate DESC, VisitId DESC;
     ELSE IF @DoctorId IS NOT NULL
-        SELECT * FROM dbo.Visits WHERE DoctorId = @DoctorId ORDER BY VisitDate DESC;
+        SELECT * FROM dbo.Visits WHERE DoctorId = @DoctorId ORDER BY VisitDate DESC, VisitId DESC;
     ELSE
-        SELECT * FROM dbo.Visits;
+        SELECT * FROM dbo.Visits ORDER BY VisitDate DESC, VisitId DESC;
 END
+

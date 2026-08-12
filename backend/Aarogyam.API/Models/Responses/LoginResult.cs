@@ -21,5 +21,7 @@ public class LoginResult
 
     public string? ApprovalStatus { get; set; }
 
+    public string? RejectionReason { get; set; }
+
     public string? Token { get; set; }
 }

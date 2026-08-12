@@ -53,9 +53,11 @@ export default function Doctors() {
       AdminAPI.master("cities").list()
     ])
       .then(([hospitals, degrees, specializations, countries, states, cities]) => {
+        const degreeMap = {};
+        (degrees || []).forEach((d) => (degreeMap[d.degreeId] = d.shortName || d.degreeName));
         setLookups({
           hospitals: buildLookup(hospitals, "hospitalId", "hospitalName"),
-          degrees: buildLookup(degrees, "degreeId", "degreeName"),
+          degrees: degreeMap,
           specializations: buildLookup(specializations, "specializationId", "specializationName"),
           countries: buildLookup(countries, "countryId", "countryName"),
           states: buildLookup(states, "stateId", "stateName"),

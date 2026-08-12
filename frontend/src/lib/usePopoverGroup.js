@@ -6,11 +6,19 @@ export function usePopoverGroup() {
   const [open, setOpen] = useState(null);
 
   useEffect(() => {
-    function onDocClick() {
-      setOpen(null);
+    function onDocClick(e) {
+      // If clicking outside any open popover or trigger button, close it
+      if (!e.target.closest(".pt-popover") && !e.target.closest(".pt-avatar-btn") && !e.target.closest(".pt-icon-btn")) {
+        setOpen(null);
+      }
     }
+
     document.addEventListener("click", onDocClick);
-    return () => document.removeEventListener("click", onDocClick);
+    document.addEventListener("pointerdown", onDocClick);
+    return () => {
+      document.removeEventListener("click", onDocClick);
+      document.removeEventListener("pointerdown", onDocClick);
+    };
   }, []);
 
   function toggle(key, e) {
@@ -18,9 +26,13 @@ export function usePopoverGroup() {
     setOpen((current) => (current === key ? null : key));
   }
 
-  function stop(e) {
-    e.stopPropagation();
+  function close() {
+    setOpen(null);
   }
 
-  return { open, toggle, stop };
+  function stop(e) {
+    if (e) e.stopPropagation();
+  }
+
+  return { open, toggle, close, stop };
 }

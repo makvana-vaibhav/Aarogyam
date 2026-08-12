@@ -59,3 +59,8 @@ export function statusBadgeClass(status) {
   if (value === "rejected" || value === "inactive") return "bad";
   return "";
 }
+
+export function joinName(row) {
+  if (!row) return "";
+  return [row.firstName, row.middleName, row.lastName].filter(Boolean).join(" ");
+}

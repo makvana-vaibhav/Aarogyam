@@ -49,6 +49,20 @@ export default function CreateVisit() {
 
   const [invalid, setInvalid] = useState({});
   const [submitting, setSubmitting] = useState(false);
+  const flowAlertRef = useRef(null);
+
+  useEffect(() => {
+    if (flowAlert) {
+      setTimeout(() => {
+        if (flowAlertRef.current) {
+          flowAlertRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+          flowAlertRef.current.focus?.();
+        } else {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+      }, 50);
+    }
+  }, [flowAlert]);
 
   useEffect(() => {
     DoctorAPI.diagnosisTypes().then(setDiagnosisTypes).catch(() => {});
@@ -83,17 +97,17 @@ export default function CreateVisit() {
       DoctorAPI.getPatient(patientIdParam)
         .then((patient) => {
           setFoundPatient(patient);
-          goToStep(2, patient);
+          goToStep(2);
         })
         .catch((err) => setFlowAlert(err.message));
     } else if (aarogyamIdParam) {
       runLookup(aarogyamIdParam, true);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [searchParams]);
 
   function goToStep(nextStep) {
     setStep(nextStep);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function handleScan() {
@@ -212,7 +226,7 @@ export default function CreateVisit() {
         <div className={"wizard-step-pill" + (step === 2 ? " active" : "")} id="stepPill2"><span className="num">2</span>Visit details</div>
       </div>
 
-      {flowAlert ? <div id="flowAlert" className="form-alert error">{flowAlert}</div> : null}
+      {flowAlert ? <div ref={flowAlertRef} id="flowAlert" className="form-alert error" tabIndex={-1} style={{ outline: "none" }}>{flowAlert}</div> : null}
 
       {step === 1 ? (
         <section className="wizard-panel card" id="panelStep1">
@@ -235,7 +249,7 @@ export default function CreateVisit() {
                 }}
               />
               <button className="btn btn-solid" id="lookupBtn" type="button" onClick={handleLookupClick}>Find patient</button>
-              <button className="btn btn-ghost" id="scanQrBtn" type="button" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }} onClick={handleScan}>
+              <button className="btn btn-ghost mobile-only-inline" id="scanQrBtn" type="button" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }} onClick={handleScan}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /><path d="M14 14h3v3h-3z" /><path d="M17 17h4v4h-4z" /></svg>
                 Scan QR
               </button>

@@ -44,7 +44,7 @@ export default function MyPatients() {
       <div className="toolbar">
         <input id="patientSearch" type="search" placeholder="Search by name or Aarogyam ID" value={search} onChange={(e) => setSearch(e.target.value)} />
         <div className="spacer"></div>
-        <button className="btn btn-solid btn-sm" id="myPatientsScanQrBtn" type="button" style={{ display: "inline-flex", alignItems: "center", gap: "5px" }} onClick={handleScan}>
+        <button className="btn btn-solid btn-sm mobile-only-inline" id="myPatientsScanQrBtn" type="button" style={{ display: "inline-flex", alignItems: "center", gap: "5px" }} onClick={handleScan}>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /><path d="M14 14h3v3h-3z" /><path d="M17 17h4v4h-4z" /></svg>
           Scan Patient QR
         </button>
