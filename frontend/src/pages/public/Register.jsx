@@ -165,7 +165,7 @@ export default function Register() {
 
     const phoneClean = pPhone.replace(/\D/g, "");
     if (phoneClean.length !== 10 || !/^[6-9]\d{9}$/.test(phoneClean)) {
-      setAlert("Please enter a valid 10-digit mobile number starting with 6, 7, 8, or 9.");
+      setAlert("Please enter a valid 10-digit mobile number.");
       return;
     }
 
@@ -203,7 +203,7 @@ export default function Register() {
 
     const phoneClean = dPhone.replace(/\D/g, "");
     if (phoneClean.length !== 10 || !/^[6-9]\d{9}$/.test(phoneClean)) {
-      setAlert("Please enter a valid 10-digit mobile number starting with 6, 7, 8, or 9.");
+      setAlert("Please enter a valid 10-digit mobile number.");
       return;
     }
 
