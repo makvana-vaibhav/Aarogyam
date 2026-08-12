@@ -179,7 +179,7 @@ h1, h2, h3 {
 }
 
 .mobile-only-nav-auth {
-  display: none;
+  display: none !important;
 }
 
 .site-nav a {
@@ -1170,7 +1170,19 @@ body.nav-open .nav-toggle span::after { transform: translateY(-6px) rotate(-45de
   .site-nav a::after { display: none; }
 
   .nav-toggle { display: block; }
-  .mobile-only-nav-auth { display: flex !important; }
+  .mobile-only-nav-auth {
+    display: flex !important;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+  }
+  .mobile-only-nav-auth .btn {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
   .header-actions { display: flex; align-items: center; gap: 8px; }
   .header-actions .btn-ghost { display: inline-flex; padding: 7px 12px; font-size: 13px; }
   .header-actions .btn-solid { padding: 7px 14px; font-size: 13px; }

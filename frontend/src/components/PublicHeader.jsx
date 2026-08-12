@@ -54,14 +54,14 @@ export default function PublicHeader() {
           <Link to="/about" className={location.pathname === "/about" ? "active" : undefined} onClick={closeNav}>About</Link>
           <Link to="/contact" className={location.pathname === "/contact" ? "active" : undefined} onClick={closeNav}>Contact</Link>
           {!user ? (
-            <div className="mobile-only-nav-auth" style={{ marginTop: "12px", display: "flex", flexDirection: "column", gap: "10px" }}>
-              <Link to="/login" className="btn btn-ghost" style={{ textAlign: "center", justifyContent: "center" }} onClick={closeNav}>Log in</Link>
-              <Link to="/register" className="btn btn-solid" style={{ textAlign: "center", justifyContent: "center" }} onClick={closeNav}>Register account</Link>
+            <div className="mobile-only-nav-auth">
+              <Link to="/login" className="btn btn-ghost" onClick={closeNav}>Log in</Link>
+              <Link to="/register" className="btn btn-solid" onClick={closeNav}>Register account</Link>
             </div>
           ) : (
-            <div className="mobile-only-nav-auth" style={{ marginTop: "12px", display: "flex", flexDirection: "column", gap: "10px" }}>
-              <Link to={getDashboardHref(user)} className="btn btn-ghost" style={{ textAlign: "center", justifyContent: "center" }} onClick={closeNav}>Dashboard</Link>
-              <button type="button" className="btn btn-solid" style={{ textAlign: "center", justifyContent: "center" }} onClick={() => { closeNav(); logout(); }}>Log out</button>
+            <div className="mobile-only-nav-auth">
+              <Link to={getDashboardHref(user)} className="btn btn-ghost" onClick={closeNav}>Dashboard</Link>
+              <button type="button" className="btn btn-solid" onClick={() => { closeNav(); logout(); }}>Log out</button>
             </div>
           )}
         </nav>

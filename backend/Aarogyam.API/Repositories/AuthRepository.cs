@@ -158,8 +158,11 @@ public class AuthRepository : IAuthRepository
 
         if (string.Equals(loginResult.RoleName, "Doctor", StringComparison.OrdinalIgnoreCase))
         {
-            var doctorResults = await _context.DoctorApprovalResults
-                .FromSqlRaw("EXEC dbo.spDoctorsGet @UserId = {0}", loginResult.UserId)
+            var doctorResults = await _context.DoctorMasterRows
+                .FromSqlRaw("EXEC dbo.spDoctorsGet @DoctorId, @UserId, @ApprovalStatus",
+                    new SqlParameter("@DoctorId", DBNull.Value),
+                    new SqlParameter("@UserId", loginResult.UserId),
+                    new SqlParameter("@ApprovalStatus", DBNull.Value))
                 .ToListAsync();
 
             var doctor = doctorResults.FirstOrDefault();
