@@ -9,11 +9,13 @@ import Patients from "../pages/admin/Patients.jsx";
 import MasterData from "../pages/admin/MasterData.jsx";
 import AuditLogs from "../pages/admin/AuditLogs.jsx";
 
+// Mounted at "/admin/*" — paths here are relative to that prefix (React Router
+// resolves a nested <Routes> against the remaining, already-stripped path).
 export default function AdminRoutes() {
   return (
     <Routes>
-      <Route path="/admin/login" element={<Login />} />
-      <Route path="/admin" element={<AdminLayout />}>
+      <Route path="login" element={<Login />} />
+      <Route path="/" element={<AdminLayout />}>
         <Route index element={<Overview />} />
         <Route path="doctors" element={<Doctors />} />
         <Route path="users" element={<Users />} />
