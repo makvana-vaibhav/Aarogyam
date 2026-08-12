@@ -1,2 +1,5 @@
 .dockerignore
 .git
+node_modules
+dist
+_legacy
