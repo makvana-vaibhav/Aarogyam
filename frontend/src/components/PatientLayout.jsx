@@ -5,9 +5,10 @@ import { initials as formatInitials } from "../lib/format.js";
 import { usePopoverGroup } from "../lib/usePopoverGroup.js";
 import NotifPopover from "./NotifPopover.jsx";
 import AvatarMenu from "./AvatarMenu.jsx";
+import PwaInstallPrompt from "./PwaInstallPrompt.jsx";
+import OfflineIndicator from "./OfflineIndicator.jsx";
 import { ToastProvider } from "../context/ToastContext.jsx";
 
-// Ported from patient/app.js's PatientShell.init + the shared <header class="pt-topnav"> markup.
 export default function PatientLayout() {
   const [profile, setProfile] = useState(null);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -69,6 +70,7 @@ export default function PatientLayout() {
 
   return (
     <ToastProvider>
+      <OfflineIndicator />
       <header className="pt-topnav">
         <div className="pt-topnav-inner">
           <NavLink className="pt-brand" to="/patient/overview">
@@ -117,11 +119,54 @@ export default function PatientLayout() {
           <NavLink to="/patient/overview" onClick={() => setMobileNavOpen(false)}>Overview</NavLink>
           <NavLink to="/patient/medical-history" onClick={() => setMobileNavOpen(false)}>Medical History</NavLink>
           <NavLink to="/patient/reports" onClick={() => setMobileNavOpen(false)}>Reports</NavLink>
+          <NavLink to="/patient/profile" onClick={() => setMobileNavOpen(false)}>My Profile</NavLink>
         </nav>
       </header>
+
       <main className="pt-main">
         <Outlet context={{ profile, refreshProfile }} />
       </main>
+
+      {/* Mobile App Bottom Navigation Bar */}
+      <nav className="mobile-app-bottom-nav" aria-label="Mobile Navigation">
+        <NavLink to="/patient/overview" className={({ isActive }) => `mob-tab-item ${isActive ? "active" : ""}`}>
+          <div className="mob-tab-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" />
+              <rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" />
+            </svg>
+          </div>
+          <span>Overview</span>
+        </NavLink>
+        <NavLink to="/patient/medical-history" className={({ isActive }) => `mob-tab-item ${isActive ? "active" : ""}`}>
+          <div className="mob-tab-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="9" /><polyline points="12 6 12 12 16 14" />
+            </svg>
+          </div>
+          <span>History</span>
+        </NavLink>
+        <NavLink to="/patient/reports" className={({ isActive }) => `mob-tab-item ${isActive ? "active" : ""}`}>
+          <div className="mob-tab-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" />
+            </svg>
+          </div>
+          <span>Reports</span>
+        </NavLink>
+        <NavLink to="/patient/profile" className={({ isActive }) => `mob-tab-item ${isActive ? "active" : ""}`}>
+          <div className="mob-tab-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
+            </svg>
+          </div>
+          <span>Profile</span>
+        </NavLink>
+      </nav>
+
+      <PwaInstallPrompt />
     </ToastProvider>
   );
 }
+

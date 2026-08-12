@@ -7,6 +7,8 @@ import { useQrScanner } from "../lib/useQrScanner.js";
 import NotifPopover from "./NotifPopover.jsx";
 import AvatarMenu from "./AvatarMenu.jsx";
 import QrScannerModal from "./QrScannerModal.jsx";
+import PwaInstallPrompt from "./PwaInstallPrompt.jsx";
+import OfflineIndicator from "./OfflineIndicator.jsx";
 import { ToastProvider } from "../context/ToastContext.jsx";
 
 function ScanQrIcon() {
@@ -84,6 +86,7 @@ function DoctorShell() {
 
   return (
     <ToastProvider>
+      <OfflineIndicator />
       <header className="pt-topnav">
         <div className="pt-topnav-inner">
           <NavLink className="pt-brand" to="/doctor/overview">
@@ -143,6 +146,7 @@ function DoctorShell() {
           <NavLink to="/doctor/overview" onClick={() => setMobileNavOpen(false)}>Overview</NavLink>
           <NavLink to="/doctor/my-patients" onClick={() => setMobileNavOpen(false)}>My Patients</NavLink>
           <NavLink to="/doctor/create-visit" onClick={() => setMobileNavOpen(false)}>Create Visit</NavLink>
+          <NavLink to="/doctor/profile" onClick={() => setMobileNavOpen(false)}>My Profile</NavLink>
           <a
             href="#"
             id="mobileNavScanQrBtn"
@@ -158,12 +162,70 @@ function DoctorShell() {
           </a>
         </nav>
       </header>
+
       <main className="pt-main">
         <Outlet context={{ profile, refreshProfile, requestScan: scanner.startScan }} />
       </main>
+
+      {/* Mobile App Bottom Navigation Bar for Doctors */}
+      <nav className="mobile-app-bottom-nav doctor-bottom-nav" aria-label="Doctor Mobile Navigation">
+        <NavLink to="/doctor/overview" className={({ isActive }) => `mob-tab-item ${isActive ? "active" : ""}`}>
+          <div className="mob-tab-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" />
+              <rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" />
+            </svg>
+          </div>
+          <span>Overview</span>
+        </NavLink>
+
+        <NavLink to="/doctor/my-patients" className={({ isActive }) => `mob-tab-item ${isActive ? "active" : ""}`}>
+          <div className="mob-tab-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+          </div>
+          <span>Patients</span>
+        </NavLink>
+
+        {/* Center Prominent Scan QR Button */}
+        <button
+          type="button"
+          className="mob-tab-center-btn"
+          aria-label="Scan Patient QR Code"
+          onClick={defaultScanNavigate}
+        >
+          <div className="mob-tab-center-icon">
+            <ScanQrIcon />
+          </div>
+          <span>Scan QR</span>
+        </button>
+
+        <NavLink to="/doctor/create-visit" className={({ isActive }) => `mob-tab-item ${isActive ? "active" : ""}`}>
+          <div className="mob-tab-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+          </div>
+          <span>New Visit</span>
+        </NavLink>
+
+        <NavLink to="/doctor/profile" className={({ isActive }) => `mob-tab-item ${isActive ? "active" : ""}`}>
+          <div className="mob-tab-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
+            </svg>
+          </div>
+          <span>Profile</span>
+        </NavLink>
+      </nav>
+
       <QrScannerModal open={scanner.open} status={scanner.status} videoRef={scanner.videoRef} canvasRef={scanner.canvasRef} onClose={scanner.stopScan} />
+      <PwaInstallPrompt />
     </ToastProvider>
   );
 }
 
 export default DoctorShell;
+
