@@ -138,12 +138,15 @@ export const MASTER_ENTITIES = [
   },
   {
     key: "specializations", route: "master/specializations", label: "Specializations", idField: "specializationId",
+    filterBy: { param: "degreeId", label: "Filter by Degree", entity: "degrees", idField: "degreeId", nameField: "shortName" },
     fields: [
+      { name: "degreeId", label: "Degree", type: "select", entity: "degrees", idField: "degreeId", nameField: "shortName", required: true },
       { name: "specializationName", label: "Specialization name", type: "text", required: true, maxLength: 100 },
       { name: "description", label: "Description", type: "text", maxLength: 200 }
     ],
     columns: [
       { field: "specializationId", label: "ID" },
+      { field: "degreeId", label: "Degree", type: "lookup", lookup: "degrees", lookupId: "degreeId", lookupName: "shortName" },
       { field: "specializationName", label: "Name" },
       { field: "createdAt", label: "Created", type: "date" }
     ]

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useDocumentTitle } from "../../lib/useDocumentTitle.js";
 import { AdminAPI, getToken, getUser, saveSession } from "../../lib/adminApi.js";
+import PasswordField from "../../components/PasswordField.jsx";
 
 export default function Login() {
   useDocumentTitle("Admin login — Aarogyam");
@@ -70,7 +71,7 @@ export default function Login() {
             </div>
             <div className="form-row">
               <label htmlFor="password">Password<span className="req">*</span></label>
-              <input id="password" name="password" type="password" placeholder="••••••••" required autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
+              <PasswordField id="password" name="password" required autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
             </div>
             <button id="loginSubmit" className="btn btn-solid btn-block" type="submit" disabled={submitting}>{submitting ? "Signing in…" : "Log in"}</button>
           </form>

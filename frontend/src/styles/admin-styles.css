@@ -143,6 +143,40 @@ h1, h2, h3 {
 .form-row select:focus,
 .form-row textarea:focus { outline: none; border-color: var(--accent); }
 
+/* Password field wrapper with eye toggle */
+.password-field-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.password-field-wrapper .password-input {
+  width: 100%;
+  padding-right: 44px !important;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-faint);
+  border-radius: 4px;
+  transition: color 0.15s ease;
+}
+
+.password-toggle-btn:hover {
+  color: var(--pine);
+}
+
 .form-row.check {
   display: flex;
   align-items: center;

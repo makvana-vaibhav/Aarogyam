@@ -1,15 +1,13 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useDocumentTitle } from "../../lib/useDocumentTitle.js";
 import { AarogyamAuth } from "../../lib/publicAuth.js";
+import PasswordField from "../../components/PasswordField.jsx";
 
 export default function ForgotPassword() {
   useDocumentTitle("Forgot Password — Aarogyam");
 
   const [step, setStep] = useState(1);
-  const [alert, setAlert] = useState(null);
-  const [success, setSuccess] = useState(null);
-
   const [email, setEmail] = useState("");
   const [activeUserId, setActiveUserId] = useState(null);
   const [activeEmail, setActiveEmail] = useState("");
@@ -19,94 +17,105 @@ export default function ForgotPassword() {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const [sendingOtp, setSendingOtp] = useState(false);
-  const [resending, setResending] = useState(false);
   const [verifying, setVerifying] = useState(false);
+  const [resending, setResending] = useState(false);
   const [resettingPassword, setResettingPassword] = useState(false);
 
-  function hideAlerts() {
-    setAlert(null);
-    setSuccess(null);
-  }
+  const [alert, setAlert] = useState(null);
+  const [success, setSuccess] = useState(null);
+  const alertRef = useRef(null);
+
+  useEffect(() => {
+    if (alert) {
+      setTimeout(() => {
+        if (alertRef.current) {
+          alertRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+          alertRef.current.focus?.();
+        } else {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+      }, 50);
+    }
+  }, [alert]);
 
   async function handleStep1(e) {
     e.preventDefault();
-    hideAlerts();
-    const trimmed = email.trim();
-    if (!trimmed) {
-      setAlert("Please enter your email address.");
-      return;
-    }
+    setAlert(null);
+    setSuccess(null);
     setSendingOtp(true);
     try {
-      const res = await AarogyamAuth.forgotPassword({ email: trimmed });
+      const res = await AarogyamAuth.forgotPassword({ email: email.trim() });
       setActiveUserId(res.userId);
-      setActiveEmail(trimmed);
-      setSuccess("Verification code sent! Check your inbox.");
+      setActiveEmail(email.trim());
       setStep(2);
+      setSuccess("A verification code was sent to your registered email address.");
     } catch (err) {
-      setAlert(err.message || "Failed to send verification code.");
+      setAlert(err.message);
     } finally {
       setSendingOtp(false);
     }
   }
 
-  async function handleResend() {
-    if (!activeEmail) return;
-    hideAlerts();
-    setResending(true);
-    try {
-      await AarogyamAuth.forgotPassword({ email: activeEmail });
-      setSuccess("A new verification code has been sent to " + activeEmail);
-    } catch (err) {
-      setAlert(err.message || "Failed to resend verification code.");
-    } finally {
-      setResending(false);
-    }
-  }
-
   async function handleStep2(e) {
     e.preventDefault();
-    hideAlerts();
-    const trimmed = otpCode.trim();
-    if (!trimmed) {
-      setAlert("Please enter the 6-digit OTP code.");
-      return;
-    }
+    setAlert(null);
+    setSuccess(null);
     setVerifying(true);
     try {
-      await AarogyamAuth.verifyForgotOtp({ userId: activeUserId, otpCode: trimmed });
-      setVerifiedOtpCode(trimmed);
-      setSuccess("OTP code verified successfully!");
+      await AarogyamAuth.verifyForgotOtp({
+        userId: activeUserId,
+        otpCode: otpCode.trim()
+      });
+      setVerifiedOtpCode(otpCode.trim());
       setStep(3);
+      setSuccess("OTP verified! Please create a new password.");
     } catch (err) {
-      setAlert(err.message || "Invalid or expired OTP code. Please enter the correct code.");
+      setAlert(err.message);
     } finally {
       setVerifying(false);
     }
   }
 
+  async function handleResend() {
+    setAlert(null);
+    setSuccess(null);
+    setResending(true);
+    try {
+      const res = await AarogyamAuth.forgotPassword({ email: activeEmail });
+      if (res.userId) setActiveUserId(res.userId);
+      setSuccess("A fresh verification code was sent to " + activeEmail + ".");
+    } catch (err) {
+      setAlert(err.message);
+    } finally {
+      setResending(false);
+    }
+  }
+
   async function handleStep3(e) {
     e.preventDefault();
-    hideAlerts();
-    if (!newPassword || newPassword.length < 6) {
-      setAlert("New password must be at least 6 characters.");
+    setAlert(null);
+    setSuccess(null);
+
+    if (newPassword.length < 6) {
+      setAlert("Password must be at least 6 characters.");
       return;
     }
     if (newPassword !== confirmPassword) {
       setAlert("Passwords do not match. Please re-enter.");
       return;
     }
+
     setResettingPassword(true);
     try {
-      const res = await AarogyamAuth.resetPassword({
+      await AarogyamAuth.resetPassword({
         userId: activeUserId,
         otpCode: verifiedOtpCode,
         newPassword
       });
-      setSuccess(res.message || "Password reset successfully! You can now log in.");
       setStep(4);
+      setSuccess("Your password has been reset successfully! You can now log in.");
     } catch (err) {
-      setAlert(err.message || "Failed to reset password.");
+      setAlert(err.message);
     } finally {
       setResettingPassword(false);
     }
@@ -122,7 +131,7 @@ export default function ForgotPassword() {
         </div>
 
         <div className="auth-card">
-          {alert ? <div className="form-alert error">{alert}</div> : null}
+          {alert ? <div ref={alertRef} id="forgotAlert" className="form-alert error" tabIndex={-1} style={{ outline: "none" }}>{alert}</div> : null}
           {success ? <div className="form-alert success">{success}</div> : null}
 
           {step === 1 ? (
@@ -166,11 +175,11 @@ export default function ForgotPassword() {
               </div>
               <div className="form-row">
                 <label htmlFor="newPassword">New password<span className="req">*</span></label>
-                <input id="newPassword" type="password" minLength={6} placeholder="At least 6 characters" required value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+                <PasswordField id="newPassword" minLength={6} placeholder="At least 6 characters" required value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
               </div>
               <div className="form-row">
                 <label htmlFor="confirmPassword">Confirm new password<span className="req">*</span></label>
-                <input id="confirmPassword" type="password" minLength={6} placeholder="Re-enter new password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+                <PasswordField id="confirmPassword" minLength={6} placeholder="Re-enter new password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
               </div>
               <button id="resetPasswordBtn" className="btn btn-solid btn-block" type="submit" disabled={resettingPassword}>
                 {resettingPassword ? "Setting new password…" : "Set new password"}

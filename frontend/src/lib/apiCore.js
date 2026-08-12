@@ -21,23 +21,54 @@ export function qs(params) {
   return parts.length ? "?" + parts.join("&") : "";
 }
 
+function sanitizeDbError(raw) {
+  if (!raw) return raw;
+  const str = String(raw);
+
+  if (/UNIQUE KEY constraint|duplicate key/i.test(str)) {
+    if (/phone|phonenumber|UQ_.*phone/i.test(str)) {
+      return "This mobile number is already registered. Please log in or use another number.";
+    }
+    if (/email|UQ_.*email/i.test(str)) {
+      return "This email address is already registered. Please log in or use another email.";
+    }
+    if (/license|licensenumber/i.test(str)) {
+      return "This medical license number is already registered in the system.";
+    }
+    if (/aarogyamid/i.test(str)) {
+      return "An account with this Aarogyam ID already exists.";
+    }
+    return "An account with these details already exists. Please log in or verify your details.";
+  }
+
+  if (/FOREIGN KEY constraint/i.test(str)) {
+    return "Invalid selection or referenced item no longer exists. Please refresh and try again.";
+  }
+
+  if (/SqlException|Timeout expired|A connection was successfully established/i.test(str)) {
+    return "Database service temporarily unavailable. Please try again in a few moments.";
+  }
+
+  return raw;
+}
+
 // ASP.NET Core's automatic [Required]/[MaxLength] validation (via [ApiController]) returns
 // { title, errors: { Field: ["..."] } } instead of our own { success, message } shape -
 // without this, every validation failure would show a bare "Request failed (400)".
 function extractErrorMessage(data, status) {
+  let msg = "Request failed (" + status + ")";
   if (data) {
-    if (data.message) return data.message;
-    if (data.Message) return data.Message;
-    if (data.errors) {
+    if (data.message) msg = data.message;
+    else if (data.Message) msg = data.Message;
+    else if (data.errors) {
       const fieldNames = Object.keys(data.errors);
       if (fieldNames.length) {
         const firstMessages = data.errors[fieldNames[0]];
-        if (firstMessages && firstMessages.length) return firstMessages[0];
+        if (firstMessages && firstMessages.length) msg = firstMessages[0];
       }
-    }
-    if (data.title) return data.title;
+    } else if (data.title) msg = data.title;
   }
-  return "Request failed (" + status + ")";
+  return sanitizeDbError(msg);
 }
 
 function getFileName(contentDisposition) {

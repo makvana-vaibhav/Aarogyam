@@ -99,7 +99,7 @@ export default function Overview() {
           <input id="aarogyamId" type="text" placeholder="Aarogyam ID" value={aarogyamId} onChange={(e) => setAarogyamId(e.target.value)} />
           <input id="searchName" type="text" placeholder="Patient name" value={searchName} onChange={(e) => setSearchName(e.target.value)} />
           <button className="btn btn-solid btn-sm" type="submit" disabled={searching}>{searching ? "Searching…" : "Search"}</button>
-          <button className="btn btn-ghost btn-sm" id="overviewScanQrBtn" type="button" style={{ display: "inline-flex", alignItems: "center", gap: "5px" }} onClick={handleScan}>
+          <button className="btn btn-ghost btn-sm mobile-only-inline" id="overviewScanQrBtn" type="button" style={{ display: "inline-flex", alignItems: "center", gap: "5px" }} onClick={handleScan}>
             <ScanQrIcon />
             Scan QR
           </button>

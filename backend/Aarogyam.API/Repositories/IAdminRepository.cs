@@ -48,7 +48,7 @@ public interface IAdminRepository
     Task<DegreeManageResult?> DeleteDegreeAsync(int id);
 
     // Specialization Master
-    Task<List<SpecializationMasterRow>> GetSpecializationsAsync();
+    Task<List<SpecializationMasterRow>> GetSpecializationsAsync(int? degreeId = null);
     Task<SpecializationMasterRow?> GetSpecializationByIdAsync(int id);
     Task<SpecializationManageResult?> CreateSpecializationAsync(SpecializationRequest request);
     Task<SpecializationManageResult?> UpdateSpecializationAsync(int id, SpecializationRequest request);

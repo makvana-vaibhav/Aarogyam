@@ -107,20 +107,12 @@ export default function PatientLayout() {
                 meta={meta}
                 profileHref="/patient/profile"
                 onLogout={patientLogout}
+                onClose={popovers.close}
                 onStopClick={popovers.stop}
               />
             </div>
           </div>
-          <button className="pt-mobile-toggle" id="mobileNavToggle" type="button" aria-label="Menu" onClick={() => setMobileNavOpen((v) => !v)}>
-            <span></span>
-          </button>
         </div>
-        <nav className="pt-mobile-links">
-          <NavLink to="/patient/overview" onClick={() => setMobileNavOpen(false)}>Overview</NavLink>
-          <NavLink to="/patient/medical-history" onClick={() => setMobileNavOpen(false)}>Medical History</NavLink>
-          <NavLink to="/patient/reports" onClick={() => setMobileNavOpen(false)}>Reports</NavLink>
-          <NavLink to="/patient/profile" onClick={() => setMobileNavOpen(false)}>My Profile</NavLink>
-        </nav>
       </header>
 
       <main className="pt-main">

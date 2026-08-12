@@ -78,7 +78,7 @@ export default function MedicalHistory() {
           )
         : visits;
 
-    return [...result].sort((a, b) => new Date(b.visitDate) - new Date(a.visitDate));
+    return [...result].sort((a, b) => new Date(b.visitDate) - new Date(a.visitDate) || (b.visitId || 0) - (a.visitId || 0));
   }, [visits, diagnoses, prescriptions, search, filterTypeId]);
 
   const diagnosisByVisit = useMemo(() => {

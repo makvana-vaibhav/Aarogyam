@@ -4,6 +4,8 @@ public class SpecializationMasterRow
 {
     public int SpecializationId { get; set; }
 
+    public int? DegreeId { get; set; }
+
     public string SpecializationName { get; set; } = string.Empty;
 
     public string? Description { get; set; }

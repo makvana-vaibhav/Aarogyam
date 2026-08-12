@@ -42,7 +42,8 @@ export default function PatientDetail() {
     ])
       .then(([patientData, visitRows, diagnosisRows, reportRows, prescriptionRows]) => {
         setPatient(patientData);
-        setVisits(visitRows || []);
+        const sortedVisits = (visitRows || []).sort((a, b) => new Date(b.visitDate) - new Date(a.visitDate) || (b.visitId || 0) - (a.visitId || 0));
+        setVisits(sortedVisits);
         setDiagnoses(diagnosisRows || []);
         setReports(reportRows || []);
         setPrescriptions(prescriptionRows || []);

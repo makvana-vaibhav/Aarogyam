@@ -39,6 +39,21 @@ BEGIN
     END TRY
     BEGIN CATCH
         IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
-        SELECT 0 AS Success, ERROR_MESSAGE() AS Message, NULL AS UserId;
+        DECLARE @Err NVARCHAR(1000) = ERROR_MESSAGE();
+        DECLARE @UserMsg NVARCHAR(500) = @Err;
+
+        IF ERROR_NUMBER() IN (2627, 2601)
+        BEGIN
+            IF @Err LIKE '%PhoneNumber%' OR @Err LIKE '%UQ_Users_PhoneNumber%'
+                SET @UserMsg = 'This mobile number is already registered. Please log in or use another number.';
+            ELSE IF @Err LIKE '%Email%' OR @Err LIKE '%UQ_Users_Email%'
+                SET @UserMsg = 'This email address is already registered. Please log in or use another email.';
+            ELSE IF @Err LIKE '%LicenseNumber%' OR @Err LIKE '%UQ_Doctors_LicenseNumber%'
+                SET @UserMsg = 'This medical license number is already registered.';
+            ELSE
+                SET @UserMsg = 'An account with these details already exists. Please log in.';
+        END
+
+        SELECT 0 AS Success, @UserMsg AS Message, NULL AS UserId;
     END CATCH
 END

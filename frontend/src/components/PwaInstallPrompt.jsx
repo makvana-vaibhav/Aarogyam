@@ -1,12 +1,36 @@
 import { useState, useEffect } from "react";
 
+function isMobileDevice() {
+  if (typeof window === "undefined") return false;
+  const ua = (navigator.userAgent || "").toLowerCase();
+  const isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+  const isMobileUA = /android|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(ua);
+  return isMobileUA || (window.innerWidth <= 768 && isTouch);
+}
+
+function detectMobileBrowser() {
+  if (typeof window === "undefined") return "other";
+  const ua = (navigator.userAgent || "").toLowerCase();
+  if (/iphone|ipad|ipod/.test(ua) && !/crios|fxios|opios/.test(ua)) return "ios-safari";
+  if (/crios/.test(ua)) return "ios-chrome";
+  if (/fxios|firefox/.test(ua)) return "firefox";
+  if (/samsungbrowser/.test(ua)) return "samsung";
+  if (/opr|opera/.test(ua)) return "opera";
+  if (/edg|edge/.test(ua)) return "edge";
+  if (/chrome|chromium/.test(ua)) return "chrome";
+  return "other";
+}
+
 export default function PwaInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showPrompt, setShowPrompt] = useState(false);
-  const [isIos, setIsIos] = useState(false);
+  const [browserType, setBrowserType] = useState("other");
   const [isStandalone, setIsStandalone] = useState(false);
 
   useEffect(() => {
+    // Only prompt on mobile devices (never on laptop/desktop)
+    if (!isMobileDevice()) return;
+
     // Check if already in standalone app mode
     const inStandalone =
       window.matchMedia("(display-mode: standalone)").matches ||
@@ -23,28 +47,28 @@ export default function PwaInstallPrompt() {
       return;
     }
 
-    // Detect iOS
-    const userAgent = window.navigator.userAgent.toLowerCase();
-    const isAppleDevice = /iphone|ipad|ipod/.test(userAgent);
-    if (isAppleDevice && !inStandalone) {
-      setIsIos(true);
-      // Give the user a moment to browse before showing the prompt
-      const timer = setTimeout(() => setShowPrompt(true), 3000);
-      return () => clearTimeout(timer);
-    }
+    const detected = detectMobileBrowser();
+    setBrowserType(detected);
 
-    // Standard Chromium / Android beforeinstallprompt
+    // Standard Chromium beforeinstallprompt handler
     function handleBeforeInstall(e) {
       e.preventDefault();
       setDeferredPrompt(e);
-      // Show prompt after a short delay
-      setTimeout(() => setShowPrompt(true), 2500);
+      setShowPrompt(true);
     }
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstall);
 
+    // For all mobile browsers (iOS Safari, Firefox, Samsung, etc.), show universal install guidance after a gentle delay
+    const fallbackTimer = setTimeout(() => {
+      if (isMobileDevice() && !inStandalone) {
+        setShowPrompt(true);
+      }
+    }, 2800);
+
     return () => {
       window.removeEventListener("beforeinstallprompt", handleBeforeInstall);
+      clearTimeout(fallbackTimer);
     };
   }, []);
 
@@ -65,6 +89,52 @@ export default function PwaInstallPrompt() {
 
   if (isStandalone || !showPrompt) return null;
 
+  function renderInstruction() {
+    if (deferredPrompt) {
+      return <p>Install Aarogyam for fast offline access and an app experience on your phone.</p>;
+    }
+    if (browserType === "ios-safari") {
+      return (
+        <p>
+          Tap <strong style={{ color: "var(--accent)" }}>Share ⎋</strong> at the bottom, then choose <strong>“Add to Home Screen”</strong>.
+        </p>
+      );
+    }
+    if (browserType === "ios-chrome") {
+      return (
+        <p>
+          Tap <strong style={{ color: "var(--accent)" }}>Share ⎋</strong> in the address bar, then select <strong>“Add to Home Screen”</strong>.
+        </p>
+      );
+    }
+    if (browserType === "firefox") {
+      return (
+        <p>
+          Tap menu <strong style={{ color: "var(--accent)" }}>⋮</strong>, then select <strong>“Install”</strong> or <strong>“Add to Home screen”</strong>.
+        </p>
+      );
+    }
+    if (browserType === "samsung") {
+      return (
+        <p>
+          Tap menu <strong style={{ color: "var(--accent)" }}>☰</strong>, then tap <strong>“+ Add page to” ➔ “Home screen”</strong>.
+        </p>
+      );
+    }
+    if (browserType === "edge") {
+      return (
+        <p>
+          Tap menu <strong style={{ color: "var(--accent)" }}>⋯</strong>, then select <strong>“Add to phone”</strong>.
+        </p>
+      );
+    }
+    return (
+      <p>
+        Tap your browser menu <strong style={{ color: "var(--accent)" }}>(⋮)</strong>, then select <strong>“Install App”</strong> or <strong>“Add to Home screen”</strong>.
+      </p>
+    );
+  }
+
   return (
     <aside className="pwa-install-banner" role="dialog" aria-label="Install Aarogyam App">
       <div className="pwa-install-inner">
@@ -77,17 +147,11 @@ export default function PwaInstallPrompt() {
 
         <div className="pwa-install-text">
           <strong>Install Aarogyam App</strong>
-          {isIos ? (
-            <p>
-              Tap <span className="pwa-ios-share-icon" aria-label="Share">⎋</span> Share, then select <strong>“Add to Home Screen”</strong> for the best app experience.
-            </p>
-          ) : (
-            <p>Fast offline access and native app experience on your phone.</p>
-          )}
+          {renderInstruction()}
         </div>
 
         <div className="pwa-install-actions">
-          {!isIos && deferredPrompt && (
+          {deferredPrompt && (
             <button className="btn btn-solid btn-sm" type="button" onClick={handleInstallClick}>
               Install
             </button>

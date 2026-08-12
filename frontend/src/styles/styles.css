@@ -178,6 +178,10 @@ h1, h2, h3 {
   margin-left: 4px;
 }
 
+.mobile-only-nav-auth {
+  display: none;
+}
+
 .site-nav a {
   font-size: 13.5px;
   color: var(--ink-soft);
@@ -831,6 +835,81 @@ body.nav-open .nav-toggle span::after { transform: translateY(-6px) rotate(-45de
   border-color: var(--accent);
 }
 
+.form-row input[type="file"] {
+  padding: 8px 12px;
+  background: var(--bg-card);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* Password field wrapper with eye toggle */
+.password-field-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.password-field-wrapper .password-input {
+  width: 100%;
+  padding-right: 44px !important;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-faint);
+  border-radius: 4px;
+  transition: color 0.15s ease;
+}
+
+.password-toggle-btn:hover {
+  color: var(--pine);
+}
+
+/* File Upload PDF Box styling */
+.pdf-upload-box {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pdf-upload-input {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--bg-card);
+  border: 1.5px dashed var(--line-strong);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.pdf-upload-input:hover {
+  border-color: var(--accent);
+  background: var(--bg-raised);
+}
+
+.pdf-file-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--emerald);
+  font-weight: 500;
+}
+
 .form-note { font-size: 12.5px; color: var(--ink-faint); margin-top: 14px; }
 
 /* ---------------------------------------------------------- */
@@ -1091,8 +1170,10 @@ body.nav-open .nav-toggle span::after { transform: translateY(-6px) rotate(-45de
   .site-nav a::after { display: none; }
 
   .nav-toggle { display: block; }
-  .header-actions .btn-ghost { display: none; }
-  .header-actions .btn-solid { padding: 9px 16px; font-size: 13.5px; }
+  .mobile-only-nav-auth { display: flex !important; }
+  .header-actions { display: flex; align-items: center; gap: 8px; }
+  .header-actions .btn-ghost { display: inline-flex; padding: 7px 12px; font-size: 13px; }
+  .header-actions .btn-solid { padding: 7px 14px; font-size: 13px; }
 
   .hero { padding: 84px 0 48px; }
   .section { padding: 72px 0; }

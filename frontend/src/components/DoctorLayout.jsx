@@ -11,6 +11,9 @@ import PwaInstallPrompt from "./PwaInstallPrompt.jsx";
 import OfflineIndicator from "./OfflineIndicator.jsx";
 import { ToastProvider } from "../context/ToastContext.jsx";
 
+import DoctorPendingApproval from "../pages/doctor/DoctorPendingApproval.jsx";
+import DoctorRejected from "../pages/doctor/DoctorRejected.jsx";
+
 function ScanQrIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /><path d="M14 14h3v3h-3z" /><path d="M17 17h4v4h-4z" /></svg>
@@ -80,6 +83,54 @@ function DoctorShell() {
     });
   }
 
+  const approvalStatus = (profile?.approvalStatus || "").toLowerCase();
+  const isPending = profile && (approvalStatus === "pendingapproval" || approvalStatus === "pending");
+  const isRejected = profile && approvalStatus === "rejected";
+
+  if (isPending) {
+    return (
+      <ToastProvider>
+        <OfflineIndicator />
+        <header className="pt-topnav">
+          <div className="pt-topnav-inner">
+            <div className="pt-brand" style={{ cursor: "default" }}>
+              <svg width="24" height="24" viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect x="1.5" y="1.5" width="29" height="29" rx="8.5" stroke="#2d6a4f" strokeWidth="1.5" /><path d="M7 17h5l2.5-6 3.5 10 2.5-6.5L22 17h3" stroke="#40916c" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              Aarogyam <small style={{ fontSize: "11px", color: "#ca8a04", marginLeft: "6px" }}>Pending Review</small>
+            </div>
+            <div className="pt-actions">
+              <button className="btn btn-ghost btn-sm" type="button" onClick={doctorLogout}>Log out</button>
+            </div>
+          </div>
+        </header>
+        <main className="pt-main">
+          <DoctorPendingApproval profile={profile} />
+        </main>
+      </ToastProvider>
+    );
+  }
+
+  if (isRejected) {
+    return (
+      <ToastProvider>
+        <OfflineIndicator />
+        <header className="pt-topnav">
+          <div className="pt-topnav-inner">
+            <div className="pt-brand" style={{ cursor: "default" }}>
+              <svg width="24" height="24" viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect x="1.5" y="1.5" width="29" height="29" rx="8.5" stroke="#2d6a4f" strokeWidth="1.5" /><path d="M7 17h5l2.5-6 3.5 10 2.5-6.5L22 17h3" stroke="#40916c" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              Aarogyam <small style={{ fontSize: "11px", color: "#dc2626", marginLeft: "6px" }}>Application Rejected</small>
+            </div>
+            <div className="pt-actions">
+              <button className="btn btn-ghost btn-sm" type="button" onClick={doctorLogout}>Log out</button>
+            </div>
+          </div>
+        </header>
+        <main className="pt-main">
+          <DoctorRejected profile={profile} />
+        </main>
+      </ToastProvider>
+    );
+  }
+
   const name = profile ? "Dr. " + [profile.firstName, profile.middleName, profile.lastName].filter(Boolean).join(" ") : "Doctor";
   const meta = "License " + (profile?.licenseNumber || "—");
   const avatarInitials = profile ? formatInitials(profile.firstName, profile.lastName) : "D";
@@ -99,17 +150,6 @@ function DoctorShell() {
             <NavLink to="/doctor/create-visit">Create Visit</NavLink>
           </nav>
           <div className="pt-actions">
-            <button
-              className="btn btn-ghost btn-sm nav-qr-btn"
-              id="topNavScanQrBtn"
-              type="button"
-              title="Scan Patient QR Code"
-              style={{ display: "inline-flex", alignItems: "center", gap: "6px", color: "var(--accent)" }}
-              onClick={defaultScanNavigate}
-            >
-              <ScanQrIcon />
-              <span>Scan QR</span>
-            </button>
             <div>
               <button className="pt-icon-btn" id="notifBellBtn" type="button" aria-label="Notifications" onClick={handleNotifToggle}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.7 21a2 2 0 0 1-3.4 0" /></svg>
@@ -134,33 +174,12 @@ function DoctorShell() {
                 meta={meta}
                 profileHref="/doctor/profile"
                 onLogout={doctorLogout}
+                onClose={popovers.close}
                 onStopClick={popovers.stop}
               />
             </div>
           </div>
-          <button className="pt-mobile-toggle" id="mobileNavToggle" type="button" aria-label="Menu" onClick={() => setMobileNavOpen((v) => !v)}>
-            <span></span>
-          </button>
         </div>
-        <nav className="pt-mobile-links">
-          <NavLink to="/doctor/overview" onClick={() => setMobileNavOpen(false)}>Overview</NavLink>
-          <NavLink to="/doctor/my-patients" onClick={() => setMobileNavOpen(false)}>My Patients</NavLink>
-          <NavLink to="/doctor/create-visit" onClick={() => setMobileNavOpen(false)}>Create Visit</NavLink>
-          <NavLink to="/doctor/profile" onClick={() => setMobileNavOpen(false)}>My Profile</NavLink>
-          <a
-            href="#"
-            id="mobileNavScanQrBtn"
-            style={{ color: "var(--accent)", fontWeight: 600, display: "flex", alignItems: "center", gap: "6px" }}
-            onClick={(e) => {
-              e.preventDefault();
-              setMobileNavOpen(false);
-              defaultScanNavigate();
-            }}
-          >
-            <ScanQrIcon />
-            Scan Patient QR
-          </a>
-        </nav>
       </header>
 
       <main className="pt-main">

@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useDocumentTitle } from "../../lib/useDocumentTitle.js";
 import { AarogyamAuth, isLoggedIn, getDashboardHref } from "../../lib/publicAuth.js";
 import { useLocationCascade } from "../../lib/useLocationCascade.js";
+import PasswordField from "../../components/PasswordField.jsx";
 
 function LocationFields({ idPrefix, cascade }) {
   return (
@@ -66,13 +67,28 @@ export default function Register() {
 
   const [role, setRole] = useState("patient");
   const [alert, setAlert] = useState(null);
+  const alertRef = useRef(null);
+
+  useEffect(() => {
+    if (alert) {
+      setTimeout(() => {
+        if (alertRef.current) {
+          alertRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+          alertRef.current.focus?.();
+        } else {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+      }, 50);
+    }
+  }, [alert]);
 
   const patientLocation = useLocationCascade(AarogyamAuth);
   const doctorLocation = useLocationCascade(AarogyamAuth);
 
   const [hospitals, setHospitals] = useState([]);
   const [degrees, setDegrees] = useState([]);
-  const [specializations, setSpecializations] = useState([]);
+  const [doctorSpecializations, setDoctorSpecializations] = useState([]);
+  const [specializationsLoading, setSpecializationsLoading] = useState(false);
 
   useEffect(() => {
     if (isLoggedIn()) {
@@ -83,7 +99,6 @@ export default function Register() {
   useEffect(() => {
     AarogyamAuth.hospitals().then(setHospitals).catch(() => setHospitals(null));
     AarogyamAuth.degrees().then(setDegrees).catch(() => setDegrees(null));
-    AarogyamAuth.specializations().then(setSpecializations).catch(() => setSpecializations(null));
   }, []);
 
   // ---- patient form state ----
@@ -111,10 +126,29 @@ export default function Register() {
   const [dHospital, setDHospital] = useState("");
   const [dDegree, setDDegree] = useState("");
   const [dSpecialization, setDSpecialization] = useState("");
-  const [dLicenseDoc, setDLicenseDoc] = useState("");
-  const [dDegreeDoc, setDDegreeDoc] = useState("");
+  const [dLicenseFile, setDLicenseFile] = useState(null);
+  const [dDegreeFile, setDDegreeFile] = useState(null);
   const [dAddress, setDAddress] = useState("");
   const [doctorSubmitting, setDoctorSubmitting] = useState(false);
+
+  // Cascading Specializations based on Degree selection
+  useEffect(() => {
+    if (!dDegree) {
+      setDoctorSpecializations([]);
+      setDSpecialization("");
+      return;
+    }
+    setSpecializationsLoading(true);
+    AarogyamAuth.specializations(dDegree)
+      .then((data) => {
+        setDoctorSpecializations(data || []);
+        setSpecializationsLoading(false);
+      })
+      .catch(() => {
+        setDoctorSpecializations([]);
+        setSpecializationsLoading(false);
+      });
+  }, [dDegree]);
 
   function selectTab(nextRole) {
     setRole(nextRole);
@@ -128,11 +162,18 @@ export default function Register() {
   async function handlePatientSubmit(e) {
     e.preventDefault();
     setAlert(null);
+
+    const phoneClean = pPhone.replace(/\D/g, "");
+    if (phoneClean.length !== 10 || !/^[6-9]\d{9}$/.test(phoneClean)) {
+      setAlert("Please enter a valid 10-digit mobile number starting with 6, 7, 8, or 9.");
+      return;
+    }
+
     setPatientSubmitting(true);
     const email = pEmail.trim();
     const payload = {
       email,
-      phoneNumber: pPhone.trim(),
+      phoneNumber: phoneClean,
       password: pPassword.trim(),
       firstName: pFirstName.trim(),
       middleName: pMiddleName.trim() || null,
@@ -159,27 +200,57 @@ export default function Register() {
   async function handleDoctorSubmit(e) {
     e.preventDefault();
     setAlert(null);
+
+    const phoneClean = dPhone.replace(/\D/g, "");
+    if (phoneClean.length !== 10 || !/^[6-9]\d{9}$/.test(phoneClean)) {
+      setAlert("Please enter a valid 10-digit mobile number starting with 6, 7, 8, or 9.");
+      return;
+    }
+
+    if (!dLicenseFile) {
+      setAlert("Please select your medical license document (PDF).");
+      return;
+    }
+    if (!dDegreeFile) {
+      setAlert("Please select your degree certificate document (PDF).");
+      return;
+    }
+
     setDoctorSubmitting(true);
-    const email = dEmail.trim();
-    const payload = {
-      email,
-      phoneNumber: dPhone.trim(),
-      password: dPassword.trim(),
-      firstName: dFirstName.trim(),
-      middleName: dMiddleName.trim(),
-      lastName: dLastName.trim(),
-      licenseNumber: dLicense.trim(),
-      hospitalId: Number(dHospital),
-      degreeId: Number(dDegree),
-      specializationId: Number(dSpecialization),
-      licenseDocumentPath: dLicenseDoc.trim(),
-      degreeDocumentPath: dDegreeDoc.trim(),
-      address: dAddress.trim(),
-      countryId: Number(doctorLocation.countryId),
-      stateId: Number(doctorLocation.stateId),
-      cityId: Number(doctorLocation.cityId)
-    };
     try {
+      // 1. Upload License PDF
+      const licenseUploadRes = await AarogyamAuth.uploadDocument(dLicenseFile);
+      if (!licenseUploadRes.filePath) {
+        throw new Error(licenseUploadRes.message || "Failed to upload license document.");
+      }
+
+      // 2. Upload Degree PDF
+      const degreeUploadRes = await AarogyamAuth.uploadDocument(dDegreeFile);
+      if (!degreeUploadRes.filePath) {
+        throw new Error(degreeUploadRes.message || "Failed to upload degree document.");
+      }
+
+      // 3. Register Doctor with generated document paths
+      const email = dEmail.trim();
+      const payload = {
+        email,
+        phoneNumber: phoneClean,
+        password: dPassword.trim(),
+        firstName: dFirstName.trim(),
+        middleName: dMiddleName.trim() || null,
+        lastName: dLastName.trim(),
+        licenseNumber: dLicense.trim(),
+        hospitalId: Number(dHospital),
+        degreeId: Number(dDegree),
+        specializationId: Number(dSpecialization),
+        licenseDocumentPath: licenseUploadRes.filePath,
+        degreeDocumentPath: degreeUploadRes.filePath,
+        address: dAddress.trim(),
+        countryId: Number(doctorLocation.countryId),
+        stateId: Number(doctorLocation.stateId),
+        cityId: Number(doctorLocation.cityId)
+      };
+
       const result = await AarogyamAuth.registerDoctor(payload);
       goToVerify(result.userId, email);
     } catch (err) {
@@ -204,7 +275,11 @@ export default function Register() {
             <button type="button" className={"tab-btn" + (role === "doctor" ? " active" : "")} data-role="doctor" role="tab" aria-selected={role === "doctor"} onClick={() => selectTab("doctor")}>Doctor</button>
           </div>
 
-          {alert ? <div className="form-alert error">{alert}</div> : null}
+          {alert ? (
+            <div ref={alertRef} id="registerAlert" className="form-alert error" tabIndex={-1} style={{ outline: "none" }}>
+              {alert}
+            </div>
+          ) : null}
 
           {/* ============ PATIENT FORM ============ */}
           <form id="patientForm" noValidate hidden={role !== "patient"} onSubmit={handlePatientSubmit}>
@@ -228,13 +303,23 @@ export default function Register() {
                 <input id="p-email" type="email" required maxLength={100} value={pEmail} onChange={(e) => setPEmail(e.target.value)} />
               </div>
               <div className="form-row">
-                <label htmlFor="p-phone">Phone number<span className="req">*</span></label>
-                <input id="p-phone" required maxLength={20} value={pPhone} onChange={(e) => setPPhone(e.target.value)} />
+                <label htmlFor="p-phone">Mobile number (10 digits)<span className="req">*</span></label>
+                <input
+                  id="p-phone"
+                  type="tel"
+                  inputMode="numeric"
+                  pattern="[0-9]{10}"
+                  maxLength={10}
+                  placeholder="9876543210"
+                  required
+                  value={pPhone}
+                  onChange={(e) => setPPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                />
               </div>
             </div>
             <div className="form-row">
               <label htmlFor="p-password">Password<span className="req">*</span></label>
-              <input id="p-password" type="password" required minLength={6} maxLength={200} value={pPassword} onChange={(e) => setPPassword(e.target.value)} />
+              <PasswordField id="p-password" required minLength={6} maxLength={200} value={pPassword} onChange={(e) => setPPassword(e.target.value)} />
               <span className="hint">At least 6 characters.</span>
             </div>
             <div className="form-row-2col">
@@ -265,7 +350,15 @@ export default function Register() {
               </div>
               <div className="form-row">
                 <label htmlFor="p-emergency">Emergency contact (optional)</label>
-                <input id="p-emergency" maxLength={20} value={pEmergency} onChange={(e) => setPEmergency(e.target.value)} />
+                <input
+                  id="p-emergency"
+                  type="tel"
+                  inputMode="numeric"
+                  maxLength={10}
+                  placeholder="10-digit number"
+                  value={pEmergency}
+                  onChange={(e) => setPEmergency(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                />
               </div>
             </div>
             <div className="form-row">
@@ -300,13 +393,23 @@ export default function Register() {
                 <input id="d-email" type="email" required maxLength={100} value={dEmail} onChange={(e) => setDEmail(e.target.value)} />
               </div>
               <div className="form-row">
-                <label htmlFor="d-phone">Phone number<span className="req">*</span></label>
-                <input id="d-phone" required maxLength={20} value={dPhone} onChange={(e) => setDPhone(e.target.value)} />
+                <label htmlFor="d-phone">Mobile number (10 digits)<span className="req">*</span></label>
+                <input
+                  id="d-phone"
+                  type="tel"
+                  inputMode="numeric"
+                  pattern="[0-9]{10}"
+                  maxLength={10}
+                  placeholder="9876543210"
+                  required
+                  value={dPhone}
+                  onChange={(e) => setDPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                />
               </div>
             </div>
             <div className="form-row">
               <label htmlFor="d-password">Password<span className="req">*</span></label>
-              <input id="d-password" type="password" required minLength={6} maxLength={200} value={dPassword} onChange={(e) => setDPassword(e.target.value)} />
+              <PasswordField id="d-password" required minLength={6} maxLength={200} value={dPassword} onChange={(e) => setDPassword(e.target.value)} />
               <span className="hint">At least 6 characters.</span>
             </div>
             <div className="form-row">
@@ -328,28 +431,98 @@ export default function Register() {
                 <select id="d-degree" required value={dDegree} onChange={(e) => setDDegree(e.target.value)}>
                   <option value="">{degrees === null ? "Failed to load — refresh the page" : degrees.length ? "Select degree" : "Loading…"}</option>
                   {(degrees || []).map((d) => (
-                    <option key={d.degreeId} value={d.degreeId}>{d.degreeName}</option>
+                    <option key={d.degreeId} value={d.degreeId}>{d.shortName || d.degreeName}</option>
                   ))}
                 </select>
               </div>
             </div>
             <div className="form-row">
               <label htmlFor="d-specialization">Specialization<span className="req">*</span></label>
-              <select id="d-specialization" required value={dSpecialization} onChange={(e) => setDSpecialization(e.target.value)}>
-                <option value="">{specializations === null ? "Failed to load — refresh the page" : specializations.length ? "Select specialization" : "Loading…"}</option>
-                {(specializations || []).map((s) => (
+              <select
+                id="d-specialization"
+                required
+                disabled={!dDegree || specializationsLoading}
+                value={dSpecialization}
+                onChange={(e) => setDSpecialization(e.target.value)}
+              >
+                <option value="">
+                  {!dDegree
+                    ? "Select degree first"
+                    : specializationsLoading
+                    ? "Loading specializations…"
+                    : doctorSpecializations.length
+                    ? "Select specialization"
+                    : "No specializations found"}
+                </option>
+                {doctorSpecializations.map((s) => (
                   <option key={s.specializationId} value={s.specializationId}>{s.specializationName}</option>
                 ))}
               </select>
             </div>
             <div className="form-row-2col">
               <div className="form-row">
-                <label htmlFor="d-licenseDoc">Licence document path/URL<span className="req">*</span></label>
-                <input id="d-licenseDoc" required maxLength={200} value={dLicenseDoc} onChange={(e) => setDLicenseDoc(e.target.value)} />
+                <label htmlFor="d-licenseFile">Licence document (PDF only)<span className="req">*</span></label>
+                <div className="pdf-upload-box">
+                  <input
+                    id="d-licenseFile"
+                    type="file"
+                    accept="application/pdf,.pdf"
+                    required
+                    className="pdf-upload-input"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
+                          setAlert("Licence document must be a PDF file (.pdf).");
+                          e.target.value = "";
+                          setDLicenseFile(null);
+                          return;
+                        }
+                        if (file.size > 10 * 1024 * 1024) {
+                          setAlert("Licence PDF file must be under 10MB.");
+                          e.target.value = "";
+                          setDLicenseFile(null);
+                          return;
+                        }
+                        setDLicenseFile(file);
+                        setAlert(null);
+                      }
+                    }}
+                  />
+                  {dLicenseFile ? <div className="pdf-file-info">📄 {dLicenseFile.name} ({(dLicenseFile.size / 1024).toFixed(1)} KB)</div> : null}
+                </div>
               </div>
               <div className="form-row">
-                <label htmlFor="d-degreeDoc">Degree document path/URL<span className="req">*</span></label>
-                <input id="d-degreeDoc" required maxLength={200} value={dDegreeDoc} onChange={(e) => setDDegreeDoc(e.target.value)} />
+                <label htmlFor="d-degreeFile">Degree document (PDF only)<span className="req">*</span></label>
+                <div className="pdf-upload-box">
+                  <input
+                    id="d-degreeFile"
+                    type="file"
+                    accept="application/pdf,.pdf"
+                    required
+                    className="pdf-upload-input"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
+                          setAlert("Degree document must be a PDF file (.pdf).");
+                          e.target.value = "";
+                          setDDegreeFile(null);
+                          return;
+                        }
+                        if (file.size > 10 * 1024 * 1024) {
+                          setAlert("Degree PDF file must be under 10MB.");
+                          e.target.value = "";
+                          setDDegreeFile(null);
+                          return;
+                        }
+                        setDDegreeFile(file);
+                        setAlert(null);
+                      }
+                    }}
+                  />
+                  {dDegreeFile ? <div className="pdf-file-info">📄 {dDegreeFile.name} ({(dDegreeFile.size / 1024).toFixed(1)} KB)</div> : null}
+                </div>
               </div>
             </div>
             <div className="form-row">
@@ -357,7 +530,7 @@ export default function Register() {
               <input id="d-address" required maxLength={200} value={dAddress} onChange={(e) => setDAddress(e.target.value)} />
             </div>
             <LocationFields idPrefix="d" cascade={doctorLocation} />
-            <p className="form-note">Doctor accounts also need admin approval after email verification before login succeeds.</p>
+            <p className="form-note">Doctor accounts require administrator verification after registration before clinical features are activated.</p>
             <button id="doctorSubmit" className="btn btn-solid btn-block" type="submit" disabled={doctorSubmitting}>
               {doctorSubmitting ? "Creating account…" : "Create doctor account"}
             </button>

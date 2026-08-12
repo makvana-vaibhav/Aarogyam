@@ -39,7 +39,7 @@ export const DoctorAPI = {
   states: (countryId) => request("/lookup/states" + qs({ countryId })),
   cities: (stateId) => request("/lookup/cities" + qs({ stateId })),
   hospitals: () => request("/lookup/hospitals"),
-  specializations: () => request("/lookup/specializations")
+  specializations: (degreeId) => request("/lookup/specializations" + qs({ degreeId }))
 };
 
 export function requireDoctorAuth() {
@@ -65,13 +65,23 @@ export function doctorLogout() {
 export function extractAarogyamId(raw) {
   if (!raw) return "";
   const value = String(raw).trim();
+  
+  // Try regex for canonical Aarogyam ID pattern (e.g. AAR-2026-00001)
+  const idMatch = value.match(/AAR-\d{4}-\d{5}/i);
+  if (idMatch) return idMatch[0].toUpperCase();
+
   if (value.indexOf("aarogyamId=") !== -1) {
-    const match = value.match(/aarogyamId=([^&]+)/);
+    const match = value.match(/aarogyamId=([^&]+)/i);
     if (match) return decodeURIComponent(match[1]);
   }
   if (value.indexOf("AAROGYAM|") === 0) {
     const parts = value.split("|");
-    if (parts.length >= 2) return parts[1];
+    if (parts.length >= 2) return parts[1].trim();
   }
+  try {
+    const parsed = JSON.parse(value);
+    if (parsed.aarogyamId) return parsed.aarogyamId.trim();
+  } catch (e) {}
+
   return value;
 }

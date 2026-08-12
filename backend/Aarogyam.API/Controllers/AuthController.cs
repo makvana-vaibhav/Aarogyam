@@ -1,21 +1,51 @@
 using Aarogyam.API.Models.Requests;
 using Aarogyam.API.Models.Responses;
 using Aarogyam.API.Repositories;
+using Aarogyam.API.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Aarogyam.API.Controllers;
 
 [ApiController]
-[Route("api/[controller]")] // attribute routing, the route is set to "api/auth" for this controller
+[Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
     private readonly IAuthRepository _authRepository;
     private readonly IAuditLogRepository _auditLogRepository;
+    private readonly IFileStorageService _fileStorageService;
 
-    public AuthController(IAuthRepository authRepository, IAuditLogRepository auditLogRepository)
+    public AuthController(IAuthRepository authRepository, IAuditLogRepository auditLogRepository, IFileStorageService fileStorageService)
     {
         _authRepository = authRepository;
         _auditLogRepository = auditLogRepository;
+        _fileStorageService = fileStorageService;
+    }
+
+    [HttpPost("upload-document")]
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> UploadDocument([FromForm] IFormFile file)
+    {
+        if (file is null || file.Length == 0)
+        {
+            return BadRequest(new { success = 0, message = "No file was uploaded." });
+        }
+
+        var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+        if (ext != ".pdf")
+        {
+            return BadRequest(new { success = 0, message = "Only PDF documents (.pdf) are allowed." });
+        }
+
+        if (file.Length > 10 * 1024 * 1024)
+        {
+            return BadRequest(new { success = 0, message = "PDF document file size cannot exceed 10MB." });
+        }
+
+        var fileName = $"{Guid.NewGuid():N}.pdf";
+        await using var stream = file.OpenReadStream();
+        var relativePath = await _fileStorageService.SaveAsync("documents", fileName, stream);
+
+        return Ok(new { success = 1, filePath = relativePath });
     }
 
     [HttpPost("register/patient")]

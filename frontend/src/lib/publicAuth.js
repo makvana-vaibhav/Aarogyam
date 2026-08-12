@@ -16,6 +16,11 @@ function request(path, options) {
 export const AarogyamAuth = {
   registerPatient: (payload) => request("/auth/register/patient", { method: "POST", body: payload }),
   registerDoctor: (payload) => request("/auth/register/doctor", { method: "POST", body: payload }),
+  uploadDocument: (file) => {
+    const fd = new FormData();
+    fd.append("file", file);
+    return request("/auth/upload-document", { method: "POST", body: fd });
+  },
   login: (payload) => request("/auth/login", { method: "POST", body: payload }),
   verifyOtp: (payload) => request("/auth/verify-otp", { method: "POST", body: payload }),
   resendOtp: (payload) => request("/auth/resend-otp", { method: "POST", body: payload }),
@@ -27,7 +32,7 @@ export const AarogyamAuth = {
   cities: (stateId) => request("/lookup/cities" + qs({ stateId })),
   hospitals: () => request("/lookup/hospitals"),
   degrees: () => request("/lookup/degrees"),
-  specializations: () => request("/lookup/specializations")
+  specializations: (degreeId) => request("/lookup/specializations" + qs({ degreeId }))
 };
 
 export { getDashboardHref, getUser, getToken };

@@ -452,10 +452,16 @@ public class AdminRepository : IAdminRepository
 
     // ================= Specialization Master =================
 
-    public Task<List<SpecializationMasterRow>> GetSpecializationsAsync()
+    public Task<List<SpecializationMasterRow>> GetSpecializationsAsync(int? degreeId = null)
     {
+        var parameters = new[]
+        {
+            new SqlParameter("@SpecializationId", DBNull.Value),
+            new SqlParameter("@DegreeId", (object?)degreeId ?? DBNull.Value)
+        };
+
         return _context.SpecializationMasterRows
-            .FromSqlRaw("EXEC dbo.spSpecializationMasterGet @SpecializationId = NULL")
+            .FromSqlRaw("EXEC dbo.spSpecializationMasterGet @SpecializationId, @DegreeId", parameters)
             .ToListAsync();
     }
 
