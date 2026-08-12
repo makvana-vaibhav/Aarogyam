@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { AdminAPI, requireAdminAuth, adminLogout } from "../lib/adminApi.js";
+import PwaInstallPrompt from "./PwaInstallPrompt.jsx";
+import OfflineIndicator from "./OfflineIndicator.jsx";
 import { ToastProvider } from "../context/ToastContext.jsx";
 
 const NAV_ITEMS = [
@@ -67,6 +69,7 @@ export default function AdminLayout() {
 
   return (
     <ToastProvider>
+      <OfflineIndicator />
       <div className="sidebar-scrim" id="sidebarScrim" onClick={closeSidebar}></div>
 
       <aside className="admin-sidebar">
@@ -112,6 +115,8 @@ export default function AdminLayout() {
           <Outlet context={{ refreshPendingCount: () => AdminAPI.dashboardStats().then((s) => setPendingCount(s.pendingDoctorApprovals || 0)).catch(() => {}) }} />
         </main>
       </div>
+      <PwaInstallPrompt />
     </ToastProvider>
   );
 }
+

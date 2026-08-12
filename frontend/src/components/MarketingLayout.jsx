@@ -2,6 +2,8 @@ import { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import PublicHeader from "./PublicHeader.jsx";
 import PublicFooter from "./PublicFooter.jsx";
+import PwaInstallPrompt from "./PwaInstallPrompt.jsx";
+import OfflineIndicator from "./OfflineIndicator.jsx";
 import { initScrollReveal } from "../lib/scrollReveal.js";
 
 // Used by the marketing pages (home/about/contact/privacy/terms) — full footer with link columns.
@@ -22,11 +24,14 @@ export default function MarketingLayout() {
 
   return (
     <>
+      <OfflineIndicator />
       <PublicHeader />
       <main>
         <Outlet />
       </main>
       <PublicFooter />
+      <PwaInstallPrompt />
     </>
   );
 }
+
