@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace Aarogyam.API.Models.Responses;
@@ -21,7 +22,9 @@ public class LoginResult
 
     public string? ApprovalStatus { get; set; }
 
+    [NotMapped]
     public string? RejectionReason { get; set; }
 
+    [NotMapped]
     public string? Token { get; set; }
 }

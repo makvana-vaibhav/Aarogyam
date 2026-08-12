@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useDocumentTitle } from "../../lib/useDocumentTitle.js";
 import { AarogyamAuth } from "../../lib/publicAuth.js";
@@ -15,6 +15,18 @@ export default function VerifyOtp() {
   const [success, setSuccess] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [resending, setResending] = useState(false);
+  const alertRef = useRef(null);
+
+  useEffect(() => {
+    if (alert) {
+      setTimeout(() => {
+        if (alertRef.current) {
+          alertRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }, 50);
+    }
+  }, [alert]);
 
   useEffect(() => {
     if (!userId) {
@@ -69,7 +81,7 @@ export default function VerifyOtp() {
         </div>
 
         <div className="auth-card">
-          {alert ? <div className="form-alert error">{alert}</div> : null}
+          {alert ? <div ref={alertRef} id="otpAlert" className="form-alert error" tabIndex={-1} style={{ outline: "none" }}>{alert}</div> : null}
           {success ? <div className="form-alert success">{success}</div> : null}
 
           <form id="otpForm" noValidate onSubmit={handleSubmit}>

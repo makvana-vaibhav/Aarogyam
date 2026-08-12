@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useDocumentTitle } from "../../lib/useDocumentTitle.js";
 import { AdminAPI, getToken, getUser, saveSession } from "../../lib/adminApi.js";
@@ -12,6 +12,18 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [alert, setAlert] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const alertRef = useRef(null);
+
+  useEffect(() => {
+    if (alert) {
+      setTimeout(() => {
+        if (alertRef.current) {
+          alertRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }, 50);
+    }
+  }, [alert]);
 
   useEffect(() => {
     const existingUser = getUser();
@@ -62,7 +74,7 @@ export default function Login() {
         </div>
 
         <div className="auth-card">
-          {alert ? <div className="form-alert error">{alert}</div> : null}
+          {alert ? <div ref={alertRef} id="adminLoginAlert" className="form-alert error" tabIndex={-1} style={{ outline: "none" }}>{alert}</div> : null}
 
           <form id="loginForm" noValidate onSubmit={handleSubmit}>
             <div className="form-row">
