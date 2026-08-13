@@ -14,7 +14,7 @@ function assignVisitNumbers(visits) {
 }
 
 export default function MedicalHistory() {
-  useDocumentTitle("Medical History — Aarogyam Patient");
+  useDocumentTitle("Medical History · Aarogyam Patient");
   const showToast = useToast();
 
   const [visits, setVisits] = useState([]);
@@ -149,7 +149,7 @@ export default function MedicalHistory() {
       <div className="page-head-row">
         <div>
           <h2>Medical history</h2>
-          <p>Every visit, diagnosis and prescription — click a visit to see the full details.</p>
+          <p>Every visit, diagnosis and prescription. Click a visit to see the full details.</p>
         </div>
       </div>
       <div className="toolbar">

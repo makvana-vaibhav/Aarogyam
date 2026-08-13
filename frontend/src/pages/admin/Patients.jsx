@@ -14,7 +14,7 @@ function fullName(p) {
 }
 
 export default function Patients() {
-  useDocumentTitle("Patients — Aarogyam Admin");
+  useDocumentTitle("Patients · Aarogyam Admin");
 
   const [lookups, setLookups] = useState({ countries: {}, states: {}, cities: {} });
   const [patients, setPatients] = useState(null);

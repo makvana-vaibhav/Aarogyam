@@ -37,7 +37,7 @@ function buildInitialValues(entity, existingRow) {
 }
 
 export default function MasterData() {
-  useDocumentTitle("Master data — Aarogyam Admin");
+  useDocumentTitle("Master data · Aarogyam Admin");
   const showToast = useToast();
 
   const [activeKey, setActiveKey] = useState(ENTITIES[0].key);

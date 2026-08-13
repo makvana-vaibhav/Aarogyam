@@ -14,7 +14,7 @@ function assignVisitNumbers(visits) {
 }
 
 export default function Reports() {
-  useDocumentTitle("Reports — Aarogyam Patient");
+  useDocumentTitle("Reports · Aarogyam Patient");
   const showToast = useToast();
 
   const [reports, setReports] = useState([]);

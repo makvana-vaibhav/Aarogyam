@@ -3,7 +3,7 @@ import { useDocumentTitle } from "../../lib/useDocumentTitle.js";
 import { isLoggedIn, getDashboardHref, getUser } from "../../lib/publicAuth.js";
 
 export default function NotFound() {
-  useDocumentTitle("404 — Page Not Found · Aarogyam");
+  useDocumentTitle("404 · Page Not Found · Aarogyam");
   const user = isLoggedIn() ? getUser() : null;
 
   return (

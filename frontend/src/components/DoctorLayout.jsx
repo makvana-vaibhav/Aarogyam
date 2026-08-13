@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { DoctorAPI, requireDoctorAuth, doctorLogout } from "../lib/doctorApi.js";
+import { DoctorAPI, requireDoctorAuth, doctorLogout, extractAarogyamId } from "../lib/doctorApi.js";
 import { initials as formatInitials } from "../lib/format.js";
 import { usePopoverGroup } from "../lib/usePopoverGroup.js";
 import { useQrScanner } from "../lib/useQrScanner.js";
@@ -78,8 +78,9 @@ function DoctorShell() {
   }
 
   function defaultScanNavigate() {
-    scanner.startScan((aarogyamId) => {
-      navigate("/doctor/create-visit?aarogyamId=" + encodeURIComponent(aarogyamId));
+    scanner.startScan((rawId) => {
+      const cleanId = extractAarogyamId(rawId);
+      navigate("/doctor/create-visit?aarogyamId=" + encodeURIComponent(cleanId) + "&t=" + Date.now());
     });
   }
 

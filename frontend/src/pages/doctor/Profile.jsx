@@ -16,7 +16,7 @@ function nameById(list, idField, nameField, id) {
 }
 
 export default function Profile() {
-  useDocumentTitle("Profile — Aarogyam Doctor");
+  useDocumentTitle("Profile · Aarogyam Doctor");
   const { refreshProfile } = useOutletContext();
   const showToast = useToast();
 

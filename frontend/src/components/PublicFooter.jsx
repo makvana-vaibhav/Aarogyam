@@ -9,7 +9,7 @@ export function SimpleFooter() {
       <div className="wrap">
         <div className="footer-bottom">
           <span>© <span id="year">{YEAR}</span> Aarogyam. Built for educational and research purposes.</span>
-          <span className="mono">आरोग्यम् — "good health"</span>
+          <span className="mono">आरोग्यम् · "good health"</span>
         </div>
       </div>
     </footer>
@@ -30,7 +30,7 @@ export default function PublicFooter() {
               </svg>
               Aarogyam
             </Link>
-            <p>A digital health identity platform — one lifelong ID for every patient's complete medical record.</p>
+            <p>A digital health identity platform with one lifelong ID for every patient's complete medical record.</p>
           </div>
 
           <div className="footer-col">
@@ -55,7 +55,7 @@ export default function PublicFooter() {
 
         <div className="footer-bottom">
           <span>© <span id="year">{YEAR}</span> Aarogyam. Built for educational and research purposes.</span>
-          <span className="mono">आरोग्यम् — "good health"</span>
+          <span className="mono">आरोग्यम् · "good health"</span>
         </div>
       </div>
     </footer>

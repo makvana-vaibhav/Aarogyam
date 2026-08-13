@@ -3,7 +3,7 @@ import { useDocumentTitle } from "../../lib/useDocumentTitle.js";
 import { requireAuth, logout } from "../../lib/publicAuth.js";
 
 export default function Dashboard() {
-  useDocumentTitle("Dashboard — Aarogyam");
+  useDocumentTitle("Dashboard · Aarogyam");
 
   const [user, setUser] = useState(null);
   const [redirecting, setRedirecting] = useState(true);

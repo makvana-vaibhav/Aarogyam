@@ -16,7 +16,7 @@ function toLocalDatetimeValue(date) {
 }
 
 export default function CreateVisit() {
-  useDocumentTitle("Create Visit — Aarogyam Doctor");
+  useDocumentTitle("Create Visit · Aarogyam Doctor");
   const showToast = useToast();
   const navigate = useNavigate();
   const { requestScan } = useOutletContext();
@@ -70,19 +70,23 @@ export default function CreateVisit() {
 
   async function runLookup(rawId, autoAdvance) {
     const aarogyamId = extractAarogyamId(rawId);
+    if (!aarogyamId) return;
     setLookupAarogyamId(aarogyamId);
     setFlowAlert(null);
     setLookupLoading(true);
     setLookupError(null);
     try {
       const rows = await DoctorAPI.searchPatients(aarogyamId, null);
-      if (!rows.length) {
+      if (!rows || !rows.length) {
         setLookupError("No patient found with Aarogyam ID: " + aarogyamId);
         setFoundPatient(null);
         return;
       }
       setFoundPatient(rows[0]);
-      if (autoAdvance) goToStep(2, rows[0]);
+      if (autoAdvance) {
+        setStep(2);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
     } catch (err) {
       setLookupError(err.message);
     } finally {
@@ -97,7 +101,8 @@ export default function CreateVisit() {
       DoctorAPI.getPatient(patientIdParam)
         .then((patient) => {
           setFoundPatient(patient);
-          goToStep(2);
+          setStep(2);
+          window.scrollTo({ top: 0, behavior: "smooth" });
         })
         .catch((err) => setFlowAlert(err.message));
     } else if (aarogyamIdParam) {
@@ -111,7 +116,10 @@ export default function CreateVisit() {
   }
 
   function handleScan() {
-    requestScan((scannedId) => runLookup(scannedId, true));
+    requestScan((scannedId) => {
+      const cleanId = extractAarogyamId(scannedId);
+      runLookup(cleanId, true);
+    });
   }
 
   function handleLookupClick() {
@@ -216,7 +224,7 @@ export default function CreateVisit() {
       <div className="page-head-row">
         <div>
           <h2>New visit</h2>
-          <p>Find the patient by their Aarogyam ID, then record the visit — diagnosis, prescription and a report are optional add-ons.</p>
+          <p>Find the patient by their Aarogyam ID, then record the visit. Diagnosis, prescription and a report are optional add-ons.</p>
         </div>
       </div>
 
@@ -231,13 +239,13 @@ export default function CreateVisit() {
       {step === 1 ? (
         <section className="wizard-panel card" id="panelStep1">
           <div className="card-title">Find patient</div>
-          <div className="card-sub">Enter the patient's Aarogyam ID or scan their Health Card QR Code — their details will load automatically.</div>
+          <div className="card-sub">Enter the patient's Aarogyam ID or scan their Health Card QR Code to load their details automatically.</div>
           <div className={"form-row" + (invalid.rowAarogyamId ? " invalid" : "")} id="rowAarogyamId">
             <label htmlFor="lookupAarogyamId">Aarogyam ID<span className="req">*</span></label>
             <div className="lookup-row">
               <input
                 id="lookupAarogyamId"
-                placeholder="e.g. AAR-2026-000123"
+                placeholder="e.g. ARG-2026-000010"
                 autoComplete="off"
                 value={lookupAarogyamId}
                 onChange={(e) => setLookupAarogyamId(e.target.value)}
@@ -248,11 +256,13 @@ export default function CreateVisit() {
                   }
                 }}
               />
-              <button className="btn btn-solid" id="lookupBtn" type="button" onClick={handleLookupClick}>Find patient</button>
-              <button className="btn btn-ghost mobile-only-inline" id="scanQrBtn" type="button" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }} onClick={handleScan}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /><path d="M14 14h3v3h-3z" /><path d="M17 17h4v4h-4z" /></svg>
-                Scan QR
-              </button>
+              <div className="lookup-actions">
+                <button className="btn btn-solid" id="lookupBtn" type="button" onClick={handleLookupClick}>Find patient</button>
+                <button className="btn btn-ghost mobile-only-inline" id="scanQrBtn" type="button" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }} onClick={handleScan}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /><path d="M14 14h3v3h-3z" /><path d="M17 17h4v4h-4z" /></svg>
+                  Scan QR
+                </button>
+              </div>
             </div>
             <div className="field-error">Enter the patient's Aarogyam ID first.</div>
           </div>

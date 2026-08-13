@@ -23,7 +23,7 @@ function buildLookup(rows, idField, nameField) {
 }
 
 export default function Doctors() {
-  useDocumentTitle("Doctors — Aarogyam Admin");
+  useDocumentTitle("Doctors · Aarogyam Admin");
   const showToast = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
   const currentStatus = searchParams.get("status") || "";

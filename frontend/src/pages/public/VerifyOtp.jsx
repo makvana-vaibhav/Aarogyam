@@ -4,7 +4,7 @@ import { useDocumentTitle } from "../../lib/useDocumentTitle.js";
 import { AarogyamAuth } from "../../lib/publicAuth.js";
 
 export default function VerifyOtp() {
-  useDocumentTitle("Verify your email — Aarogyam");
+  useDocumentTitle("Verify your email · Aarogyam");
 
   const [searchParams] = useSearchParams();
   const userId = searchParams.get("userId");
@@ -53,7 +53,7 @@ export default function VerifyOtp() {
 
   async function handleResend() {
     if (!email) {
-      setAlert("Missing email — go back and register again.");
+      setAlert("Missing email. Please go back and register again.");
       return;
     }
     setResending(true);

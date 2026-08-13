@@ -12,7 +12,7 @@ const FILTER_TABS = [
 ];
 
 export default function Users() {
-  useDocumentTitle("Users — Aarogyam Admin");
+  useDocumentTitle("Users · Aarogyam Admin");
   const showToast = useToast();
 
   const [roleNames, setRoleNames] = useState({});

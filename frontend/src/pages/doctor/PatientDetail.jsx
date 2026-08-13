@@ -10,7 +10,7 @@ function joinName(row) {
 }
 
 export default function PatientDetail() {
-  useDocumentTitle("Patient Record — Aarogyam Doctor");
+  useDocumentTitle("Patient Record · Aarogyam Doctor");
   const showToast = useToast();
   const [searchParams] = useSearchParams();
   const patientId = searchParams.get("patientId");

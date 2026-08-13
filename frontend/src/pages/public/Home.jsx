@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useDocumentTitle } from "../../lib/useDocumentTitle.js";
 
 export default function Home() {
-  useDocumentTitle("Aarogyam — One health identity, for life");
+  useDocumentTitle("Aarogyam · One health identity, for life");
 
   return (
     <>
@@ -11,7 +11,7 @@ export default function Home() {
         <div className="wrap">
           <span className="eyebrow">Digital health identity</span>
           <h1>Your medical history, <em>finally</em> in one place.</h1>
-          <p className="lede">Aarogyam gives every patient a single lifelong health ID. Reports, prescriptions and diagnoses stay attached to you — not to the hospital that filed them, the clinic that lost them, or the folder at home.</p>
+          <p className="lede">Aarogyam gives every patient a single lifelong health ID. Reports, prescriptions and diagnoses stay attached to you, not to the hospital that filed them, the clinic that lost them, or the folder at home.</p>
           <div className="hero-ctas">
             <Link className="btn btn-solid btn-lg" to="/register">Create your Aarogyam ID <span className="arr">→</span></Link>
             <Link className="btn btn-ghost btn-lg" to="/#how">See how it works</Link>
@@ -30,11 +30,11 @@ export default function Home() {
 
           <div className="problem-grid">
             <div className="problem-copy reveal">
-              <p>A lifetime of healthcare produces a paper trail across hospitals, clinics, labs and pharmacies — and none of them talk to each other. The person who ends up responsible for assembling that history is usually the one least equipped to do it: <strong>the patient, mid-illness</strong>.</p>
+              <p>A lifetime of healthcare produces a paper trail across hospitals, clinics, labs and pharmacies, and none of them talk to each other. The person who ends up responsible for assembling that history is usually the one least equipped to do it: <strong>the patient, mid-illness</strong>.</p>
               <p>Aarogyam replaces the paper trail with a single record that follows the patient. Every visit, diagnosis, prescription and uploaded report lands on one timeline, under one ID, retrievable in seconds by scanning a QR code.</p>
             </div>
             <ul className="problem-list reveal d1">
-              <li><span className="n">a.</span>Reports go missing between appointments, so diagnostic tests get repeated — at the patient's cost.</li>
+              <li><span className="n">a.</span>Reports go missing between appointments, so diagnostic tests get repeated at the patient's cost.</li>
               <li><span className="n">b.</span>Doctors work from incomplete histories and whatever the patient happens to remember.</li>
               <li><span className="n">c.</span>Old prescriptions are unreadable, unfindable, or both.</li>
               <li><span className="n">d.</span>Switching cities or hospitals means starting the record from zero.</li>
@@ -49,7 +49,7 @@ export default function Home() {
           <div className="section-head reveal">
             <span className="section-num">02</span>
             <h2>What you get</h2>
-            <p className="lede">Everything hangs off the Aarogyam ID — a permanent identifier issued once, at registration.</p>
+            <p className="lede">Everything hangs off the Aarogyam ID, a permanent identifier issued once, at registration.</p>
           </div>
 
           <div className="feature-grid">
@@ -57,35 +57,35 @@ export default function Home() {
               <span className="tag">Identity</span>
               <svg className="icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="9" width="32" height="22" rx="3" /><path d="M10 17h8M10 21h6M10 25h7" /><circle cx="28" cy="19" r="3.5" /><path d="M23 27c1-2.4 2.8-3.5 5-3.5s4 1.1 5 3.5" /></svg>
               <h3>One lifelong health ID</h3>
-              <p>Registration issues a unique Aarogyam ID that stays with the patient permanently. Every future record — from any doctor, in any city — attaches to it.</p>
+              <p>Registration issues a unique Aarogyam ID that stays with the patient permanently. Every future record, from any doctor in any city, attaches to it.</p>
             </div>
 
             <div className="feature reveal d1">
               <span className="tag">Access</span>
               <svg className="icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="6" width="10" height="10" rx="1.5" /><rect x="24" y="6" width="10" height="10" rx="1.5" /><rect x="6" y="24" width="10" height="10" rx="1.5" /><path d="M24 24h4v4h-4zM30 24h4M34 28v6M24 30v4h6M28 34h2" /></svg>
               <h3>QR health card</h3>
-              <p>A scannable card that opens the patient's record instantly at the front desk — no forms, no spelling out names, no "do you have your file with you?"</p>
+              <p>A scannable card that opens the patient's record instantly at the front desk: no forms, no spelling out names, no lost files.</p>
             </div>
 
             <div className="feature reveal d2">
               <span className="tag">Records</span>
               <svg className="icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M23 4H10a2 2 0 0 0-2 2v28a2 2 0 0 0 2 2h20a2 2 0 0 0 2-2V13z" /><path d="M23 4v9h9" /><path d="M14 22l3 0 2-4 3 8 2-4h4" /></svg>
               <h3>Report uploads</h3>
-              <p>Lab results, scans and discharge summaries live as files on the record — uploaded by the patient or their doctor, and never photocopied again.</p>
+              <p>Lab results, scans and discharge summaries live as files on the record, uploaded by the patient or their doctor, and never photocopied again.</p>
             </div>
 
             <div className="feature reveal">
               <span className="tag">Treatment</span>
               <svg className="icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 4h16v7H12z" /><path d="M9 11h22v23a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2z" /><path d="M20 19v10M15 24h10" /></svg>
               <h3>Digital prescriptions</h3>
-              <p>Doctors issue structured prescriptions with dosage and duration, downloadable as a clean PDF — legible by pharmacists and future doctors alike.</p>
+              <p>Doctors issue structured prescriptions with dosage and duration, downloadable as a clean PDF, legible by pharmacists and future doctors alike.</p>
             </div>
 
             <div className="feature reveal d1">
               <span className="tag">History</span>
               <svg className="icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 4v32" /><circle cx="8" cy="10" r="2.5" fill="currentColor" stroke="none" /><circle cx="8" cy="20" r="2.5" /><circle cx="8" cy="30" r="2.5" /><path d="M14 10h18M14 20h14M14 30h16" /></svg>
               <h3>Health timeline</h3>
-              <p>Visits, diagnoses, prescriptions and reports arranged chronologically — the whole medical story readable top to bottom in one scroll.</p>
+              <p>Visits, diagnoses, prescriptions and reports arranged chronologically: the whole medical story readable top to bottom in one scroll.</p>
             </div>
 
             <div className="feature reveal d2">

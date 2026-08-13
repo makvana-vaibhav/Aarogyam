@@ -4,7 +4,7 @@ import { AdminAPI } from "../../lib/adminApi.js";
 import { formatDateTime } from "../../lib/format.js";
 
 export default function AuditLogs() {
-  useDocumentTitle("Audit logs — Aarogyam Admin");
+  useDocumentTitle("Audit logs · Aarogyam Admin");
 
   const [allLogs, setAllLogs] = useState(null);
   const [loadError, setLoadError] = useState(null);

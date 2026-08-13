@@ -5,7 +5,7 @@ import { AdminAPI } from "../../lib/adminApi.js";
 import { formatDate, formatDateTime } from "../../lib/format.js";
 
 export default function Overview() {
-  useDocumentTitle("Overview — Aarogyam Admin");
+  useDocumentTitle("Overview · Aarogyam Admin");
   const { refreshPendingCount } = useOutletContext();
 
   const [stats, setStats] = useState(null);
