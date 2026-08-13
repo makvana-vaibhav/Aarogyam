@@ -3,9 +3,14 @@ import { useState, useEffect } from "react";
 function isMobileDevice() {
   if (typeof window === "undefined") return false;
   const ua = (navigator.userAgent || "").toLowerCase();
-  const isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+  
+  // Explicitly reject Windows, Mac desktop, Linux desktop
+  const isDesktopOS = /windows nt|macintosh|mac os x.*intel|x11.*linux/i.test(ua) && !/android|iphone|ipad|ipod|mobile/i.test(ua);
+  if (isDesktopOS) return false;
+
+  // Must have a mobile user agent AND be on a mobile viewport
   const isMobileUA = /android|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(ua);
-  return isMobileUA || (window.innerWidth <= 768 && isTouch);
+  return isMobileUA && window.innerWidth <= 860;
 }
 
 function detectMobileBrowser() {
@@ -28,7 +33,7 @@ export default function PwaInstallPrompt() {
   const [isStandalone, setIsStandalone] = useState(false);
 
   useEffect(() => {
-    // Only prompt on mobile devices (never on laptop/desktop)
+    // Only prompt on mobile devices (never on laptop/desktop/windows)
     if (!isMobileDevice()) return;
 
     // Check if already in standalone app mode
@@ -52,6 +57,7 @@ export default function PwaInstallPrompt() {
 
     // Standard Chromium beforeinstallprompt handler
     function handleBeforeInstall(e) {
+      if (!isMobileDevice()) return;
       e.preventDefault();
       setDeferredPrompt(e);
       setShowPrompt(true);

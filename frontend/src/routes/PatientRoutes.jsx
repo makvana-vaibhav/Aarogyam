@@ -17,6 +17,7 @@ export default function PatientRoutes() {
         <Route path="medical-history" element={<MedicalHistory />} />
         <Route path="reports" element={<Reports />} />
         <Route path="profile" element={<Profile />} />
+        <Route path="*" element={<Navigate to="overview" replace />} />
       </Route>
     </Routes>
   );

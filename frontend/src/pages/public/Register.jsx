@@ -165,7 +165,13 @@ export default function Register() {
 
     const phoneClean = pPhone.replace(/\D/g, "");
     if (phoneClean.length !== 10 || !/^[6-9]\d{9}$/.test(phoneClean)) {
-      setAlert("Please enter a valid 10-digit mobile number starting with 6, 7, 8, or 9.");
+      setAlert("Please enter a valid 10-digit mobile number.");
+      return;
+    }
+
+    const todayStr = new Date().toISOString().split("T")[0];
+    if (pDob > todayStr) {
+      setAlert("Date of birth cannot be in the future.");
       return;
     }
 
@@ -203,7 +209,7 @@ export default function Register() {
 
     const phoneClean = dPhone.replace(/\D/g, "");
     if (phoneClean.length !== 10 || !/^[6-9]\d{9}$/.test(phoneClean)) {
-      setAlert("Please enter a valid 10-digit mobile number starting with 6, 7, 8, or 9.");
+      setAlert("Please enter a valid 10-digit mobile number.");
       return;
     }
 
@@ -325,7 +331,7 @@ export default function Register() {
             <div className="form-row-2col">
               <div className="form-row">
                 <label htmlFor="p-dob">Date of birth<span className="req">*</span></label>
-                <input id="p-dob" type="date" required value={pDob} onChange={(e) => setPDob(e.target.value)} />
+                <input id="p-dob" type="date" required max={new Date().toISOString().split("T")[0]} value={pDob} onChange={(e) => setPDob(e.target.value)} />
               </div>
               <div className="form-row">
                 <label htmlFor="p-gender">Gender<span className="req">*</span></label>

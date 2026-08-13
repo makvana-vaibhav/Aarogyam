@@ -60,7 +60,18 @@ export function statusBadgeClass(status) {
   return "";
 }
 
+export function toTitleCase(str) {
+  if (!str) return "";
+  return String(str)
+    .toLowerCase()
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
 export function joinName(row) {
   if (!row) return "";
-  return [row.firstName, row.middleName, row.lastName].filter(Boolean).join(" ");
+  const raw = [row.firstName, row.middleName, row.lastName].filter(Boolean).join(" ");
+  return toTitleCase(raw);
 }

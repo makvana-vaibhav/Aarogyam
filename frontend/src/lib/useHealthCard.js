@@ -1,10 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { PatientAPI } from "./patientApi.js";
-import { downloadBlob } from "./format.js";
-
-function joinName(profile) {
-  return [profile.firstName, profile.middleName, profile.lastName].filter(Boolean).join(" ");
-}
+import { downloadBlob, joinName, toTitleCase } from "./format.js";
 
 function loadImageElement(url) {
   return new Promise((resolve, reject) => {

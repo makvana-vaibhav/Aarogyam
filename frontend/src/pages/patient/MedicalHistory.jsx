@@ -21,6 +21,7 @@ export default function MedicalHistory() {
   const [diagnoses, setDiagnoses] = useState([]);
   const [prescriptions, setPrescriptions] = useState([]);
   const [diagnosisTypes, setDiagnosisTypes] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const [search, setSearch] = useState("");
@@ -34,6 +35,7 @@ export default function MedicalHistory() {
   const [currentPrescriptionId, setCurrentPrescriptionId] = useState(null);
 
   useEffect(() => {
+    setLoading(true);
     Promise.all([PatientAPI.visits(), PatientAPI.diagnoses(), PatientAPI.prescriptions(), PatientAPI.diagnosisTypes()])
       .then(([visitRows, diagnosisRows, prescriptionRows, typeRows]) => {
         setVisits(visitRows || []);
@@ -41,7 +43,8 @@ export default function MedicalHistory() {
         setPrescriptions(prescriptionRows || []);
         setDiagnosisTypes(typeRows || []);
       })
-      .catch((err) => setError(err.message));
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
   }, []);
 
   const numberByVisitId = useMemo(() => assignVisitNumbers(visits), [visits]);
@@ -165,7 +168,7 @@ export default function MedicalHistory() {
         </select>
       </div>
       <div id="historyList">
-        {!visits.length && !error ? (
+        {loading ? (
           <div className="table-loading">Loading history…</div>
         ) : !filteredVisits.length ? (
           <div className="empty-state">No visits recorded yet.</div>

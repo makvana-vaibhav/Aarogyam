@@ -19,6 +19,7 @@ export default function DoctorRoutes() {
         <Route path="patient" element={<PatientDetail />} />
         <Route path="create-visit" element={<CreateVisit />} />
         <Route path="profile" element={<Profile />} />
+        <Route path="*" element={<Navigate to="overview" replace />} />
       </Route>
     </Routes>
   );
