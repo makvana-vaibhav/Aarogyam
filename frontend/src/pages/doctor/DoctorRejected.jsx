@@ -1,11 +1,29 @@
+import { useEffect, useState } from "react";
 import { useDocumentTitle } from "../../lib/useDocumentTitle.js";
-import { doctorLogout } from "../../lib/doctorApi.js";
+import { doctorLogout, DoctorAPI } from "../../lib/doctorApi.js";
+import { getUser } from "../../lib/session.js";
 import { joinName } from "../../lib/format.js";
 
 export default function DoctorRejected({ profile }) {
   useDocumentTitle("Application Status — Aarogyam");
 
-  const doctorName = profile ? "Dr. " + joinName(profile) : "Doctor";
+  const sessionUser = getUser();
+  const [hospitalName, setHospitalName] = useState(profile?.hospitalName || "");
+
+  useEffect(() => {
+    if (profile?.hospitalId && !hospitalName) {
+      DoctorAPI.hospitals()
+        .then((list) => {
+          const match = (list || []).find((h) => h.hospitalId === profile.hospitalId);
+          if (match) setHospitalName(match.hospitalName);
+        })
+        .catch(() => {});
+    }
+  }, [profile?.hospitalId, hospitalName]);
+
+  const doctorName = profile ? "Dr. " + joinName(profile) : (sessionUser?.name ? "Dr. " + sessionUser.name : "Doctor");
+  const email = profile?.email || sessionUser?.email || "Submitted during registration";
+  const displayHospital = hospitalName || profile?.hospitalName || (profile?.hospitalId ? "Hospital #" + profile.hospitalId : "Registered Healthcare Facility");
   const rejectionReason = profile?.rejectionReason || "Credentials or verification documents did not meet verification criteria.";
 
   return (
@@ -72,11 +90,11 @@ export default function DoctorRejected({ profile }) {
             </div>
             <div>
               <span style={{ color: "var(--ink-faint)" }}>Email: </span>
-              <span>{profile?.email || "—"}</span>
+              <span>{email}</span>
             </div>
             <div>
               <span style={{ color: "var(--ink-faint)" }}>Hospital: </span>
-              <span>{profile?.hospitalName || "—"}</span>
+              <span>{displayHospital}</span>
             </div>
           </div>
         </div>

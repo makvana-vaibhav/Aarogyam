@@ -202,8 +202,7 @@ public class DoctorRepository : IDoctorRepository
             return details.PdfPath;
         }
 
-        var pdfBytes = _pdfService.GeneratePrescriptionPdf(
-            details.PatientName, details.DoctorName, details.DiagnosisTitle, details.PrescriptionDate, details.PrescriptionText);
+        var pdfBytes = _pdfService.GeneratePrescriptionPdf(details);
 
         using var stream = new MemoryStream(pdfBytes);
         var relativePath = await _fileStorage.SaveAsync("prescriptions", $"{prescriptionId}.pdf", stream);
