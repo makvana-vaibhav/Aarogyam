@@ -46,7 +46,8 @@ export function requireDoctorAuth() {
   const token = getToken();
   const user = getUser();
   if (!token || !user) {
-    window.location.href = "/login";
+    const currentPath = window.location.pathname + window.location.search;
+    window.location.href = "/login?returnUrl=" + encodeURIComponent(currentPath);
     return null;
   }
   if (String(user.roleName || "").toLowerCase() !== "doctor") {

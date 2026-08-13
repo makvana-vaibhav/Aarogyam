@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useDocumentTitle } from "../../lib/useDocumentTitle.js";
 import { AarogyamAuth, isLoggedIn, getDashboardHref } from "../../lib/publicAuth.js";
 import { saveSession } from "../../lib/session.js";
@@ -7,6 +7,8 @@ import PasswordField from "../../components/PasswordField.jsx";
 
 export default function Login() {
   useDocumentTitle("Log in · Aarogyam");
+  const [searchParams] = useSearchParams();
+  const returnUrl = searchParams.get("returnUrl");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -29,9 +31,9 @@ export default function Login() {
 
   useEffect(() => {
     if (isLoggedIn()) {
-      window.location.href = getDashboardHref();
+      window.location.href = returnUrl || getDashboardHref();
     }
-  }, []);
+  }, [returnUrl]);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -47,7 +49,7 @@ export default function Login() {
         approvalStatus: result.approvalStatus
       };
       saveSession(result.token, user);
-      window.location.href = getDashboardHref(user);
+      window.location.href = returnUrl || getDashboardHref(user);
     } catch (err) {
       const notVerified = /not verified/i.test(err.message || "");
       setError(err.message);

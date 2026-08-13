@@ -133,7 +133,7 @@ public class PatientRepository : IPatientRepository
             return patient.QrCodePath;
         }
 
-        var qrContent = patient.AarogyamId;
+        var qrContent = $"https://aarogyam.vaibhavmakvana.in/doctor/create-visit?aarogyamId={patient.AarogyamId}";
         var qrBytes = _qrCodeService.GenerateQrPng(qrContent);
 
         using var stream = new MemoryStream(qrBytes);
