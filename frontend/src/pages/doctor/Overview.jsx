@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useOutletContext } from "react-router-dom";
 import { useDocumentTitle } from "../../lib/useDocumentTitle.js";
-import { DoctorAPI } from "../../lib/doctorApi.js";
+import { DoctorAPI, extractAarogyamId } from "../../lib/doctorApi.js";
 import { formatDate } from "../../lib/format.js";
 
 function joinName(row) {
@@ -15,7 +15,7 @@ function ScanQrIcon({ size = 15 }) {
 }
 
 export default function Overview() {
-  useDocumentTitle("Overview — Aarogyam Doctor");
+  useDocumentTitle("Overview · Aarogyam Doctor");
   const { profile, requestScan } = useOutletContext();
   const navigate = useNavigate();
 
@@ -54,7 +54,8 @@ export default function Overview() {
 
   function handleScan() {
     requestScan((scannedId) => {
-      navigate("/doctor/create-visit?aarogyamId=" + encodeURIComponent(scannedId));
+      const cleanId = extractAarogyamId(scannedId);
+      navigate("/doctor/create-visit?aarogyamId=" + encodeURIComponent(cleanId) + "&t=" + Date.now());
     });
   }
 

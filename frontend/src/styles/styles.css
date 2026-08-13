@@ -103,15 +103,6 @@ h1, h2, h3 {
   color: var(--accent);
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-}
-
-
-.eyebrow::before {
-  content: "";
-  width: 22px;
-  height: 1px;
-  background: var(--accent);
 }
 
 .lede {
@@ -1203,9 +1194,7 @@ body.nav-open .nav-toggle span::after { transform: translateY(-6px) rotate(-45de
     justify-content: center;
     text-align: center;
   }
-  .header-actions { display: flex; align-items: center; gap: 8px; }
-  .header-actions .btn-ghost { display: inline-flex; padding: 7px 12px; font-size: 13px; }
-  .header-actions .btn-solid { padding: 7px 14px; font-size: 13px; }
+  .header-actions { display: none; }
 
   .hero { padding: 84px 0 48px; }
   .section { padding: 72px 0; }

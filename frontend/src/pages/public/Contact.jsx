@@ -1,7 +1,7 @@
 import { useDocumentTitle } from "../../lib/useDocumentTitle.js";
 
 export default function Contact() {
-  useDocumentTitle("Contact — Aarogyam");
+  useDocumentTitle("Contact · Aarogyam");
 
   return (
     <>
@@ -9,7 +9,7 @@ export default function Contact() {
         <div className="wrap">
           <span className="eyebrow">Contact</span>
           <h1>We read everything.</h1>
-          <p className="lede">Questions about the platform, feedback on the product, or a doctor account waiting on approval — send it over.</p>
+          <p className="lede">Questions about the platform, feedback on the product, or a doctor account waiting on approval: send it over.</p>
         </div>
       </section>
 
@@ -63,7 +63,7 @@ export default function Contact() {
                 <textarea id="cf-msg" name="message" placeholder="What's on your mind?" required></textarea>
               </div>
               <button className="btn btn-solid btn-lg" type="submit">Send message <span className="arr">→</span></button>
-              <p className="form-note">Please don't include medical details or documents in this form — those belong inside your Aarogyam record, not in email.</p>
+              <p className="form-note">Please do not include medical details or documents in this form: those belong inside your Aarogyam record, not in email.</p>
             </form>
           </div>
         </div>

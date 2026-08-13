@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useOutletContext } from "react-router-dom";
 import { useDocumentTitle } from "../../lib/useDocumentTitle.js";
-import { DoctorAPI } from "../../lib/doctorApi.js";
+import { DoctorAPI, extractAarogyamId } from "../../lib/doctorApi.js";
 import { formatDate } from "../../lib/format.js";
 
 function joinName(row) {
@@ -9,7 +9,7 @@ function joinName(row) {
 }
 
 export default function MyPatients() {
-  useDocumentTitle("My Patients — Aarogyam Doctor");
+  useDocumentTitle("My Patients · Aarogyam Doctor");
   const { requestScan } = useOutletContext();
   const navigate = useNavigate();
 
@@ -29,7 +29,8 @@ export default function MyPatients() {
 
   function handleScan() {
     requestScan((scannedId) => {
-      navigate("/doctor/create-visit?aarogyamId=" + encodeURIComponent(scannedId));
+      const cleanId = extractAarogyamId(scannedId);
+      navigate("/doctor/create-visit?aarogyamId=" + encodeURIComponent(cleanId) + "&t=" + Date.now());
     });
   }
 

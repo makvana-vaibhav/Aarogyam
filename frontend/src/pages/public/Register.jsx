@@ -17,7 +17,7 @@ function LocationFields({ idPrefix, cascade }) {
             value={cascade.countryId}
             onChange={(e) => cascade.setCountryId(e.target.value)}
           >
-            <option value="">{cascade.countriesFailed ? "Failed to load — refresh the page" : "Select country"}</option>
+            <option value="">{cascade.countriesFailed ? "Failed to load. Refresh the page" : "Select country"}</option>
             {cascade.countries.map((c) => (
               <option key={c.countryId} value={c.countryId}>{c.countryName}</option>
             ))}
@@ -63,7 +63,7 @@ function LocationFields({ idPrefix, cascade }) {
 }
 
 export default function Register() {
-  useDocumentTitle("Register — Aarogyam");
+  useDocumentTitle("Register · Aarogyam");
 
   const [role, setRole] = useState("patient");
   const [alert, setAlert] = useState(null);
@@ -426,7 +426,7 @@ export default function Register() {
               <div className="form-row">
                 <label htmlFor="d-hospital">Hospital<span className="req">*</span></label>
                 <select id="d-hospital" required value={dHospital} onChange={(e) => setDHospital(e.target.value)}>
-                  <option value="">{hospitals === null ? "Failed to load — refresh the page" : hospitals.length ? "Select hospital" : "Loading…"}</option>
+                  <option value="">{hospitals === null ? "Failed to load. Refresh the page" : hospitals.length ? "Select hospital" : "Loading…"}</option>
                   {(hospitals || []).map((h) => (
                     <option key={h.hospitalId} value={h.hospitalId}>{h.hospitalName}</option>
                   ))}
@@ -435,7 +435,7 @@ export default function Register() {
               <div className="form-row">
                 <label htmlFor="d-degree">Degree<span className="req">*</span></label>
                 <select id="d-degree" required value={dDegree} onChange={(e) => setDDegree(e.target.value)}>
-                  <option value="">{degrees === null ? "Failed to load — refresh the page" : degrees.length ? "Select degree" : "Loading…"}</option>
+                  <option value="">{degrees === null ? "Failed to load. Refresh the page" : degrees.length ? "Select degree" : "Loading…"}</option>
                   {(degrees || []).map((d) => (
                     <option key={d.degreeId} value={d.degreeId}>{d.shortName || d.degreeName}</option>
                   ))}

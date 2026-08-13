@@ -33,7 +33,7 @@ export default function OfflineIndicator() {
       {isOffline ? (
         <>
           <span className="pwa-dot offline"></span>
-          <span>Offline mode — viewing cached data</span>
+          <span>Offline mode · Viewing cached data</span>
         </>
       ) : (
         <>

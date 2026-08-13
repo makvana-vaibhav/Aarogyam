@@ -5,7 +5,7 @@ import { getUser } from "../../lib/session.js";
 import { joinName } from "../../lib/format.js";
 
 export default function DoctorRejected({ profile }) {
-  useDocumentTitle("Application Status — Aarogyam");
+  useDocumentTitle("Application Status · Aarogyam");
 
   const sessionUser = getUser();
   const [hospitalName, setHospitalName] = useState(profile?.hospitalName || "");

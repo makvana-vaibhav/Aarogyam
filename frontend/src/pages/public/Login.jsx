@@ -6,7 +6,7 @@ import { saveSession } from "../../lib/session.js";
 import PasswordField from "../../components/PasswordField.jsx";
 
 export default function Login() {
-  useDocumentTitle("Log in — Aarogyam");
+  useDocumentTitle("Log in · Aarogyam");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

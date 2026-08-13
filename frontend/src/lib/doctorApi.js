@@ -65,23 +65,41 @@ export function doctorLogout() {
 export function extractAarogyamId(raw) {
   if (!raw) return "";
   const value = String(raw).trim();
-  
-  // Try regex for canonical Aarogyam ID pattern (e.g. AAR-2026-00001)
-  const idMatch = value.match(/AAR-\d{4}-\d{5}/i);
-  if (idMatch) return idMatch[0].toUpperCase();
 
-  if (value.indexOf("aarogyamId=") !== -1) {
-    const match = value.match(/aarogyamId=([^&]+)/i);
-    if (match) return decodeURIComponent(match[1]);
+  // 1. Match canonical Aarogyam ID pattern anywhere in string or URL (e.g. ARG-2026-000010, AAR-2026-8849, ARG-2026-1)
+  const canonicalMatch = value.match(/(?:ARG|AAR|AAROGYAM)-\d{4}-\d+/i);
+  if (canonicalMatch) {
+    return canonicalMatch[0].toUpperCase();
   }
-  if (value.indexOf("AAROGYAM|") === 0) {
+
+  // 2. Query param style: aarogyamId=..., id=..., or patientAarogyamId=...
+  const queryMatch = value.match(/[?&](?:aarogyamId|id|patientAarogyamId)=([^&#]+)/i);
+  if (queryMatch && queryMatch[1]) {
+    const decoded = decodeURIComponent(queryMatch[1]).trim();
+    const inner = decoded.match(/(?:ARG|AAR|AAROGYAM)-\d{4}-\d+/i);
+    return inner ? inner[0].toUpperCase() : decoded.toUpperCase();
+  }
+
+  // 3. Pipe-separated format (e.g. AAROGYAM|ARG-2026-000010)
+  if (value.includes("|")) {
     const parts = value.split("|");
-    if (parts.length >= 2) return parts[1].trim();
+    for (const part of parts) {
+      const inner = part.trim().match(/(?:ARG|AAR|AAROGYAM)-\d{4}-\d+/i);
+      if (inner) return inner[0].toUpperCase();
+    }
   }
+
+  // 4. JSON payload
   try {
     const parsed = JSON.parse(value);
-    if (parsed.aarogyamId) return parsed.aarogyamId.trim();
+    const candidate = parsed.aarogyamId || parsed.AarogyamId || parsed.id;
+    if (candidate) {
+      const inner = String(candidate).match(/(?:ARG|AAR|AAROGYAM)-\d{4}-\d+/i);
+      return inner ? inner[0].toUpperCase() : String(candidate).trim().toUpperCase();
+    }
   } catch (e) {}
 
-  return value;
+  // 5. Clean up any trailing query or hash chars
+  const fallback = value.split(/[?#&]/)[0].trim().toUpperCase();
+  return fallback;
 }

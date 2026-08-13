@@ -1032,8 +1032,22 @@ table.data-table { width: 100%; border-collapse: collapse; min-width: 560px; }
   border: 1px solid var(--line);
   border-radius: 12px;
   box-shadow: var(--shadow-soft);
-  z-index: 80;
+  z-index: 100;
   overflow: hidden;
+}
+
+@media (max-width: 640px) {
+  .pt-popover {
+    position: fixed;
+    top: 62px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    max-width: calc(100vw - 24px);
+    margin: 0 auto;
+    z-index: 1000;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  }
 }
 .pt-popover[hidden] { display: none; }
 .pt-popover-head {
@@ -1288,8 +1302,46 @@ a.list-item:hover,
   margin-left: 3px;
 }
 
-.lookup-row { display: flex; gap: 10px; }
-.lookup-row input { flex: 1; }
+.lookup-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+.lookup-row input {
+  width: 100%;
+  height: 44px;
+  font-size: 14.5px;
+  padding: 10px 14px;
+  box-sizing: border-box;
+  font-family: var(--mono);
+}
+.lookup-actions {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+.lookup-actions .btn {
+  flex: 1;
+  height: 42px;
+  justify-content: center;
+  font-size: 13.5px;
+}
+@media (min-width: 641px) {
+  .lookup-row {
+    flex-direction: row;
+    align-items: center;
+  }
+  .lookup-row input {
+    flex: 1;
+  }
+  .lookup-actions {
+    width: auto;
+  }
+  .lookup-actions .btn {
+    flex: initial;
+  }
+}
 
 .patient-found-card {
   display: flex;

@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useDocumentTitle } from "../../lib/useDocumentTitle.js";
 
 export default function About() {
-  useDocumentTitle("About — Aarogyam");
+  useDocumentTitle("About · Aarogyam");
 
   return (
     <>
@@ -10,16 +10,16 @@ export default function About() {
         <div className="wrap">
           <span className="eyebrow">About the project</span>
           <h1>A record that outlives the paperwork.</h1>
-          <p className="lede">Aarogyam — from the Sanskrit <em>आरोग्यम्</em>, "good health" — is a digital health identity platform built around one idea: a patient's medical history should belong to the patient.</p>
+          <p className="lede">Aarogyam (from the Sanskrit <em>आरोग्यम्</em>, "good health") is a digital health identity platform built around one idea: a patient's medical history should belong to the patient.</p>
         </div>
       </section>
 
       <section className="section">
         <div className="wrap prose">
           <h2>Why it exists</h2>
-          <p>Healthcare in most places runs on fragments. A blood report from one lab, a discharge summary from a hospital two cities away, a prescription on a fading slip of paper — each institution keeps its own piece, and nobody keeps the whole. When the patient shows up somewhere new, the record effectively resets.</p>
+          <p>Healthcare in most places runs on fragments. A blood report from one lab, a discharge summary from a hospital two cities away, a prescription on a fading slip of paper: each institution keeps its own piece, and nobody keeps the whole. When the patient shows up somewhere new, the record effectively resets.</p>
           <p>The consequences are mundane and expensive: <strong>repeated diagnostic tests</strong> because the last results can't be found, <strong>incomplete histories</strong> at exactly the moment a doctor needs context, and hours lost reconstructing what should have been a single scroll.</p>
-          <p>Aarogyam collapses those fragments into one place. At registration, every patient receives a unique, permanent Aarogyam ID. From then on, every visit, diagnosis, prescription and uploaded report attaches to that ID — building a chronological health timeline that any authorized doctor can read in seconds by scanning the patient's QR card.</p>
+          <p>Aarogyam collapses those fragments into one place. At registration, every patient receives a unique, permanent Aarogyam ID. From then on, every visit, diagnosis, prescription and uploaded report attaches to that ID, building a chronological health timeline that any authorized doctor can read in seconds by scanning the patient's QR card.</p>
 
           <hr className="rule" />
 
@@ -43,7 +43,7 @@ export default function About() {
             <div className="principle">
               <div className="n">P·04</div>
               <h3>Useful on day one</h3>
-              <p>A patient can register, receive an ID and upload their existing history in minutes — the record is never empty by design.</p>
+              <p>A patient can register, receive an ID and upload their existing history in minutes: the record is never empty by design.</p>
             </div>
           </div>
 
@@ -62,7 +62,7 @@ export default function About() {
           <hr className="rule" />
 
           <h2>A note on scope</h2>
-          <p>Aarogyam is developed for <strong>educational and research purposes</strong>. It is a working demonstration of how a centralized digital health identity system can be designed and built — not a certified medical device or a substitute for professional medical infrastructure.</p>
+          <p>Aarogyam is developed for <strong>educational and research purposes</strong>. It is a working demonstration of how a centralized digital health identity system can be designed and built, not a certified medical device or a substitute for professional medical infrastructure.</p>
         </div>
       </section>
 
@@ -71,7 +71,7 @@ export default function About() {
           <h2 className="reveal">See it from the inside.</h2>
           <p className="lede reveal d1">Create an ID, upload a report, watch the timeline take shape.</p>
           <div className="hero-ctas reveal d2">
-            <a className="btn btn-solid btn-lg" href="#">Create your Aarogyam ID <span className="arr">→</span></a>
+            <Link className="btn btn-solid btn-lg" to="/register">Create your Aarogyam ID <span className="arr">→</span></Link>
             <Link className="btn btn-ghost btn-lg" to="/contact">Talk to us</Link>
           </div>
         </div>

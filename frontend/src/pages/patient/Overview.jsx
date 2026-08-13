@@ -7,7 +7,7 @@ import { useHealthCard } from "../../lib/useHealthCard.js";
 import { useToast } from "../../context/ToastContext.jsx";
 
 export default function Overview() {
-  useDocumentTitle("Overview — Aarogyam Patient");
+  useDocumentTitle("Overview · Aarogyam Patient");
   const showToast = useToast();
 
   const [profile, setProfile] = useState(null);
@@ -43,7 +43,7 @@ export default function Overview() {
       await navigator.clipboard.writeText(profile.aarogyamId);
       showToast("Aarogyam ID copied.");
     } catch (err) {
-      showToast("Could not copy — " + profile.aarogyamId, true);
+      showToast("Could not copy: " + profile.aarogyamId, true);
     }
   }
 

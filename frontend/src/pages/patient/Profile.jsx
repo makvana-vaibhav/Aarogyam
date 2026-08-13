@@ -9,7 +9,7 @@ import { useHealthCard } from "../../lib/useHealthCard.js";
 import { useToast } from "../../context/ToastContext.jsx";
 
 export default function Profile() {
-  useDocumentTitle("Profile — Aarogyam Patient");
+  useDocumentTitle("Profile · Aarogyam Patient");
   const { refreshProfile } = useOutletContext();
   const showToast = useToast();
 

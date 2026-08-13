@@ -5,7 +5,7 @@ import { getUser } from "../../lib/session.js";
 import { joinName } from "../../lib/format.js";
 
 export default function DoctorPendingApproval({ profile }) {
-  useDocumentTitle("Account Pending Approval — Aarogyam");
+  useDocumentTitle("Account Pending Approval · Aarogyam");
 
   const sessionUser = getUser();
   const [hospitalName, setHospitalName] = useState(profile?.hospitalName || "");

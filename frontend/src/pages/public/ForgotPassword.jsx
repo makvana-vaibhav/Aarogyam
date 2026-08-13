@@ -5,7 +5,7 @@ import { AarogyamAuth } from "../../lib/publicAuth.js";
 import PasswordField from "../../components/PasswordField.jsx";
 
 export default function ForgotPassword() {
-  useDocumentTitle("Forgot Password — Aarogyam");
+  useDocumentTitle("Forgot Password · Aarogyam");
 
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
