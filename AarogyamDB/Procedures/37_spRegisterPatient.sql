@@ -15,6 +15,20 @@ CREATE OR ALTER PROCEDURE dbo.spRegisterPatient
     @EmergencyContact NVARCHAR(20) = NULL
 AS
 BEGIN
+    SET NOCOUNT ON;
+    
+    IF EXISTS (SELECT 1 FROM dbo.Users WHERE Email = @Email)
+    BEGIN
+        SELECT 0 AS Success, 'This email address is already registered. Please log in or use another email.' AS Message, NULL AS UserId, NULL AS AarogyamId;
+        RETURN;
+    END
+
+    IF EXISTS (SELECT 1 FROM dbo.Users WHERE PhoneNumber = @PhoneNumber)
+    BEGIN
+        SELECT 0 AS Success, 'This mobile number is already registered. Please log in or use another mobile number.' AS Message, NULL AS UserId, NULL AS AarogyamId;
+        RETURN;
+    END
+
     BEGIN TRY
         DECLARE @RoleId INT;
         SELECT @RoleId = RoleId FROM dbo.RoleMaster WHERE RoleName = 'Patient';
@@ -43,9 +57,9 @@ BEGIN
 
         IF ERROR_NUMBER() IN (2627, 2601)
         BEGIN
-            IF @Err LIKE '%PhoneNumber%' OR @Err LIKE '%UQ_Users_PhoneNumber%'
-                SET @UserMsg = 'This mobile number is already registered. Please log in or use another number.';
-            ELSE IF @Err LIKE '%Email%' OR @Err LIKE '%UQ_Users_Email%'
+            IF @Err LIKE '%PhoneNumber%' OR @Err LIKE '%Phone%'
+                SET @UserMsg = 'This mobile number is already registered. Please log in or use another mobile number.';
+            ELSE IF @Err LIKE '%Email%'
                 SET @UserMsg = 'This email address is already registered. Please log in or use another email.';
             ELSE
                 SET @UserMsg = 'An account with these details already exists. Please log in.';

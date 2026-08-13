@@ -4,6 +4,8 @@ namespace Aarogyam.API.Services;
 
 public interface IPdfService
 {
+    byte[] GeneratePrescriptionPdf(PrescriptionDetailsRow details);
+
     byte[] GeneratePrescriptionPdf(
         string patientName,
         string doctorName,
