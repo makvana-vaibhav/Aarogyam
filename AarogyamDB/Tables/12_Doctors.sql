@@ -2,7 +2,7 @@ CREATE TABLE dbo.Doctors (
     DoctorId INT IDENTITY(1,1) PRIMARY KEY,
     UserId INT NOT NULL UNIQUE REFERENCES dbo.Users(UserId) ON DELETE CASCADE,
     FirstName NVARCHAR(50) NOT NULL,
-    MiddleName NVARCHAR(50) NOT NULL,
+    MiddleName NVARCHAR(50) NULL,
     LastName NVARCHAR(50) NOT NULL,
     LicenseNumber NVARCHAR(50) NOT NULL UNIQUE,
     HospitalId INT NOT NULL REFERENCES dbo.HospitalMaster(HospitalId),

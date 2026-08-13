@@ -3,6 +3,7 @@ import { useDocumentTitle } from "../../lib/useDocumentTitle.js";
 import { AdminAPI } from "../../lib/adminApi.js";
 import { formatDate } from "../../lib/format.js";
 import { useToast } from "../../context/ToastContext.jsx";
+import ConfirmModal from "../../components/ConfirmModal.jsx";
 
 const ENTITIES = AdminAPI.masterEntities;
 
@@ -51,6 +52,7 @@ export default function MasterData() {
   const [editingId, setEditingId] = useState(null);
   const [formValues, setFormValues] = useState({});
   const [formAlert, setFormAlert] = useState(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState(null);
   const [saving, setSaving] = useState(false);
 
   const activeEntity = entityByKey(activeKey);
@@ -139,7 +141,7 @@ export default function MasterData() {
 
   async function deleteRow(id) {
     const label = activeEntity.label.replace(/s$/, "");
-    if (!window.confirm("Delete this " + label.toLowerCase() + "? This cannot be undone.")) return;
+    setDeleteConfirmId(null);
     try {
       await AdminAPI.master(activeEntity.key).remove(id);
       showToast(label + " deleted.");
@@ -245,7 +247,7 @@ export default function MasterData() {
                   ))}
                   <td className="actions">
                     <button className="btn btn-ghost btn-sm" onClick={() => openForm(row[activeEntity.idField])}>Edit</button>
-                    <button className="btn btn-danger btn-sm" onClick={() => deleteRow(row[activeEntity.idField])}>Delete</button>
+                    <button className="btn btn-danger btn-sm" onClick={() => setDeleteConfirmId(row[activeEntity.idField])}>Delete</button>
                   </td>
                 </tr>
               ))
@@ -270,6 +272,15 @@ export default function MasterData() {
           </div>
         </div>
       </div>
+
+      <ConfirmModal
+        open={deleteConfirmId != null}
+        title={"Delete " + activeEntity.label.replace(/s$/, "").toLowerCase()}
+        message={`Delete this ${activeEntity.label.replace(/s$/, "").toLowerCase()}? This cannot be undone.`}
+        confirmText="Delete"
+        onConfirm={() => deleteRow(deleteConfirmId)}
+        onCancel={() => setDeleteConfirmId(null)}
+      />
     </>
   );
 }

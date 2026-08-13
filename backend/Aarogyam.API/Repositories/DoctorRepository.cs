@@ -78,6 +78,11 @@ public class DoctorRepository : IDoctorRepository
             return new SimpleResult { Success = 0, Message = "Current password is incorrect." };
         }
 
+        if (BCrypt.Net.BCrypt.Verify(newPassword, user.PasswordHash))
+        {
+            return new SimpleResult { Success = 0, Message = "New password must be different from your current password." };
+        }
+
         var newHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
 
         var parameters = new[]

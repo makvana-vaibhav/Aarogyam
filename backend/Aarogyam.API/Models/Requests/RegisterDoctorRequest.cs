@@ -22,9 +22,8 @@ public class RegisterDoctorRequest
     [MaxLength(50)]
     public string FirstName { get; set; } = string.Empty;
 
-    [Required]
     [MaxLength(50)]
-    public string MiddleName { get; set; } = string.Empty;
+    public string? MiddleName { get; set; }
 
     [Required]
     [MaxLength(50)]

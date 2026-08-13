@@ -10,7 +10,7 @@ import { useToast } from "../../context/ToastContext.jsx";
 
 export default function Profile() {
   useDocumentTitle("Profile · Aarogyam Patient");
-  const { refreshProfile } = useOutletContext();
+  const { refreshProfile, confirmLogout } = useOutletContext();
   const showToast = useToast();
 
   const [profile, setProfile] = useState(null);
@@ -103,6 +103,10 @@ export default function Profile() {
   async function handlePasswordSubmit(e) {
     e.preventDefault();
     setPasswordAlert(null);
+    if (newPassword === currentPassword) {
+      setPasswordAlert("New password must be different from your current password.");
+      return;
+    }
     setSavingPassword(true);
     try {
       await PatientAPI.changePassword({ currentPassword, newPassword });
@@ -165,7 +169,7 @@ export default function Profile() {
             {profileAlert ? <div className="form-alert error">{profileAlert}</div> : null}
             <div className="form-row-2col">
               <div className="form-row"><label htmlFor="firstName">First name<span className="req">*</span></label><input id="firstName" required value={firstName} onChange={(e) => setFirstName(e.target.value)} /></div>
-              <div className="form-row"><label htmlFor="middleName">Middle name</label><input id="middleName" value={middleName} onChange={(e) => setMiddleName(e.target.value)} /></div>
+              <div className="form-row"><label htmlFor="middleName">Middle name (optional)</label><input id="middleName" value={middleName} onChange={(e) => setMiddleName(e.target.value)} /></div>
             </div>
             <div className="form-row-2col">
               <div className="form-row"><label htmlFor="lastName">Last name<span className="req">*</span></label><input id="lastName" required value={lastName} onChange={(e) => setLastName(e.target.value)} /></div>
@@ -259,6 +263,12 @@ export default function Profile() {
             <button className="btn btn-solid" type="submit" disabled={savingPassword}>{savingPassword ? "Updating…" : "Update password"}</button>
           </form>
         </div>
+      </div>
+
+      <div className="card section-space">
+        <div className="card-title">Account</div>
+        <div className="card-sub">Sign out of Aarogyam on this device.</div>
+        <div className="qa-row"><button className="btn btn-danger btn-sm" type="button" onClick={confirmLogout}>Log out</button></div>
       </div>
     </div>
   );

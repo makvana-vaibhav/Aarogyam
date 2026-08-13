@@ -3,6 +3,7 @@ import { useDocumentTitle } from "../../lib/useDocumentTitle.js";
 import { PatientAPI } from "../../lib/patientApi.js";
 import { formatDate, fileSize, downloadBlob } from "../../lib/format.js";
 import { useToast } from "../../context/ToastContext.jsx";
+import ConfirmModal from "../../components/ConfirmModal.jsx";
 
 function assignVisitNumbers(visits) {
   const sorted = [...visits].sort((a, b) => new Date(a.visitDate) - new Date(b.visitDate));
@@ -26,6 +27,7 @@ export default function Reports() {
   const [uploadAlert, setUploadAlert] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
+  const [deleteConfirmId, setDeleteConfirmId] = useState(null);
 
   const [title, setTitle] = useState("");
   const [reportType, setReportType] = useState("");
@@ -106,7 +108,7 @@ export default function Reports() {
   }
 
   async function handleDelete(reportId) {
-    if (!window.confirm("Delete this report from your dashboard?")) return;
+    setDeleteConfirmId(null);
     try {
       await PatientAPI.deleteReport(reportId);
       await loadReports();
@@ -160,7 +162,7 @@ export default function Reports() {
                   <td className="mono">{report.doctorId ? "Doctor" : "Self"}</td>
                   <td className="actions">
                     <button className="btn btn-ghost btn-sm" type="button" onClick={() => handleDownload(report.reportId)}>Download</button>
-                    <button className="btn btn-danger btn-sm" type="button" onClick={() => handleDelete(report.reportId)}>Delete</button>
+                    <button className="btn btn-danger btn-sm" type="button" onClick={() => setDeleteConfirmId(report.reportId)}>Delete</button>
                   </td>
                 </tr>
               ))
@@ -247,6 +249,15 @@ export default function Reports() {
           </div>
         </div>
       </div>
+
+      <ConfirmModal
+        open={deleteConfirmId != null}
+        title="Delete report"
+        message="Delete this report from your dashboard? This cannot be undone."
+        confirmText="Delete"
+        onConfirm={() => handleDelete(deleteConfirmId)}
+        onCancel={() => setDeleteConfirmId(null)}
+      />
     </div>
   );
 }
