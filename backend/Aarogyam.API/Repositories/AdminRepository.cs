@@ -624,6 +624,19 @@ public class AdminRepository : IAdminRepository
         return results.FirstOrDefault();
     }
 
+    public async Task<SimpleResult?> DeleteUserAsync(int id)
+    {
+        var parameters = new[]
+        {
+            new SqlParameter("@Action", "DELETE"),
+            new SqlParameter("@UserId", id)
+        };
+        var results = await _context.SimpleResults
+            .FromSqlRaw("EXEC dbo.spUsersManage @Action = @Action, @UserId = @UserId", parameters)
+            .ToListAsync();
+        return results.FirstOrDefault();
+    }
+
     // ================= Doctor Verification =================
 
     public Task<List<DoctorMasterRow>> GetDoctorsAsync(string? approvalStatus)

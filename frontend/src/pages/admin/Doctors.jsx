@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useDocumentTitle } from "../../lib/useDocumentTitle.js";
 import { AdminAPI, statusBadgeClass } from "../../lib/adminApi.js";
-import { formatDate, formatDateTime } from "../../lib/format.js";
+import { formatDate, formatDateTime, downloadBlob } from "../../lib/format.js";
 import { useToast } from "../../context/ToastContext.jsx";
 
 const STATUS_TABS = [
@@ -42,6 +42,7 @@ export default function Doctors() {
   const [rejecting, setRejecting] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
   const [actionAlert, setActionAlert] = useState(null);
+  const [downloadingDoc, setDownloadingDoc] = useState(null);
 
   function loadLookups() {
     return Promise.all([
@@ -112,6 +113,7 @@ export default function Doctors() {
     setRejecting(false);
     setRejectReason("");
     setActionAlert(null);
+    setDownloadingDoc(null);
     try {
       const d = await AdminAPI.getDoctor(doctorId);
       setDetail(d);
@@ -127,6 +129,7 @@ export default function Doctors() {
     setRejectReason("");
     setActionAlert(null);
     setRejecting(false);
+    setDownloadingDoc(null);
   }
 
   async function handleApprove() {
@@ -155,6 +158,26 @@ export default function Doctors() {
       loadDoctors();
     } catch (err) {
       setActionAlert(err.message);
+    }
+  }
+
+  async function handleDownloadDoc(doctorId, docType, originalPath) {
+    setDownloadingDoc(docType);
+    setActionAlert(null);
+    try {
+      const isLicense = docType === "license";
+      const blob = isLicense
+        ? await AdminAPI.downloadLicenseDocument(doctorId)
+        : await AdminAPI.downloadDegreeDocument(doctorId);
+
+      const ext = originalPath && originalPath.includes(".") ? "." + originalPath.split(".").pop() : isLicense ? "_license.pdf" : "_degree.pdf";
+      const docName = (detail ? fullName(detail).replace(/\s+/g, "_") : `doctor_${doctorId}`) + (isLicense ? "_license" : "_degree") + ext;
+      downloadBlob(blob, docName);
+      showToast(`${isLicense ? "Licence" : "Degree"} document downloaded.`);
+    } catch (err) {
+      setActionAlert("Could not download document: " + err.message);
+    } finally {
+      setDownloadingDoc(null);
     }
   }
 
@@ -224,9 +247,54 @@ export default function Doctors() {
                   <div><div className="dl">Degree</div><div className="dv">{lookups.degrees[detail.degreeId] || "#" + detail.degreeId}</div></div>
                   <div><div className="dl">Specialization</div><div className="dv">{lookups.specializations[detail.specializationId] || "#" + detail.specializationId}</div></div>
                   <div><div className="dl">Applied</div><div className="dv">{formatDate(detail.createdAt)}</div></div>
-                  <div className="full"><div className="dl">Address</div><div className="dv">{addressLine}</div></div>
-                  <div className="full"><div className="dl">Licence document</div><div className="dv"><span className="mono">{detail.licenseDocumentPath || "—"}</span></div></div>
-                  <div className="full"><div className="dl">Degree document</div><div className="dv"><span className="mono">{detail.degreeDocumentPath || "—"}</span></div></div>
+                  <div className="full">
+                    <div className="dl">Licence document</div>
+                    <div className="dv" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", marginTop: "4px", flexWrap: "wrap" }}>
+                      <span className="mono" style={{ fontSize: "12.5px", color: "var(--ink-soft)", wordBreak: "break-all" }}>
+                        {detail.licenseDocumentPath ? detail.licenseDocumentPath.split("/").pop() : "Not uploaded"}
+                      </span>
+                      {detail.licenseDocumentPath ? (
+                        <button
+                          type="button"
+                          className="btn btn-ghost btn-sm"
+                          disabled={downloadingDoc === "license"}
+                          onClick={() => handleDownloadDoc(detail.doctorId, "license", detail.licenseDocumentPath)}
+                          style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
+                        >
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="7 10 12 15 17 10" />
+                            <line x1="12" y1="15" x2="12" y2="3" />
+                          </svg>
+                          {downloadingDoc === "license" ? "Downloading…" : "Download Licence"}
+                        </button>
+                      ) : null}
+                    </div>
+                  </div>
+                  <div className="full">
+                    <div className="dl">Degree document</div>
+                    <div className="dv" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", marginTop: "4px", flexWrap: "wrap" }}>
+                      <span className="mono" style={{ fontSize: "12.5px", color: "var(--ink-soft)", wordBreak: "break-all" }}>
+                        {detail.degreeDocumentPath ? detail.degreeDocumentPath.split("/").pop() : "Not uploaded"}
+                      </span>
+                      {detail.degreeDocumentPath ? (
+                        <button
+                          type="button"
+                          className="btn btn-ghost btn-sm"
+                          disabled={downloadingDoc === "degree"}
+                          onClick={() => handleDownloadDoc(detail.doctorId, "degree", detail.degreeDocumentPath)}
+                          style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
+                        >
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="7 10 12 15 17 10" />
+                            <line x1="12" y1="15" x2="12" y2="3" />
+                          </svg>
+                          {downloadingDoc === "degree" ? "Downloading…" : "Download Degree"}
+                        </button>
+                      ) : null}
+                    </div>
+                  </div>
                   {String(detail.approvalStatus).toLowerCase() === "rejected" && detail.rejectionReason ? (
                     <div className="full"><div className="dl">Rejection reason</div><div className="dv">{detail.rejectionReason}</div></div>
                   ) : null}
