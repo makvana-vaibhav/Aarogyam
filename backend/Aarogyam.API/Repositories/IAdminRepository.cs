@@ -66,6 +66,7 @@ public interface IAdminRepository
     Task<UserMasterRow?> GetUserByIdAsync(int id);
     Task<SimpleResult?> ActivateUserAsync(int id);
     Task<SimpleResult?> DeactivateUserAsync(int id);
+    Task<SimpleResult?> DeleteUserAsync(int id);
 
     // Doctor verification
     Task<List<DoctorMasterRow>> GetDoctorsAsync(string? approvalStatus);

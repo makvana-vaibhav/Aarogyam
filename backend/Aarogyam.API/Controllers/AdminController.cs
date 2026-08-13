@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Aarogyam.API.Models.Requests;
 using Aarogyam.API.Repositories;
+using Aarogyam.API.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,11 +15,13 @@ public class AdminController : ControllerBase
 {
     private readonly IAdminRepository _adminRepository;
     private readonly IAuditLogRepository _auditLogRepository;
+    private readonly IFileStorageService _fileStorage;
 
-    public AdminController(IAdminRepository adminRepository, IAuditLogRepository auditLogRepository)
+    public AdminController(IAdminRepository adminRepository, IAuditLogRepository auditLogRepository, IFileStorageService fileStorage)
     {
         _adminRepository = adminRepository;
         _auditLogRepository = auditLogRepository;
+        _fileStorage = fileStorage;
     }
 
     // ================= Role Master =================
@@ -470,6 +473,19 @@ public class AdminController : ControllerBase
         return BadRequest(result);
     }
 
+    [HttpDelete("users/{id:int}")]
+    public async Task<IActionResult> DeleteUser(int id)
+    {
+        var result = await _adminRepository.DeleteUserAsync(id);
+        if (result is null) return NotFound(new { success = 0, message = "User not found." });
+        if (result.Success == 1)
+        {
+            await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "DELETE_USER", "Users", id);
+            return Ok(result);
+        }
+        return BadRequest(result);
+    }
+
     // ================= Doctor Verification =================
 
     [HttpGet("doctors")]
@@ -483,6 +499,36 @@ public class AdminController : ControllerBase
     {
         var doctor = await _adminRepository.GetDoctorByIdAsync(id);
         return doctor is null ? NotFound(new { success = 0, message = "Doctor not found." }) : Ok(doctor);
+    }
+
+    [HttpGet("doctors/{id:int}/documents/license")]
+    public async Task<IActionResult> DownloadLicenseDocument(int id)
+    {
+        var doctor = await _adminRepository.GetDoctorByIdAsync(id);
+        if (doctor is null) return NotFound(new { success = 0, message = "Doctor not found." });
+
+        if (string.IsNullOrWhiteSpace(doctor.LicenseDocumentPath))
+            return NotFound(new { success = 0, message = "License document not uploaded." });
+
+        var file = await _fileStorage.ReadAsync(doctor.LicenseDocumentPath);
+        if (file is null) return NotFound(new { success = 0, message = "License document file not found on disk." });
+
+        return File(file.Value.Content, file.Value.ContentType, file.Value.FileName);
+    }
+
+    [HttpGet("doctors/{id:int}/documents/degree")]
+    public async Task<IActionResult> DownloadDegreeDocument(int id)
+    {
+        var doctor = await _adminRepository.GetDoctorByIdAsync(id);
+        if (doctor is null) return NotFound(new { success = 0, message = "Doctor not found." });
+
+        if (string.IsNullOrWhiteSpace(doctor.DegreeDocumentPath))
+            return NotFound(new { success = 0, message = "Degree document not uploaded." });
+
+        var file = await _fileStorage.ReadAsync(doctor.DegreeDocumentPath);
+        if (file is null) return NotFound(new { success = 0, message = "Degree document file not found on disk." });
+
+        return File(file.Value.Content, file.Value.ContentType, file.Value.FileName);
     }
 
     [HttpPost("doctors/{id:int}/approve")]

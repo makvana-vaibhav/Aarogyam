@@ -10,6 +10,7 @@ CREATE OR ALTER PROCEDURE dbo.spUsersManage
     @LastLoginAt DATETIME2 = NULL
 AS
 BEGIN
+    SET NOCOUNT ON;
     BEGIN TRY
         IF @Action = 'INSERT'
         BEGIN
@@ -27,6 +28,8 @@ BEGIN
         END
         ELSE IF @Action = 'DELETE'
         BEGIN
+            DELETE FROM dbo.MedicalReports WHERE UploadedByUserId = @UserId;
+            UPDATE dbo.Doctors SET ApprovedByUserId = NULL WHERE ApprovedByUserId = @UserId;
             DELETE FROM dbo.Users WHERE UserId = @UserId;
             SELECT 1 AS Success, 'Deleted.' AS Message, NULL AS UserId;
         END

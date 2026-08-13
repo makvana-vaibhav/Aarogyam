@@ -22,6 +22,7 @@ export default function Users() {
   const [filter, setFilter] = useState("");
   const [search, setSearch] = useState("");
   const [togglingId, setTogglingId] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
 
   useEffect(() => {
     Promise.all([AdminAPI.master("roles").list(), AdminAPI.listUsers()])
@@ -66,6 +67,22 @@ export default function Users() {
     }
   }
 
+  async function deleteUser(user) {
+    if (!window.confirm(`Are you sure you want to delete user "${user.email}"?\n\nThis will permanently delete this user account and its associated records.`)) {
+      return;
+    }
+    setDeletingId(user.userId);
+    try {
+      await AdminAPI.deleteUser(user.userId);
+      setAllUsers((rows) => rows.filter((u) => u.userId !== user.userId));
+      showToast(`User ${user.email} was deleted successfully.`);
+    } catch (err) {
+      showToast(err.message, true);
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
   return (
     <>
       <div className="page-head-row">
@@ -87,7 +104,7 @@ export default function Users() {
 
       <div className="table-wrap">
         <table className="data-table">
-          <thead><tr><th>Email</th><th>Phone</th><th>Role</th><th>Verified</th><th>Status</th><th>Last login</th><th></th></tr></thead>
+          <thead><tr><th>Email</th><th>Phone</th><th>Role</th><th>Verified</th><th>Status</th><th>Last login</th><th>Actions</th></tr></thead>
           <tbody id="usersBody">
             {loading ? (
               <tr><td colSpan={7} className="table-loading">Loading…</td></tr>
@@ -104,13 +121,21 @@ export default function Users() {
                   <td>{u.isEmailVerified ? <span className="badge ok">Verified</span> : <span className="badge pending">Unverified</span>}</td>
                   <td>{u.isActive ? <span className="badge ok">Active</span> : <span className="badge bad">Inactive</span>}</td>
                   <td>{formatDateTime(u.lastLoginAt)}</td>
-                  <td className="actions">
+                  <td className="actions" style={{ whiteSpace: "nowrap" }}>
                     <button
-                      className={"btn btn-sm " + (u.isActive ? "btn-danger" : "btn-solid")}
-                      disabled={togglingId === u.userId}
+                      className={"btn btn-sm " + (u.isActive ? "btn-ghost" : "btn-solid")}
+                      disabled={togglingId === u.userId || deletingId === u.userId}
                       onClick={() => toggleUser(u.userId)}
+                      style={{ marginRight: "6px" }}
                     >
                       {u.isActive ? "Deactivate" : "Activate"}
+                    </button>
+                    <button
+                      className="btn btn-sm btn-danger"
+                      disabled={togglingId === u.userId || deletingId === u.userId}
+                      onClick={() => deleteUser(u)}
+                    >
+                      {deletingId === u.userId ? "Deleting…" : "Delete"}
                     </button>
                   </td>
                 </tr>
