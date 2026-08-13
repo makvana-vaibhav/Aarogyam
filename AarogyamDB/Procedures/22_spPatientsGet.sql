@@ -1,7 +1,7 @@
 CREATE OR ALTER PROCEDURE dbo.spPatientsGet
     @PatientId INT = NULL,
     @UserId INT = NULL,
-    @AarogyamId NVARCHAR(20) = NULL,
+    @AarogyamId NVARCHAR(50) = NULL,
     @SearchName NVARCHAR(100) = NULL
 AS
 BEGIN
@@ -10,7 +10,7 @@ BEGIN
     ELSE IF @UserId IS NOT NULL
         SELECT * FROM dbo.Patients WHERE UserId = @UserId;
     ELSE IF @AarogyamId IS NOT NULL
-        SELECT * FROM dbo.Patients WHERE AarogyamId = @AarogyamId;
+        SELECT * FROM dbo.Patients WHERE LTRIM(RTRIM(AarogyamId)) = LTRIM(RTRIM(@AarogyamId));
     ELSE IF @SearchName IS NOT NULL
         SELECT * FROM dbo.Patients WHERE FirstName LIKE '%' + @SearchName + '%' OR LastName LIKE '%' + @SearchName + '%';
     ELSE
