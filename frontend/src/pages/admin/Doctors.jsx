@@ -166,13 +166,13 @@ export default function Doctors() {
     setActionAlert(null);
     try {
       const isLicense = docType === "license";
-      const blob = isLicense
+      const file = isLicense
         ? await AdminAPI.downloadLicenseDocument(doctorId)
         : await AdminAPI.downloadDegreeDocument(doctorId);
 
       const ext = originalPath && originalPath.includes(".") ? "." + originalPath.split(".").pop() : isLicense ? "_license.pdf" : "_degree.pdf";
       const docName = (detail ? fullName(detail).replace(/\s+/g, "_") : `doctor_${doctorId}`) + (isLicense ? "_license" : "_degree") + ext;
-      downloadBlob(blob, docName);
+      downloadBlob(file.blob, file.fileName || docName);
       showToast(`${isLicense ? "Licence" : "Degree"} document downloaded.`);
     } catch (err) {
       setActionAlert("Could not download document: " + err.message);

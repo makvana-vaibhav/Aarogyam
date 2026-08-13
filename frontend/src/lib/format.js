@@ -41,11 +41,14 @@ export function fileSize(bytes) {
   return (size / (1024 * 1024)).toFixed(1) + " MB";
 }
 
-export function downloadBlob(blob, fileName) {
+export function downloadBlob(blobOrResult, fileName) {
+  if (!blobOrResult) return;
+  const blob = (blobOrResult && blobOrResult.blob instanceof Blob) ? blobOrResult.blob : (blobOrResult instanceof Blob ? blobOrResult : (blobOrResult.blob || blobOrResult));
+  const resolvedName = fileName || (blobOrResult && blobOrResult.fileName) || "download";
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = fileName || "download";
+  a.download = resolvedName;
   document.body.appendChild(a);
   a.click();
   a.remove();
