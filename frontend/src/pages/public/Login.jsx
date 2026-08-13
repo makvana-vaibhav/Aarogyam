@@ -80,14 +80,13 @@ export default function Login() {
         <div className="auth-card">
           {error ? (
             <div ref={alertRef} id="loginAlert" className="form-alert error" tabIndex={-1} style={{ outline: "none" }}>
-              {error}
+              <div>{error}</div>
               {resendEmail ? (
-                <>
-                  <br />
-                  <button type="button" className="resend-link" disabled={resending} onClick={handleResend}>
-                    {resending ? "Sending…" : "Resend verification code"}
+                <div style={{ marginTop: "10px" }}>
+                  <button type="button" id="resendBtn" className="btn btn-solid btn-sm" disabled={resending} onClick={handleResend}>
+                    {resending ? "Sending code…" : "Resend verification code"}
                   </button>
-                </>
+                </div>
               ) : null}
             </div>
           ) : null}

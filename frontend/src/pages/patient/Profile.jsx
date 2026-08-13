@@ -65,6 +65,13 @@ export default function Profile() {
   async function handleProfileSubmit(e) {
     e.preventDefault();
     setProfileAlert(null);
+
+    const todayStr = new Date().toISOString().split("T")[0];
+    if (dateOfBirth > todayStr) {
+      setProfileAlert("Date of birth cannot be in the future.");
+      return;
+    }
+
     const payload = {
       firstName: firstName.trim(),
       middleName: middleName.trim() || null,
@@ -162,7 +169,7 @@ export default function Profile() {
             </div>
             <div className="form-row-2col">
               <div className="form-row"><label htmlFor="lastName">Last name<span className="req">*</span></label><input id="lastName" required value={lastName} onChange={(e) => setLastName(e.target.value)} /></div>
-              <div className="form-row"><label htmlFor="dateOfBirth">Date of birth<span className="req">*</span></label><input id="dateOfBirth" type="date" required value={dateOfBirth} onChange={(e) => setDateOfBirth(e.target.value)} /></div>
+              <div className="form-row"><label htmlFor="dateOfBirth">Date of birth<span className="req">*</span></label><input id="dateOfBirth" type="date" required max={new Date().toISOString().split("T")[0]} value={dateOfBirth} onChange={(e) => setDateOfBirth(e.target.value)} /></div>
             </div>
             <div className="form-row-2col">
               <div className="form-row">

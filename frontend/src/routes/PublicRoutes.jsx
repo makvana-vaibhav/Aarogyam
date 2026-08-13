@@ -12,6 +12,7 @@ import Register from "../pages/public/Register.jsx";
 import ForgotPassword from "../pages/public/ForgotPassword.jsx";
 import VerifyOtp from "../pages/public/VerifyOtp.jsx";
 import Dashboard from "../pages/public/Dashboard.jsx";
+import NotFound from "../pages/public/NotFound.jsx";
 
 export default function PublicRoutes() {
   return (
@@ -29,6 +30,9 @@ export default function PublicRoutes() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/verify-otp" element={<VerifyOtp />} />
         <Route path="/dashboard" element={<Dashboard />} />
+      </Route>
+      <Route element={<MarketingLayout />}>
+        <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
   );

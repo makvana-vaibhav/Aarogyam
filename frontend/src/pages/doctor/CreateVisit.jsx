@@ -363,7 +363,21 @@ export default function CreateVisit() {
                 </div>
                 <div className="form-row">
                   <label htmlFor="reportType">Report type</label>
-                  <input id="reportType" placeholder="Clinical / Lab / Imaging" value={reportType} onChange={(e) => setReportType(e.target.value)} />
+                  <select id="reportType" value={reportType} onChange={(e) => setReportType(e.target.value)}>
+                    <option value="">Select report type</option>
+                    <option value="Blood Test / Pathology">Blood Test / Pathology</option>
+                    <option value="Radiology / X-Ray">Radiology / X-Ray</option>
+                    <option value="MRI / CT Scan">MRI / CT Scan</option>
+                    <option value="Ultrasound / Sonography">Ultrasound / Sonography</option>
+                    <option value="ECG / Cardiology">ECG / Cardiology</option>
+                    <option value="Prescription / Pharmacy">Prescription / Pharmacy</option>
+                    <option value="Discharge Summary">Discharge Summary</option>
+                    <option value="Clinical / Consultation Note">Clinical / Consultation Note</option>
+                    <option value="Biopsy / Histopathology">Biopsy / Histopathology</option>
+                    <option value="Urine / Stool Routine">Urine / Stool Routine</option>
+                    <option value="Immunization / Vaccine Record">Immunization / Vaccine Record</option>
+                    <option value="Other">Other</option>
+                  </select>
                 </div>
               </div>
               <div className={"form-row" + (invalid.rowReportFile ? " invalid" : "")} id="rowReportFile">

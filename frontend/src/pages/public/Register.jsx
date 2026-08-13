@@ -169,6 +169,12 @@ export default function Register() {
       return;
     }
 
+    const todayStr = new Date().toISOString().split("T")[0];
+    if (pDob > todayStr) {
+      setAlert("Date of birth cannot be in the future.");
+      return;
+    }
+
     setPatientSubmitting(true);
     const email = pEmail.trim();
     const payload = {
@@ -325,7 +331,7 @@ export default function Register() {
             <div className="form-row-2col">
               <div className="form-row">
                 <label htmlFor="p-dob">Date of birth<span className="req">*</span></label>
-                <input id="p-dob" type="date" required value={pDob} onChange={(e) => setPDob(e.target.value)} />
+                <input id="p-dob" type="date" required max={new Date().toISOString().split("T")[0]} value={pDob} onChange={(e) => setPDob(e.target.value)} />
               </div>
               <div className="form-row">
                 <label htmlFor="p-gender">Gender<span className="req">*</span></label>

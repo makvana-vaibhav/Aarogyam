@@ -19,6 +19,7 @@ export default function Reports() {
 
   const [reports, setReports] = useState([]);
   const [visits, setVisits] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const [uploadOpen, setUploadOpen] = useState(false);
@@ -39,12 +40,14 @@ export default function Reports() {
   }
 
   useEffect(() => {
+    setLoading(true);
     Promise.all([PatientAPI.visits(), PatientAPI.reports()])
       .then(([visitRows, reportRows]) => {
         setVisits(visitRows || []);
         setReports(reportRows || []);
       })
-      .catch((err) => setError(err.message));
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
   }, []);
 
   function openUpload() {
@@ -143,7 +146,9 @@ export default function Reports() {
             <tr><th>Report</th><th>Date</th><th>Visit</th><th>Size</th><th>Uploaded by</th><th></th></tr>
           </thead>
           <tbody id="reportsBody">
-            {!reports.length ? (
+            {loading ? (
+              <tr><td colSpan={6} className="table-loading">Loading reports…</td></tr>
+            ) : !reports.length ? (
               <tr><td colSpan={6} className="table-empty">No reports uploaded yet.</td></tr>
             ) : (
               reports.map((report) => (
@@ -180,11 +185,25 @@ export default function Reports() {
               <div className="form-row-2col">
                 <div className="form-row">
                   <label htmlFor="reportType">Report type<span className="req">*</span></label>
-                  <input id="reportType" type="text" maxLength={50} required value={reportType} onChange={(e) => setReportType(e.target.value)} />
+                  <select id="reportType" required value={reportType} onChange={(e) => setReportType(e.target.value)}>
+                    <option value="">Select report type</option>
+                    <option value="Blood Test / Pathology">Blood Test / Pathology</option>
+                    <option value="Radiology / X-Ray">Radiology / X-Ray</option>
+                    <option value="MRI / CT Scan">MRI / CT Scan</option>
+                    <option value="Ultrasound / Sonography">Ultrasound / Sonography</option>
+                    <option value="ECG / Cardiology">ECG / Cardiology</option>
+                    <option value="Prescription / Pharmacy">Prescription / Pharmacy</option>
+                    <option value="Discharge Summary">Discharge Summary</option>
+                    <option value="Clinical / Consultation Note">Clinical / Consultation Note</option>
+                    <option value="Biopsy / Histopathology">Biopsy / Histopathology</option>
+                    <option value="Urine / Stool Routine">Urine / Stool Routine</option>
+                    <option value="Immunization / Vaccine Record">Immunization / Vaccine Record</option>
+                    <option value="Other">Other</option>
+                  </select>
                 </div>
                 <div className="form-row">
                   <label htmlFor="reportDate">Report date</label>
-                  <input id="reportDate" type="date" value={reportDate} onChange={(e) => setReportDate(e.target.value)} />
+                  <input id="reportDate" type="date" max={new Date().toISOString().split("T")[0]} value={reportDate} onChange={(e) => setReportDate(e.target.value)} />
                 </div>
               </div>
               <div className="form-row">

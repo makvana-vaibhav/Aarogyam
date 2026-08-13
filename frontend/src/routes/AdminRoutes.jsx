@@ -1,5 +1,5 @@
 import "../styles/admin-styles.css";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import AdminLayout from "../components/AdminLayout.jsx";
 import Login from "../pages/admin/Login.jsx";
 import Overview from "../pages/admin/Overview.jsx";
@@ -22,6 +22,7 @@ export default function AdminRoutes() {
         <Route path="patients" element={<Patients />} />
         <Route path="master-data" element={<MasterData />} />
         <Route path="audit-logs" element={<AuditLogs />} />
+        <Route path="*" element={<Navigate to="" replace />} />
       </Route>
     </Routes>
   );

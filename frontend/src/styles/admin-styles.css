@@ -126,7 +126,6 @@ h1, h2, h3 {
   margin-bottom: 7px;
 }
 .form-row input,
-.form-row select,
 .form-row textarea {
   width: 100%;
   background: var(--bg);
@@ -136,6 +135,19 @@ h1, h2, h3 {
   color: var(--ink);
   font-family: var(--sans);
   font-size: 14px;
+  transition: border-color 0.2s;
+}
+.form-row select {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  padding: 9px 12px;
+  height: 42px;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.4;
   transition: border-color 0.2s;
 }
 .form-row textarea { resize: vertical; min-height: 90px; }

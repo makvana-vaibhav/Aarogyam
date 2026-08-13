@@ -53,8 +53,13 @@ public class PatientController : ControllerBase
         var patient = await GetCurrentPatientAsync();
         if (patient is null) return PatientNotFound();
 
-        var pdfBytes = _pdfService.GeneratePatientProfilePdf(patient);
-        return File(pdfBytes, "application/pdf", $"aarogyam-profile-{patient.AarogyamId}.pdf");
+        var visits = await _patientRepository.GetVisitsAsync(patient.PatientId);
+        var diagnoses = await _patientRepository.GetDiagnosesAsync(patient.PatientId, null);
+        var prescriptions = await _patientRepository.GetPrescriptionsAsync(patient.PatientId);
+        var reports = await _patientRepository.GetReportsAsync(patient.PatientId);
+
+        var pdfBytes = _pdfService.GeneratePatientProfilePdf(patient, visits, diagnoses, prescriptions, reports);
+        return File(pdfBytes, "application/pdf", $"aarogyam-health-record-{patient.AarogyamId}.pdf");
     }
 
     [HttpPut("profile")]
