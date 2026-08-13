@@ -73,8 +73,8 @@ export function extractAarogyamId(raw) {
     return canonicalMatch[0].toUpperCase();
   }
 
-  // 2. Query param style: aarogyamId=..., id=..., or patientAarogyamId=...
-  const queryMatch = value.match(/[?&](?:aarogyamId|id|patientAarogyamId)=([^&#]+)/i);
+  // 2. Query param style: aarogyamId=..., id=..., patientId=..., or patientAarogyamId=...
+  const queryMatch = value.match(/[?&](?:aarogyamId|id|patientId|patientAarogyamId)=([^&#]+)/i);
   if (queryMatch && queryMatch[1]) {
     const decoded = decodeURIComponent(queryMatch[1]).trim();
     const inner = decoded.match(/(?:ARG|AAR|AAROGYAM)-\d{4}-\d+/i);
@@ -93,7 +93,7 @@ export function extractAarogyamId(raw) {
   // 4. JSON payload
   try {
     const parsed = JSON.parse(value);
-    const candidate = parsed.aarogyamId || parsed.AarogyamId || parsed.id;
+    const candidate = parsed.aarogyamId || parsed.AarogyamId || parsed.id || parsed.patientId;
     if (candidate) {
       const inner = String(candidate).match(/(?:ARG|AAR|AAROGYAM)-\d{4}-\d+/i);
       return inner ? inner[0].toUpperCase() : String(candidate).trim().toUpperCase();

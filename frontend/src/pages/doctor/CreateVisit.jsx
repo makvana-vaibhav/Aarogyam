@@ -69,20 +69,29 @@ export default function CreateVisit() {
   }, []);
 
   async function runLookup(rawId, autoAdvance) {
-    const aarogyamId = extractAarogyamId(rawId);
-    if (!aarogyamId) return;
-    setLookupAarogyamId(aarogyamId);
+    const cleanId = extractAarogyamId(rawId) || String(rawId || "").trim();
+    if (!cleanId) return;
+    setLookupAarogyamId(cleanId);
     setFlowAlert(null);
     setLookupLoading(true);
     setLookupError(null);
     try {
-      const rows = await DoctorAPI.searchPatients(aarogyamId, null);
-      if (!rows || !rows.length) {
-        setLookupError("No patient found with Aarogyam ID: " + aarogyamId);
+      let patient = null;
+      const rows = await DoctorAPI.searchPatients(cleanId, null);
+      if (rows && rows.length > 0) {
+        patient = rows[0];
+      } else if (/^\d+$/.test(cleanId)) {
+        try {
+          patient = await DoctorAPI.getPatient(Number(cleanId));
+        } catch (e) {}
+      }
+
+      if (!patient) {
+        setLookupError("No patient found with Aarogyam ID: " + cleanId);
         setFoundPatient(null);
         return;
       }
-      setFoundPatient(rows[0]);
+      setFoundPatient(patient);
       if (autoAdvance) {
         setStep(2);
         window.scrollTo({ top: 0, behavior: "smooth" });
