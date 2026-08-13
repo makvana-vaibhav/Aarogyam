@@ -105,7 +105,7 @@ export function useQrScanner() {
           const ctx = canvas.getContext("2d");
           ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
           const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-          const code = jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: "dontInvert" });
+          const code = jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: "attemptBoth" });
           if (code && code.data) scannedText = code.data;
         } catch (e) {}
       }
@@ -118,11 +118,13 @@ export function useQrScanner() {
           } catch (e) {}
         }
         showToast("QR Code Scanned!");
-        const scannedId = extractAarogyamId(scannedText);
+        const scannedId = extractAarogyamId(scannedText) || scannedText;
         stopScan();
-        if (onResultRef.current) onResultRef.current(scannedId);
+        if (onResultRef.current) {
+          onResultRef.current(scannedId);
+        }
       }
-    }, 250);
+    }, 120);
   }
 
   return { open, status, videoRef, canvasRef, startScan, stopScan };
