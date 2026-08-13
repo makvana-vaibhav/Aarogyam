@@ -22,7 +22,7 @@ export function qs(params) {
 }
 
 function sanitizeDbError(raw) {
-  if (!raw) return raw;
+  if (!raw) return "An unexpected error occurred. Please try again.";
   const str = String(raw);
 
   if (/UNIQUE KEY constraint|duplicate key/i.test(str)) {
@@ -32,21 +32,29 @@ function sanitizeDbError(raw) {
     if (/email|UQ_.*email/i.test(str)) {
       return "This email address is already registered. Please log in or use another email.";
     }
-    if (/license|licensenumber/i.test(str)) {
-      return "This medical license number is already registered in the system.";
+    if (/license|licensenumber|UQ_.*license/i.test(str)) {
+      return "This medical licence number is already registered in the system.";
     }
-    if (/aarogyamid/i.test(str)) {
+    if (/aarogyamid|UQ_.*aarogyamid/i.test(str)) {
       return "An account with this Aarogyam ID already exists.";
     }
-    return "An account with these details already exists. Please log in or verify your details.";
+    return "An account with these details already exists. Please log in.";
   }
 
   if (/FOREIGN KEY constraint/i.test(str)) {
     return "Invalid selection or referenced item no longer exists. Please refresh and try again.";
   }
 
-  if (/SqlException|Timeout expired|A connection was successfully established/i.test(str)) {
-    return "Database service temporarily unavailable. Please try again in a few moments.";
+  if (/CHECK constraint/i.test(str)) {
+    return "Please check the entered information and try again.";
+  }
+
+  if (/SqlException|Timeout expired|A connection was successfully established|network-related or instance-specific error|transport-level error/i.test(str)) {
+    return "Service is temporarily busy. Please try again in a moment.";
+  }
+
+  if (/Invalid column|syntax error|Procedure or function|Incorrect syntax|Statement\(s\) could not be prepared|NullReferenceException/i.test(str)) {
+    return "Unable to complete request. Please verify the entered information.";
   }
 
   return raw;

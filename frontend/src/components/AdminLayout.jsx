@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
-import { AdminAPI, requireAdminAuth, adminLogout } from "../lib/adminApi.js";
+import { AdminAPI, requireAdminAuth, performAdminLogout } from "../lib/adminApi.js";
 import PwaInstallPrompt from "./PwaInstallPrompt.jsx";
 import OfflineIndicator from "./OfflineIndicator.jsx";
+import ConfirmModal from "./ConfirmModal.jsx";
 import { ToastProvider } from "../context/ToastContext.jsx";
 
 const NAV_ITEMS = [
@@ -46,6 +47,7 @@ export default function AdminLayout() {
   const [user, setUser] = useState(null);
   const [pendingCount, setPendingCount] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
 
   useEffect(() => {
     const current = requireAdminAuth();
@@ -107,7 +109,7 @@ export default function AdminLayout() {
           <h1>{title}</h1>
           <div className="topbar-actions">
             <span className="admin-user"><span className="dot"></span><span id="adminEmail">{user?.email || "—"}</span></span>
-            <button className="btn btn-ghost btn-sm" id="logoutBtn" type="button" onClick={adminLogout}>Log out</button>
+            <button className="btn btn-ghost btn-sm" id="logoutBtn" type="button" onClick={() => setLogoutConfirmOpen(true)}>Log out</button>
           </div>
         </header>
 
@@ -116,6 +118,14 @@ export default function AdminLayout() {
         </main>
       </div>
       <PwaInstallPrompt />
+      <ConfirmModal
+        open={logoutConfirmOpen}
+        title="Log out"
+        message="Are you sure you want to log out of Aarogyam Admin?"
+        confirmText="Log out"
+        onConfirm={performAdminLogout}
+        onCancel={() => setLogoutConfirmOpen(false)}
+      />
     </ToastProvider>
   );
 }

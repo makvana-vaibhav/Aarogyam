@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
-import { PatientAPI, requirePatientAuth, patientLogout } from "../lib/patientApi.js";
+import { PatientAPI, requirePatientAuth, performPatientLogout } from "../lib/patientApi.js";
 import { initials as formatInitials } from "../lib/format.js";
 import { usePopoverGroup } from "../lib/usePopoverGroup.js";
 import NotifPopover from "./NotifPopover.jsx";
 import AvatarMenu from "./AvatarMenu.jsx";
 import PwaInstallPrompt from "./PwaInstallPrompt.jsx";
 import OfflineIndicator from "./OfflineIndicator.jsx";
+import ConfirmModal from "./ConfirmModal.jsx";
 import { ToastProvider } from "../context/ToastContext.jsx";
 
 export default function PatientLayout() {
@@ -16,6 +17,7 @@ export default function PatientLayout() {
   const [notifRows, setNotifRows] = useState([]);
   const [notifLoading, setNotifLoading] = useState(false);
   const [notifError, setNotifError] = useState(null);
+  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
   const popovers = usePopoverGroup();
 
   const refreshProfile = useCallback(() => {
@@ -106,7 +108,7 @@ export default function PatientLayout() {
                 name={name}
                 meta={meta}
                 profileHref="/patient/profile"
-                onLogout={patientLogout}
+                onLogout={() => setLogoutConfirmOpen(true)}
                 onClose={popovers.close}
                 onStopClick={popovers.stop}
               />
@@ -116,7 +118,7 @@ export default function PatientLayout() {
       </header>
 
       <main className="pt-main">
-        <Outlet context={{ profile, refreshProfile }} />
+        <Outlet context={{ profile, refreshProfile, confirmLogout: () => setLogoutConfirmOpen(true) }} />
       </main>
 
       {/* Mobile App Bottom Navigation Bar */}
@@ -158,6 +160,14 @@ export default function PatientLayout() {
       </nav>
 
       <PwaInstallPrompt />
+      <ConfirmModal
+        open={logoutConfirmOpen}
+        title="Log out"
+        message="Are you sure you want to log out of Aarogyam?"
+        confirmText="Log out"
+        onConfirm={performPatientLogout}
+        onCancel={() => setLogoutConfirmOpen(false)}
+      />
     </ToastProvider>
   );
 }

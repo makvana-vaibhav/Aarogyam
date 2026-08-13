@@ -86,6 +86,7 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
+app.UseMiddleware<ErrorHandlingMiddleware>();
 app.UseMiddleware<SwaggerBasicAuthMiddleware>();
 app.UseSwagger();
 app.UseSwaggerUI();

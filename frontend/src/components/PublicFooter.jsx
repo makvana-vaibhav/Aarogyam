@@ -8,7 +8,7 @@ export function SimpleFooter() {
     <footer className="site-footer">
       <div className="wrap">
         <div className="footer-bottom">
-          <span>© <span id="year">{YEAR}</span> Aarogyam. Built for educational and research purposes.</span>
+          <span><Link to="/admin/login" style={{ color: "inherit", textDecoration: "none" }} aria-label="Admin login">©</Link> <span id="year">{YEAR}</span> Aarogyam. Built for educational and research purposes.</span>
           <span className="mono">आरोग्यम् · "good health"</span>
         </div>
       </div>
@@ -54,7 +54,7 @@ export default function PublicFooter() {
         </div>
 
         <div className="footer-bottom">
-          <span>© <span id="year">{YEAR}</span> Aarogyam. Built for educational and research purposes.</span>
+          <span><Link to="/admin/login" style={{ color: "inherit", textDecoration: "none" }} aria-label="Admin login">©</Link> <span id="year">{YEAR}</span> Aarogyam. Built for educational and research purposes.</span>
           <span className="mono">आरोग्यम् · "good health"</span>
         </div>
       </div>

@@ -74,7 +74,7 @@ public class AuthRepository : IAuthRepository
             new SqlParameter("@PhoneNumber", request.PhoneNumber),
             new SqlParameter("@PasswordHash", passwordHash),
             new SqlParameter("@FirstName", request.FirstName),
-            new SqlParameter("@MiddleName", request.MiddleName),
+            new SqlParameter("@MiddleName", (object?)request.MiddleName ?? DBNull.Value),
             new SqlParameter("@LastName", request.LastName),
             new SqlParameter("@LicenseNumber", request.LicenseNumber),
             new SqlParameter("@HospitalId", request.HospitalId),

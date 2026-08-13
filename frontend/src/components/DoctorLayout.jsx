@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { DoctorAPI, requireDoctorAuth, doctorLogout, extractAarogyamId } from "../lib/doctorApi.js";
+import { NavLink, Outlet } from "react-router-dom";
+import { DoctorAPI, requireDoctorAuth, performDoctorLogout, extractAarogyamId } from "../lib/doctorApi.js";
 import { initials as formatInitials } from "../lib/format.js";
 import { usePopoverGroup } from "../lib/usePopoverGroup.js";
 import { useQrScanner } from "../lib/useQrScanner.js";
@@ -9,6 +9,7 @@ import AvatarMenu from "./AvatarMenu.jsx";
 import QrScannerModal from "./QrScannerModal.jsx";
 import PwaInstallPrompt from "./PwaInstallPrompt.jsx";
 import OfflineIndicator from "./OfflineIndicator.jsx";
+import ConfirmModal from "./ConfirmModal.jsx";
 import { ToastProvider } from "../context/ToastContext.jsx";
 
 import DoctorPendingApproval from "../pages/doctor/DoctorPendingApproval.jsx";
@@ -21,13 +22,13 @@ function ScanQrIcon() {
 }
 
 function DoctorShell() {
-  const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [notifDot, setNotifDot] = useState(false);
   const [notifRows, setNotifRows] = useState([]);
   const [notifLoading, setNotifLoading] = useState(false);
   const [notifError, setNotifError] = useState(null);
+  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
   const popovers = usePopoverGroup();
   const scanner = useQrScanner();
 
@@ -80,7 +81,7 @@ function DoctorShell() {
   function defaultScanNavigate() {
     scanner.startScan((rawId) => {
       const cleanId = extractAarogyamId(rawId);
-      navigate("/doctor/create-visit?aarogyamId=" + encodeURIComponent(cleanId) + "&t=" + Date.now());
+      window.location.href = "/doctor/create-visit?aarogyamId=" + encodeURIComponent(cleanId);
     });
   }
 
@@ -99,13 +100,21 @@ function DoctorShell() {
               Aarogyam <small style={{ fontSize: "11px", color: "#ca8a04", marginLeft: "6px" }}>Pending Review</small>
             </div>
             <div className="pt-actions">
-              <button className="btn btn-ghost btn-sm" type="button" onClick={doctorLogout}>Log out</button>
+              <button className="btn btn-ghost btn-sm" type="button" onClick={() => setLogoutConfirmOpen(true)}>Log out</button>
             </div>
           </div>
         </header>
         <main className="pt-main">
           <DoctorPendingApproval profile={profile} />
         </main>
+        <ConfirmModal
+          open={logoutConfirmOpen}
+          title="Log out"
+          message="Are you sure you want to log out of Aarogyam?"
+          confirmText="Log out"
+          onConfirm={performDoctorLogout}
+          onCancel={() => setLogoutConfirmOpen(false)}
+        />
       </ToastProvider>
     );
   }
@@ -121,13 +130,21 @@ function DoctorShell() {
               Aarogyam <small style={{ fontSize: "11px", color: "#dc2626", marginLeft: "6px" }}>Application Rejected</small>
             </div>
             <div className="pt-actions">
-              <button className="btn btn-ghost btn-sm" type="button" onClick={doctorLogout}>Log out</button>
+              <button className="btn btn-ghost btn-sm" type="button" onClick={() => setLogoutConfirmOpen(true)}>Log out</button>
             </div>
           </div>
         </header>
         <main className="pt-main">
           <DoctorRejected profile={profile} />
         </main>
+        <ConfirmModal
+          open={logoutConfirmOpen}
+          title="Log out"
+          message="Are you sure you want to log out of Aarogyam?"
+          confirmText="Log out"
+          onConfirm={performDoctorLogout}
+          onCancel={() => setLogoutConfirmOpen(false)}
+        />
       </ToastProvider>
     );
   }
@@ -174,7 +191,7 @@ function DoctorShell() {
                 name={name}
                 meta={meta}
                 profileHref="/doctor/profile"
-                onLogout={doctorLogout}
+                onLogout={() => setLogoutConfirmOpen(true)}
                 onClose={popovers.close}
                 onStopClick={popovers.stop}
               />
@@ -184,7 +201,7 @@ function DoctorShell() {
       </header>
 
       <main className="pt-main">
-        <Outlet context={{ profile, refreshProfile, requestScan: scanner.startScan }} />
+        <Outlet context={{ profile, refreshProfile, requestScan: scanner.startScan, confirmLogout: () => setLogoutConfirmOpen(true) }} />
       </main>
 
       {/* Mobile App Bottom Navigation Bar for Doctors */}
@@ -243,6 +260,14 @@ function DoctorShell() {
 
       <QrScannerModal open={scanner.open} status={scanner.status} videoRef={scanner.videoRef} canvasRef={scanner.canvasRef} onClose={scanner.stopScan} />
       <PwaInstallPrompt />
+      <ConfirmModal
+        open={logoutConfirmOpen}
+        title="Log out"
+        message="Are you sure you want to log out of Aarogyam?"
+        confirmText="Log out"
+        onConfirm={performDoctorLogout}
+        onCancel={() => setLogoutConfirmOpen(false)}
+      />
     </ToastProvider>
   );
 }

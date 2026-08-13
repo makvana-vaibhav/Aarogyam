@@ -213,11 +213,12 @@ export function requireAdminAuth() {
   return user;
 }
 
-export function adminLogout() {
-  if (!window.confirm("Log out of Aarogyam Admin?")) return;
+export function performAdminLogout() {
   clearSession();
   window.location.href = "/admin/login";
 }
+
+export const adminLogout = performAdminLogout;
 
 export function statusBadgeClass(status) {
   const s = String(status || "").toLowerCase();

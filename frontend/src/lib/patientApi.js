@@ -51,8 +51,9 @@ export function requirePatientAuth() {
   return user;
 }
 
-export function patientLogout() {
-  if (!window.confirm("Log out of Aarogyam?")) return;
+export function performPatientLogout() {
   clearSession();
   window.location.href = "/login";
 }
+
+export const patientLogout = performPatientLogout;

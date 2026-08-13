@@ -669,7 +669,7 @@ table.data-table { width: 100%; border-collapse: collapse; min-width: 560px; }
   position: fixed;
   bottom: 22px;
   right: 22px;
-  z-index: 300;
+  z-index: 900;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -1347,13 +1347,77 @@ a.list-item:hover,
   display: flex;
   align-items: center;
   gap: 14px;
-  border: 1px solid var(--line-strong);
-  border-radius: 8px;
-  padding: 14px;
+  border: 1px solid var(--accent);
+  border-radius: 10px;
+  padding: 14px 16px;
   margin-top: 14px;
-  background: var(--bg-raised);
+  background: rgba(45, 106, 79, 0.06);
 }
 .patient-found-card .pf-main { min-width: 0; flex: 1; }
+
+.patient-search-results {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.patient-search-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  padding: 12px 14px;
+  background: var(--bg-raised);
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  text-align: left;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.patient-search-card:hover {
+  border-color: var(--accent);
+  background: rgba(45, 106, 79, 0.05);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.patient-search-card:active {
+  transform: translateY(0);
+}
+
+.patient-search-card .pf-main {
+  min-width: 0;
+  flex: 1;
+}
+
+.patient-search-card .pf-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 3px;
+}
+
+.patient-search-card .pf-meta {
+  font-size: 13px;
+  color: var(--ink-soft);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  align-items: center;
+}
+
+.patient-search-card .pf-action {
+  flex: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
 
 /* ---------------------------------------------------------- */
 /* Responsive                                                    */
@@ -1519,6 +1583,17 @@ a.list-item:hover,
 
   .pwa-install-banner {
     bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+  }
+
+  #toastHost {
+    bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+    right: 14px;
+    left: 14px;
+    align-items: flex-end;
+  }
+
+  .toast {
+    width: 100%;
   }
 }
 

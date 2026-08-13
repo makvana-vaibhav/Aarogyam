@@ -3,6 +3,7 @@ import { useDocumentTitle } from "../../lib/useDocumentTitle.js";
 import { AdminAPI } from "../../lib/adminApi.js";
 import { formatDateTime } from "../../lib/format.js";
 import { useToast } from "../../context/ToastContext.jsx";
+import ConfirmModal from "../../components/ConfirmModal.jsx";
 
 const FILTER_TABS = [
   { value: "", label: "All" },
@@ -23,6 +24,7 @@ export default function Users() {
   const [search, setSearch] = useState("");
   const [togglingId, setTogglingId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
+  const [deleteConfirmUser, setDeleteConfirmUser] = useState(null);
 
   useEffect(() => {
     Promise.all([AdminAPI.master("roles").list(), AdminAPI.listUsers()])
@@ -68,9 +70,7 @@ export default function Users() {
   }
 
   async function deleteUser(user) {
-    if (!window.confirm(`Are you sure you want to delete user "${user.email}"?\n\nThis will permanently delete this user account and its associated records.`)) {
-      return;
-    }
+    setDeleteConfirmUser(null);
     setDeletingId(user.userId);
     try {
       await AdminAPI.deleteUser(user.userId);
@@ -133,7 +133,7 @@ export default function Users() {
                     <button
                       className="btn btn-sm btn-danger"
                       disabled={togglingId === u.userId || deletingId === u.userId}
-                      onClick={() => deleteUser(u)}
+                      onClick={() => setDeleteConfirmUser(u)}
                     >
                       {deletingId === u.userId ? "Deleting…" : "Delete"}
                     </button>
@@ -144,6 +144,15 @@ export default function Users() {
           </tbody>
         </table>
       </div>
+
+      <ConfirmModal
+        open={!!deleteConfirmUser}
+        title="Delete user"
+        message={deleteConfirmUser ? `Are you sure you want to delete user "${deleteConfirmUser.email}"? This will permanently delete this user account and its associated records.` : ""}
+        confirmText="Delete"
+        onConfirm={() => deleteUser(deleteConfirmUser)}
+        onCancel={() => setDeleteConfirmUser(null)}
+      />
     </>
   );
 }

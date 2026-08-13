@@ -6,6 +6,7 @@ import { initials } from "../../lib/format.js";
 import { useToast } from "../../context/ToastContext.jsx";
 
 function joinName(row) {
+  if (!row) return "";
   return [row.firstName, row.middleName, row.lastName].filter(Boolean).join(" ");
 }
 
@@ -26,10 +27,13 @@ export default function CreateVisit() {
   const [diagnosisTypes, setDiagnosisTypes] = useState([]);
   const [flowAlert, setFlowAlert] = useState(null);
 
-  const [lookupAarogyamId, setLookupAarogyamId] = useState("");
-  const [lookupLoading, setLookupLoading] = useState(false);
-  const [lookupError, setLookupError] = useState(null);
+  // Live Patient Search state
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchError, setSearchError] = useState(null);
   const [foundPatient, setFoundPatient] = useState(null);
+  const searchDebounceRef = useRef(null);
 
   const [visitDate, setVisitDate] = useState(() => toLocalDatetimeValue(new Date()));
   const [visitNotes, setVisitNotes] = useState("");
@@ -68,38 +72,106 @@ export default function CreateVisit() {
     DoctorAPI.diagnosisTypes().then(setDiagnosisTypes).catch(() => {});
   }, []);
 
-  async function runLookup(rawId, autoAdvance) {
-    const cleanId = extractAarogyamId(rawId) || String(rawId || "").trim();
-    if (!cleanId) return;
-    setLookupAarogyamId(cleanId);
-    setFlowAlert(null);
-    setLookupLoading(true);
-    setLookupError(null);
+  function selectPatient(patient) {
+    if (!patient) return;
+    setFoundPatient(patient);
+    setSearchQuery(patient.aarogyamId);
+    setSearchResults([]);
+    setSearchError(null);
+    setInvalid((v) => ({ ...v, rowSearch: false }));
+    setStep(2);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  async function executeSearch(query) {
+    const trimmed = String(query || "").trim();
+    if (!trimmed) {
+      setSearchResults([]);
+      setSearchError(null);
+      return;
+    }
+
+    setSearchLoading(true);
+    setSearchError(null);
     try {
-      let patient = null;
-      const rows = await DoctorAPI.searchPatients(cleanId, null);
-      if (rows && rows.length > 0) {
-        patient = rows[0];
-      } else if (/^\d+$/.test(cleanId)) {
+      const cleanId = extractAarogyamId(trimmed) || trimmed;
+      const rows = await DoctorAPI.searchPatients(cleanId, cleanId);
+
+      let results = rows || [];
+      // If no results and query is numeric, attempt numeric ID lookup
+      if (results.length === 0 && /^\d+$/.test(cleanId)) {
         try {
-          patient = await DoctorAPI.getPatient(Number(cleanId));
+          const single = await DoctorAPI.getPatient(Number(cleanId));
+          if (single) results = [single];
         } catch (e) {}
       }
 
-      if (!patient) {
-        setLookupError("No patient found with Aarogyam ID: " + cleanId);
-        setFoundPatient(null);
-        return;
-      }
-      setFoundPatient(patient);
-      if (autoAdvance) {
-        setStep(2);
-        window.scrollTo({ top: 0, behavior: "smooth" });
+      setSearchResults(results);
+      if (results.length === 0) {
+        setSearchError("No patient found matching \"" + trimmed + "\".");
       }
     } catch (err) {
-      setLookupError(err.message);
+      setSearchError(err.message || "Failed to search patient.");
     } finally {
-      setLookupLoading(false);
+      setSearchLoading(false);
+    }
+  }
+
+  // Live debounced search on input change
+  function handleQueryChange(e) {
+    const val = e.target.value;
+    setSearchQuery(val);
+    setInvalid((v) => ({ ...v, rowSearch: false }));
+    setSearchError(null);
+
+    if (searchDebounceRef.current) {
+      clearTimeout(searchDebounceRef.current);
+    }
+
+    if (!val.trim()) {
+      setSearchResults([]);
+      return;
+    }
+
+    searchDebounceRef.current = setTimeout(() => {
+      executeSearch(val);
+    }, 200);
+  }
+
+  // Trigger search on button click or Enter key
+  async function handleFindClick() {
+    const trimmed = searchQuery.trim();
+    if (!trimmed) {
+      setInvalid((v) => ({ ...v, rowSearch: true }));
+      setSearchError("Please enter a patient name or Aarogyam ID.");
+      return;
+    }
+
+    setSearchLoading(true);
+    setSearchError(null);
+    try {
+      const cleanId = extractAarogyamId(trimmed) || trimmed;
+      const rows = await DoctorAPI.searchPatients(cleanId, cleanId);
+      let results = rows || [];
+
+      if (results.length === 0 && /^\d+$/.test(cleanId)) {
+        try {
+          const single = await DoctorAPI.getPatient(Number(cleanId));
+          if (single) results = [single];
+        } catch (e) {}
+      }
+
+      setSearchResults(results);
+      if (results.length === 1) {
+        // Single direct match: select and continue immediately
+        selectPatient(results[0]);
+      } else if (results.length === 0) {
+        setSearchError("No patient found matching \"" + trimmed + "\".");
+      }
+    } catch (err) {
+      setSearchError(err.message || "Failed to search patient.");
+    } finally {
+      setSearchLoading(false);
     }
   }
 
@@ -109,13 +181,18 @@ export default function CreateVisit() {
     if (patientIdParam) {
       DoctorAPI.getPatient(patientIdParam)
         .then((patient) => {
-          setFoundPatient(patient);
-          setStep(2);
-          window.scrollTo({ top: 0, behavior: "smooth" });
+          if (patient) selectPatient(patient);
         })
         .catch((err) => setFlowAlert(err.message));
     } else if (aarogyamIdParam) {
-      runLookup(aarogyamIdParam, true);
+      const clean = extractAarogyamId(aarogyamIdParam) || aarogyamIdParam;
+      DoctorAPI.searchPatients(clean, clean)
+        .then((rows) => {
+          if (rows && rows.length > 0) {
+            selectPatient(rows[0]);
+          }
+        })
+        .catch((err) => setFlowAlert(err.message));
     }
   }, [searchParams]);
 
@@ -126,16 +203,18 @@ export default function CreateVisit() {
 
   function handleScan() {
     requestScan((scannedId) => {
-      const cleanId = extractAarogyamId(scannedId);
-      runLookup(cleanId, true);
+      const cleanId = extractAarogyamId(scannedId) || scannedId;
+      setSearchQuery(cleanId);
+      DoctorAPI.searchPatients(cleanId, cleanId)
+        .then((rows) => {
+          if (rows && rows.length > 0) {
+            selectPatient(rows[0]);
+          } else {
+            setSearchError("No patient found for scanned code: " + cleanId);
+          }
+        })
+        .catch((err) => setSearchError(err.message));
     });
-  }
-
-  function handleLookupClick() {
-    const value = lookupAarogyamId.trim();
-    setInvalid((v) => ({ ...v, rowAarogyamId: !value }));
-    if (!value) return;
-    runLookup(value, false);
   }
 
   function handleSubmit(e) {
@@ -233,7 +312,7 @@ export default function CreateVisit() {
       <div className="page-head-row">
         <div>
           <h2>New visit</h2>
-          <p>Find the patient by their Aarogyam ID, then record the visit. Diagnosis, prescription and a report are optional add-ons.</p>
+          <p>Search the patient by name or Aarogyam ID, then record the visit details.</p>
         </div>
       </div>
 
@@ -248,169 +327,230 @@ export default function CreateVisit() {
       {step === 1 ? (
         <section className="wizard-panel card" id="panelStep1">
           <div className="card-title">Find patient</div>
-          <div className="card-sub">Enter the patient's Aarogyam ID or scan their Health Card QR Code to load their details automatically.</div>
-          <div className={"form-row" + (invalid.rowAarogyamId ? " invalid" : "")} id="rowAarogyamId">
-            <label htmlFor="lookupAarogyamId">Aarogyam ID<span className="req">*</span></label>
+          <div className="card-sub">Type the patient's name, full or partial Aarogyam ID, or scan their Health Card QR Code. Click any matching patient to continue.</div>
+          
+          <div className={"form-row" + (invalid.rowSearch ? " invalid" : "")} id="rowSearchPatient">
+            <label htmlFor="patientSearchInput">Search patient<span className="req">*</span></label>
             <div className="lookup-row">
               <input
-                id="lookupAarogyamId"
-                placeholder="e.g. ARG-2026-000010"
+                id="patientSearchInput"
+                placeholder="Type name (e.g. Vaibhav) or ID (e.g. 000010, ARG-2026)…"
                 autoComplete="off"
-                value={lookupAarogyamId}
-                onChange={(e) => setLookupAarogyamId(e.target.value)}
+                value={searchQuery}
+                onChange={handleQueryChange}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     e.preventDefault();
-                    handleLookupClick();
+                    handleFindClick();
                   }
                 }}
               />
               <div className="lookup-actions">
-                <button className="btn btn-solid" id="lookupBtn" type="button" onClick={handleLookupClick}>Find patient</button>
-                <button className="btn btn-ghost mobile-only-inline" id="scanQrBtn" type="button" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }} onClick={handleScan}>
+                <button className="btn btn-solid" id="lookupBtn" type="button" onClick={handleFindClick}>Find patient</button>
+                <button className="btn btn-ghost" id="scanQrBtn" type="button" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }} onClick={handleScan}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /><path d="M14 14h3v3h-3z" /><path d="M17 17h4v4h-4z" /></svg>
                   Scan QR
                 </button>
               </div>
             </div>
-            <div className="field-error">Enter the patient's Aarogyam ID first.</div>
+            <div className="field-error">Please enter a patient name or Aarogyam ID.</div>
           </div>
+
           <div id="lookupResult">
-            {lookupLoading ? (
-              <div className="table-loading">Searching…</div>
-            ) : lookupError ? (
-              <div className="form-alert error">{lookupError}</div>
-            ) : foundPatient ? (
+            {searchLoading ? (
+              <div className="table-loading" style={{ margin: "14px 0" }}>Searching patients…</div>
+            ) : searchError ? (
+              <div className="form-alert error" style={{ marginTop: "14px" }}>{searchError}</div>
+            ) : null}
+
+            {/* Live Search Results List */}
+            {searchResults.length > 0 ? (
+              <div className="patient-search-results">
+                <div style={{ fontSize: "12.5px", fontWeight: 600, color: "var(--ink-soft)", textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: "4px" }}>
+                  Select a matching patient ({searchResults.length}):
+                </div>
+                {searchResults.map((p) => (
+                  <button
+                    key={p.patientId}
+                    type="button"
+                    className="patient-search-card"
+                    onClick={() => selectPatient(p)}
+                  >
+                    <div className="avatar-circle small">{initials(p.firstName, p.lastName)}</div>
+                    <div className="pf-main">
+                      <div className="pf-name">{joinName(p)}</div>
+                      <div className="pf-meta">
+                        <span className="mono" style={{ color: "var(--accent)", fontWeight: 600 }}>{p.aarogyamId}</span>
+                        <span>•</span>
+                        <span>{p.gender || "Gender unrecorded"}</span>
+                        <span>•</span>
+                        <span>Blood: {p.bloodGroup || "Not set"}</span>
+                        {p.emergencyContact ? (
+                          <>
+                            <span>•</span>
+                            <span>Emergency: {p.emergencyContact}</span>
+                          </>
+                        ) : null}
+                      </div>
+                    </div>
+                    <div className="pf-action">
+                      Select &amp; continue →
+                    </div>
+                  </button>
+                ))}
+              </div>
+            ) : null}
+
+            {/* Selected Patient Banner if already chosen */}
+            {foundPatient && searchResults.length === 0 && !searchLoading ? (
               <div className="patient-found-card">
                 <div className="avatar-circle small">{initials(foundPatient.firstName, foundPatient.lastName)}</div>
                 <div className="pf-main">
-                  <div className="row-title">{joinName(foundPatient)}</div>
-                  <div className="row-sub mono">{foundPatient.aarogyamId} • {foundPatient.gender} • {foundPatient.bloodGroup || "Blood group not set"}</div>
+                  <div className="row-title" style={{ fontSize: "15px", fontWeight: 600 }}>{joinName(foundPatient)} (Selected)</div>
+                  <div className="row-sub mono" style={{ fontSize: "13px", marginTop: "2px" }}>
+                    {foundPatient.aarogyamId} • {foundPatient.gender} • {foundPatient.bloodGroup || "Blood group not set"}
+                  </div>
                 </div>
+                <button
+                  className="btn btn-solid btn-sm"
+                  type="button"
+                  onClick={() => goToStep(2)}
+                >
+                  Continue →
+                </button>
               </div>
             ) : null}
           </div>
-          <div className="modal-actions" style={{ justifyContent: "flex-start" }}>
-            <button className="btn btn-solid" id="continueToStep2" type="button" disabled={!foundPatient} onClick={() => goToStep(2)}>Continue</button>
+
+          <div className="modal-actions" style={{ justifyContent: "flex-start", marginTop: "18px" }}>
+            <button
+              className="btn btn-solid"
+              id="continueToStep2"
+              type="button"
+              disabled={!foundPatient}
+              onClick={() => goToStep(2)}
+            >
+              Continue to visit details
+            </button>
           </div>
         </section>
       ) : null}
 
       {step === 2 ? (
         <form id="visitFlowForm" className="wizard-panel" onSubmit={handleSubmit}>
-          <div className="card">
-            <div className="card-title">Patient</div>
-            <div className="patient-found-card">
-              <div className="avatar-circle small" id="pfInitials">{foundPatient ? initials(foundPatient.firstName, foundPatient.lastName) : "P"}</div>
+          {foundPatient ? (
+            <div className="patient-found-card" style={{ marginBottom: "20px" }}>
+              <div className="avatar-circle small">{initials(foundPatient.firstName, foundPatient.lastName)}</div>
               <div className="pf-main">
-                <div className="row-title" id="pfName">{foundPatient ? joinName(foundPatient) : "—"}</div>
-                <div className="row-sub mono" id="pfMeta">{foundPatient ? `${foundPatient.aarogyamId} • ${foundPatient.gender} • ${foundPatient.bloodGroup || "Blood group not set"}` : "—"}</div>
+                <div className="row-title" style={{ fontSize: "15px", fontWeight: 600 }}>{joinName(foundPatient)}</div>
+                <div className="row-sub mono">{foundPatient.aarogyamId} • {foundPatient.gender} • {foundPatient.bloodGroup || "Blood group not set"}</div>
               </div>
-              <button className="btn btn-ghost btn-sm" id="changePatientBtn" type="button" onClick={() => goToStep(1)}>Change</button>
+              <button className="btn btn-ghost btn-sm" type="button" onClick={() => goToStep(1)}>Change patient</button>
             </div>
-          </div>
+          ) : null}
 
           <div className="card">
-            <div className="card-title">Visit details</div>
-            <div className="card-sub">This date is reused for the diagnosis and prescription below — no need to enter it again.</div>
-            <div className={"form-row" + (invalid.rowVisitDate ? " invalid" : "")} id="rowVisitDate">
-              <label htmlFor="visitDate">Visit date &amp; time<span className="req">*</span></label>
-              <input id="visitDate" type="datetime-local" required value={visitDate} onChange={(e) => setVisitDate(e.target.value)} />
-              <div className="field-error">Visit date &amp; time is required.</div>
+            <div className="card-title">Consultation details</div>
+            <div className="form-row-2col">
+              <div className={"form-row" + (invalid.rowVisitDate ? " invalid" : "")} id="rowVisitDate">
+                <label htmlFor="visitDate">Visit date &amp; time<span className="req">*</span></label>
+                <input id="visitDate" type="datetime-local" required value={visitDate} onChange={(e) => setVisitDate(e.target.value)} />
+                <div className="field-error">Please choose a valid visit date.</div>
+              </div>
             </div>
-            <div className="form-row">
-              <label htmlFor="visitNotes">Consultation notes</label>
-              <textarea id="visitNotes" placeholder="Symptoms, observations, advice given…" value={visitNotes} onChange={(e) => setVisitNotes(e.target.value)}></textarea>
+            <div className="form-row" id="rowVisitNotes">
+              <label htmlFor="visitNotes">Doctor notes</label>
+              <textarea id="visitNotes" rows="3" placeholder="Chief complaints, symptoms, observations…" value={visitNotes} onChange={(e) => setVisitNotes(e.target.value)}></textarea>
             </div>
           </div>
 
-          <div className={"card optional-section" + (diagnosisOpen ? " open" : "")} id="sectionDiagnosis">
+          {/* Optional Diagnosis */}
+          <div className={"card optional-section" + (diagnosisOpen ? " open" : "")} id="diagnosisSection">
             <div className="optional-toggle" onClick={() => setDiagnosisOpen((v) => !v)}>
-              <div><div className="card-title" style={{ marginBottom: 0 }}>+ Add diagnosis</div><div className="card-sub" style={{ marginBottom: 0 }}>Optional — useful for patient history and prescription context.</div></div>
-              <svg className="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M6 9l6 6 6-6" /></svg>
+              <div>
+                <div className="card-title">Add diagnosis <span className="tag-opt">Optional</span></div>
+                <div className="card-sub">Link a formal diagnosis code and title to this visit.</div>
+              </div>
+              <span className="chev">▼</span>
             </div>
             <div className="optional-body">
               <div className="form-row-2col">
                 <div className={"form-row" + (invalid.rowDiagnosisType ? " invalid" : "")} id="rowDiagnosisType">
                   <label htmlFor="diagnosisTypeId">Diagnosis type<span className="req">*</span></label>
                   <select id="diagnosisTypeId" value={diagnosisTypeId} onChange={(e) => setDiagnosisTypeId(e.target.value)}>
-                    <option value="">Select diagnosis type</option>
-                    {diagnosisTypes.map((row) => (
-                      <option key={row.diagnosisTypeId} value={row.diagnosisTypeId}>{row.diagnosisTypeName}</option>
+                    <option value="">Select type</option>
+                    {diagnosisTypes.map((t) => (
+                      <option key={t.diagnosisTypeId} value={t.diagnosisTypeId}>{t.diagnosisTypeName}</option>
                     ))}
                   </select>
                   <div className="field-error">Choose a diagnosis type.</div>
                 </div>
                 <div className={"form-row" + (invalid.rowDiagnosisTitle ? " invalid" : "")} id="rowDiagnosisTitle">
                   <label htmlFor="diagnosisTitle">Diagnosis title<span className="req">*</span></label>
-                  <input id="diagnosisTitle" placeholder="e.g. Seasonal flu" value={diagnosisTitle} onChange={(e) => setDiagnosisTitle(e.target.value)} />
-                  <div className="field-error">Diagnosis title is required.</div>
+                  <input id="diagnosisTitle" placeholder="e.g. Acute Bronchitis" value={diagnosisTitle} onChange={(e) => setDiagnosisTitle(e.target.value)} />
+                  <div className="field-error">Enter a diagnosis title.</div>
                 </div>
               </div>
-              <div className="form-row">
+              <div className="form-row" id="rowDiagnosisDesc">
                 <label htmlFor="diagnosisDescription">Description</label>
-                <textarea id="diagnosisDescription" placeholder="Clinical findings, notes" value={diagnosisDescription} onChange={(e) => setDiagnosisDescription(e.target.value)}></textarea>
+                <textarea id="diagnosisDescription" rows="2" placeholder="Clinical findings, severity, etc." value={diagnosisDescription} onChange={(e) => setDiagnosisDescription(e.target.value)}></textarea>
               </div>
             </div>
           </div>
 
-          <div className={"card optional-section" + (prescriptionOpen ? " open" : "")} id="sectionPrescription">
+          {/* Optional Prescription */}
+          <div className={"card optional-section" + (prescriptionOpen ? " open" : "")} id="prescriptionSection">
             <div className="optional-toggle" onClick={() => setPrescriptionOpen((v) => !v)}>
-              <div><div className="card-title" style={{ marginBottom: 0 }}>+ Add prescription</div><div className="card-sub" style={{ marginBottom: 0 }}>Optional free-text prescription for the patient record.</div></div>
-              <svg className="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M6 9l6 6 6-6" /></svg>
+              <div>
+                <div className="card-title">Add prescription <span className="tag-opt">Optional</span></div>
+                <div className="card-sub">Prescribe medicines, dosage instructions and dietary advice.</div>
+              </div>
+              <span className="chev">▼</span>
             </div>
             <div className="optional-body">
               <div className={"form-row" + (invalid.rowPrescriptionText ? " invalid" : "")} id="rowPrescriptionText">
-                <label htmlFor="prescriptionText">Medicines &amp; instructions<span className="req">*</span></label>
-                <textarea id="prescriptionText" placeholder="Medicines, dosage, frequency, instructions" value={prescriptionText} onChange={(e) => setPrescriptionText(e.target.value)}></textarea>
-                <div className="field-error">Add the prescription text, or collapse this section.</div>
+                <label htmlFor="prescriptionText">Prescription details<span className="req">*</span></label>
+                <textarea id="prescriptionText" rows="4" placeholder="e.g. 1. Tab Paracetamol 650mg — 1-0-1 after food (3 days)&#10;2. Syp Ambrolite 5ml — 1-1-1 (5 days)" value={prescriptionText} onChange={(e) => setPrescriptionText(e.target.value)}></textarea>
+                <div className="field-error">Prescription text is required if you enabled this section.</div>
               </div>
             </div>
           </div>
 
-          <div className={"card optional-section" + (reportOpen ? " open" : "")} id="sectionReport">
+          {/* Optional Report */}
+          <div className={"card optional-section" + (reportOpen ? " open" : "")} id="reportSection">
             <div className="optional-toggle" onClick={() => setReportOpen((v) => !v)}>
-              <div><div className="card-title" style={{ marginBottom: 0 }}>+ Attach report</div><div className="card-sub" style={{ marginBottom: 0 }}>Optional doctor-uploaded report for this visit.</div></div>
-              <svg className="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M6 9l6 6 6-6" /></svg>
+              <div>
+                <div className="card-title">Upload lab report / scan <span className="tag-opt">Optional</span></div>
+                <div className="card-sub">Attach a PDF or image report to this visit.</div>
+              </div>
+              <span className="chev">▼</span>
             </div>
             <div className="optional-body">
               <div className="form-row-2col">
                 <div className={"form-row" + (invalid.rowReportTitle ? " invalid" : "")} id="rowReportTitle">
                   <label htmlFor="reportTitle">Report title<span className="req">*</span></label>
-                  <input id="reportTitle" placeholder="e.g. Blood test" value={reportTitle} onChange={(e) => setReportTitle(e.target.value)} />
-                  <div className="field-error">Report title is required.</div>
+                  <input id="reportTitle" placeholder="e.g. Complete Blood Count" value={reportTitle} onChange={(e) => setReportTitle(e.target.value)} />
+                  <div className="field-error">Enter a report title.</div>
                 </div>
-                <div className="form-row">
+                <div className="form-row" id="rowReportType">
                   <label htmlFor="reportType">Report type</label>
-                  <select id="reportType" value={reportType} onChange={(e) => setReportType(e.target.value)}>
-                    <option value="">Select report type</option>
-                    <option value="Blood Test / Pathology">Blood Test / Pathology</option>
-                    <option value="Radiology / X-Ray">Radiology / X-Ray</option>
-                    <option value="MRI / CT Scan">MRI / CT Scan</option>
-                    <option value="Ultrasound / Sonography">Ultrasound / Sonography</option>
-                    <option value="ECG / Cardiology">ECG / Cardiology</option>
-                    <option value="Prescription / Pharmacy">Prescription / Pharmacy</option>
-                    <option value="Discharge Summary">Discharge Summary</option>
-                    <option value="Clinical / Consultation Note">Clinical / Consultation Note</option>
-                    <option value="Biopsy / Histopathology">Biopsy / Histopathology</option>
-                    <option value="Urine / Stool Routine">Urine / Stool Routine</option>
-                    <option value="Immunization / Vaccine Record">Immunization / Vaccine Record</option>
-                    <option value="Other">Other</option>
-                  </select>
+                  <input id="reportType" placeholder="e.g. Pathology, Radiology" value={reportType} onChange={(e) => setReportType(e.target.value)} />
                 </div>
               </div>
               <div className={"form-row" + (invalid.rowReportFile ? " invalid" : "")} id="rowReportFile">
-                <label htmlFor="reportFile">File<span className="req">*</span></label>
-                <input id="reportFile" type="file" ref={reportFileRef} />
-                <div className="field-error">Choose a file to attach, or collapse this section.</div>
+                <label htmlFor="reportFile">Report file (PDF or image)<span className="req">*</span></label>
+                <input ref={reportFileRef} id="reportFile" type="file" accept=".pdf,.png,.jpg,.jpeg" />
+                <div className="field-error">Select a report file to upload.</div>
               </div>
             </div>
           </div>
 
           <div className="wizard-nav">
-            <button className="btn btn-ghost" id="backToStep1" type="button" onClick={() => goToStep(1)}>Back</button>
-            <span className="spacer"></span>
-            <button className="btn btn-solid" type="submit" disabled={submitting}>{submitting ? "Creating…" : "Create visit"}</button>
+            <button className="btn btn-ghost" type="button" id="backToStep1" onClick={() => goToStep(1)}>← Back to patient</button>
+            <div className="spacer"></div>
+            <button className="btn btn-solid btn-lg" id="saveVisitBtn" type="submit" disabled={submitting}>
+              {submitting ? "Saving visit…" : "Save and finish visit"}
+            </button>
           </div>
         </form>
       ) : null}

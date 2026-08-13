@@ -57,11 +57,12 @@ export function requireDoctorAuth() {
   return user;
 }
 
-export function doctorLogout() {
-  if (!window.confirm("Log out of Aarogyam?")) return;
+export function performDoctorLogout() {
   clearSession();
   window.location.href = "/login";
 }
+
+export const doctorLogout = performDoctorLogout;
 
 export function extractAarogyamId(raw) {
   if (!raw) return "";
