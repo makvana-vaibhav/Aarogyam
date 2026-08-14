@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Aarogyam.API.Helpers;
 using Aarogyam.API.Models.Requests;
 using Aarogyam.API.Repositories;
 using Aarogyam.API.Services;
@@ -48,6 +49,7 @@ public class AdminController : ControllerBase
             await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "CREATE", "RoleMaster", result.RoleId ?? 0);
             return Ok(result);
         }
+        if (result is not null) result.Message = DbErrorMessageMapper.Friendly(result.Message);
         return BadRequest(result);
     }
 
@@ -60,6 +62,7 @@ public class AdminController : ControllerBase
             await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "UPDATE", "RoleMaster", id);
             return Ok(result);
         }
+        if (result is not null) result.Message = DbErrorMessageMapper.Friendly(result.Message);
         return BadRequest(result);
     }
 
@@ -72,6 +75,7 @@ public class AdminController : ControllerBase
             await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "DELETE", "RoleMaster", id);
             return Ok(result);
         }
+        if (result is not null) result.Message = DbErrorMessageMapper.Friendly(result.Message);
         return BadRequest(result);
     }
 
@@ -99,6 +103,7 @@ public class AdminController : ControllerBase
             await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "CREATE", "CountryMaster", result.CountryId ?? 0);
             return Ok(result);
         }
+        if (result is not null) result.Message = DbErrorMessageMapper.Friendly(result.Message);
         return BadRequest(result);
     }
 
@@ -111,6 +116,7 @@ public class AdminController : ControllerBase
             await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "UPDATE", "CountryMaster", id);
             return Ok(result);
         }
+        if (result is not null) result.Message = DbErrorMessageMapper.Friendly(result.Message);
         return BadRequest(result);
     }
 
@@ -123,6 +129,7 @@ public class AdminController : ControllerBase
             await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "DELETE", "CountryMaster", id);
             return Ok(result);
         }
+        if (result is not null) result.Message = DbErrorMessageMapper.Friendly(result.Message);
         return BadRequest(result);
     }
 
@@ -150,6 +157,7 @@ public class AdminController : ControllerBase
             await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "CREATE", "StateMaster", result.StateId ?? 0);
             return Ok(result);
         }
+        if (result is not null) result.Message = DbErrorMessageMapper.Friendly(result.Message);
         return BadRequest(result);
     }
 
@@ -162,6 +170,7 @@ public class AdminController : ControllerBase
             await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "UPDATE", "StateMaster", id);
             return Ok(result);
         }
+        if (result is not null) result.Message = DbErrorMessageMapper.Friendly(result.Message);
         return BadRequest(result);
     }
 
@@ -174,6 +183,7 @@ public class AdminController : ControllerBase
             await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "DELETE", "StateMaster", id);
             return Ok(result);
         }
+        if (result is not null) result.Message = DbErrorMessageMapper.Friendly(result.Message);
         return BadRequest(result);
     }
 
@@ -201,6 +211,7 @@ public class AdminController : ControllerBase
             await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "CREATE", "CityMaster", result.CityId ?? 0);
             return Ok(result);
         }
+        if (result is not null) result.Message = DbErrorMessageMapper.Friendly(result.Message);
         return BadRequest(result);
     }
 
@@ -213,6 +224,7 @@ public class AdminController : ControllerBase
             await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "UPDATE", "CityMaster", id);
             return Ok(result);
         }
+        if (result is not null) result.Message = DbErrorMessageMapper.Friendly(result.Message);
         return BadRequest(result);
     }
 
@@ -225,6 +237,7 @@ public class AdminController : ControllerBase
             await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "DELETE", "CityMaster", id);
             return Ok(result);
         }
+        if (result is not null) result.Message = DbErrorMessageMapper.Friendly(result.Message);
         return BadRequest(result);
     }
 
@@ -252,6 +265,7 @@ public class AdminController : ControllerBase
             await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "CREATE", "HospitalMaster", result.HospitalId ?? 0);
             return Ok(result);
         }
+        if (result is not null) result.Message = DbErrorMessageMapper.Friendly(result.Message);
         return BadRequest(result);
     }
 
@@ -264,6 +278,7 @@ public class AdminController : ControllerBase
             await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "UPDATE", "HospitalMaster", id);
             return Ok(result);
         }
+        if (result is not null) result.Message = DbErrorMessageMapper.Friendly(result.Message);
         return BadRequest(result);
     }
 
@@ -276,6 +291,7 @@ public class AdminController : ControllerBase
             await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "DELETE", "HospitalMaster", id);
             return Ok(result);
         }
+        if (result is not null) result.Message = DbErrorMessageMapper.Friendly(result.Message);
         return BadRequest(result);
     }
 
@@ -303,6 +319,7 @@ public class AdminController : ControllerBase
             await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "CREATE", "DegreeMaster", result.DegreeId ?? 0);
             return Ok(result);
         }
+        if (result is not null) result.Message = DbErrorMessageMapper.Friendly(result.Message);
         return BadRequest(result);
     }
 
@@ -315,6 +332,7 @@ public class AdminController : ControllerBase
             await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "UPDATE", "DegreeMaster", id);
             return Ok(result);
         }
+        if (result is not null) result.Message = DbErrorMessageMapper.Friendly(result.Message);
         return BadRequest(result);
     }
 
@@ -327,6 +345,7 @@ public class AdminController : ControllerBase
             await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "DELETE", "DegreeMaster", id);
             return Ok(result);
         }
+        if (result is not null) result.Message = DbErrorMessageMapper.Friendly(result.Message);
         return BadRequest(result);
     }
 
@@ -354,6 +373,7 @@ public class AdminController : ControllerBase
             await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "CREATE", "SpecializationMaster", result.SpecializationId ?? 0);
             return Ok(result);
         }
+        if (result is not null) result.Message = DbErrorMessageMapper.Friendly(result.Message);
         return BadRequest(result);
     }
 
@@ -366,6 +386,7 @@ public class AdminController : ControllerBase
             await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "UPDATE", "SpecializationMaster", id);
             return Ok(result);
         }
+        if (result is not null) result.Message = DbErrorMessageMapper.Friendly(result.Message);
         return BadRequest(result);
     }
 
@@ -378,6 +399,7 @@ public class AdminController : ControllerBase
             await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "DELETE", "SpecializationMaster", id);
             return Ok(result);
         }
+        if (result is not null) result.Message = DbErrorMessageMapper.Friendly(result.Message);
         return BadRequest(result);
     }
 
@@ -405,6 +427,7 @@ public class AdminController : ControllerBase
             await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "CREATE", "DiagnosisTypeMaster", result.DiagnosisTypeId ?? 0);
             return Ok(result);
         }
+        if (result is not null) result.Message = DbErrorMessageMapper.Friendly(result.Message);
         return BadRequest(result);
     }
 
@@ -417,6 +440,7 @@ public class AdminController : ControllerBase
             await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "UPDATE", "DiagnosisTypeMaster", id);
             return Ok(result);
         }
+        if (result is not null) result.Message = DbErrorMessageMapper.Friendly(result.Message);
         return BadRequest(result);
     }
 
@@ -429,6 +453,7 @@ public class AdminController : ControllerBase
             await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "DELETE", "DiagnosisTypeMaster", id);
             return Ok(result);
         }
+        if (result is not null) result.Message = DbErrorMessageMapper.Friendly(result.Message);
         return BadRequest(result);
     }
 
@@ -457,6 +482,7 @@ public class AdminController : ControllerBase
             await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "ACTIVATE_USER", "Users", id);
             return Ok(result);
         }
+        if (result is not null) result.Message = DbErrorMessageMapper.Friendly(result.Message);
         return BadRequest(result);
     }
 
@@ -470,6 +496,7 @@ public class AdminController : ControllerBase
             await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "DEACTIVATE_USER", "Users", id);
             return Ok(result);
         }
+        if (result is not null) result.Message = DbErrorMessageMapper.Friendly(result.Message);
         return BadRequest(result);
     }
 
@@ -483,6 +510,7 @@ public class AdminController : ControllerBase
             await _auditLogRepository.LogAsync(GetCurrentAdminUserId(), "DELETE_USER", "Users", id);
             return Ok(result);
         }
+        if (result is not null) result.Message = DbErrorMessageMapper.Friendly(result.Message);
         return BadRequest(result);
     }
 
@@ -535,14 +563,18 @@ public class AdminController : ControllerBase
     public async Task<IActionResult> ApproveDoctor(int id)
     {
         var result = await _adminRepository.ApproveDoctorAsync(id, GetCurrentAdminUserId());
-        return result?.Success == 1 ? Ok(result) : BadRequest(result);
+        if (result?.Success == 1) return Ok(result);
+        if (result is not null) result.Message = DbErrorMessageMapper.Friendly(result.Message);
+        return BadRequest(result);
     }
 
     [HttpPost("doctors/{id:int}/reject")]
     public async Task<IActionResult> RejectDoctor(int id, [FromBody] RejectDoctorRequest request)
     {
         var result = await _adminRepository.RejectDoctorAsync(id, GetCurrentAdminUserId(), request.RejectionReason);
-        return result?.Success == 1 ? Ok(result) : BadRequest(result);
+        if (result?.Success == 1) return Ok(result);
+        if (result is not null) result.Message = DbErrorMessageMapper.Friendly(result.Message);
+        return BadRequest(result);
     }
 
     // ================= Patient Directory =================

@@ -28,10 +28,22 @@ BEGIN
         END
         ELSE IF @Action = 'DELETE'
         BEGIN
-            DELETE FROM dbo.MedicalReports WHERE UploadedByUserId = @UserId;
-            UPDATE dbo.Doctors SET ApprovedByUserId = NULL WHERE ApprovedByUserId = @UserId;
-            DELETE FROM dbo.Users WHERE UserId = @UserId;
-            SELECT 1 AS Success, 'Deleted.' AS Message, NULL AS UserId;
+            IF EXISTS (
+                SELECT 1
+                FROM dbo.Users u
+                JOIN dbo.RoleMaster r ON u.RoleId = r.RoleId
+                WHERE u.UserId = @UserId AND r.RoleName = 'Admin'
+            )
+            BEGIN
+                SELECT 0 AS Success, 'Admin accounts cannot be deleted.' AS Message, NULL AS UserId;
+            END
+            ELSE
+            BEGIN
+                DELETE FROM dbo.MedicalReports WHERE UploadedByUserId = @UserId;
+                UPDATE dbo.Doctors SET ApprovedByUserId = NULL WHERE ApprovedByUserId = @UserId;
+                DELETE FROM dbo.Users WHERE UserId = @UserId;
+                SELECT 1 AS Success, 'Deleted.' AS Message, NULL AS UserId;
+            END
         END
         ELSE
         BEGIN

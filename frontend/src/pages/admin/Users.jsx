@@ -130,13 +130,15 @@ export default function Users() {
                     >
                       {u.isActive ? "Deactivate" : "Activate"}
                     </button>
-                    <button
-                      className="btn btn-sm btn-danger"
-                      disabled={togglingId === u.userId || deletingId === u.userId}
-                      onClick={() => setDeleteConfirmUser(u)}
-                    >
-                      {deletingId === u.userId ? "Deleting…" : "Delete"}
-                    </button>
+                    {roleNames[u.roleId] !== "Admin" && (
+                      <button
+                        className="btn btn-sm btn-danger"
+                        disabled={togglingId === u.userId || deletingId === u.userId}
+                        onClick={() => setDeleteConfirmUser(u)}
+                      >
+                        {deletingId === u.userId ? "Deleting…" : "Delete"}
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))
