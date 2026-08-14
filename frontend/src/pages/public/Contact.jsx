@@ -3,28 +3,26 @@ import { useDocumentTitle } from "../../lib/useDocumentTitle.js";
 // NOTE: placeholder contact details below — swap for the real thing before this ships anywhere real.
 const TEAM = [
   {
-    kind: "Team member 1",
-    name: "Team Member 1",
-    github: "github.com/yourhandle",
-    portfolio: "yourportfolio.dev",
-    phone: "+91 00000 00000",
-    email: "you@example.com"
+    kind: "Vaibhav Makvana",
+    name: "Vaibhav Makvana",
+    github: "github.com/makvana-vaibhav",
+    portfolio: "vaibhavmakvana.in",
+    phone: "+91 9106117060",
+    email: "hello@vaibhavmakvana.in"
   },
   {
-    kind: "Team member 2",
-    name: "Team Member 2",
-    github: "github.com/yourhandle",
-    portfolio: "yourportfolio.dev",
-    phone: "+91 00000 00000",
-    email: "you@example.com"
+    kind: "Akshit Kapuriya",
+    name: "Akshit Kapuriya",
+    github: "github.com/akshit-kapuriya",
+    phone: "+91 6359446915",
+    email: "akshitkapuriya8@gmail.com"
   },
   {
-    kind: "Team member 3",
-    name: "Team Member 3",
-    github: "github.com/yourhandle",
-    portfolio: "yourportfolio.dev",
-    phone: "+91 00000 00000",
-    email: "you@example.com"
+    kind: "Shubham Bosmiya",
+    name: "Shubham Bosmiya",
+    github: "github.com/Shelby1507",
+    phone: "+91 9106123827",
+    email: "bosmiyashubham15@gmail.com"
   }
 ];
 
