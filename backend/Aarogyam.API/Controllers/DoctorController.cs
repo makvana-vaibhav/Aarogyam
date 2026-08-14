@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Aarogyam.API.Helpers;
 using Aarogyam.API.Models.Requests;
 using Aarogyam.API.Repositories;
 using Aarogyam.API.Services;
@@ -43,6 +44,7 @@ public class DoctorController : ControllerBase
             await _auditLogRepository.LogAsync(GetCurrentUserId(), "UPDATE_PROFILE", "Doctors", doctor.DoctorId);
             return Ok(result);
         }
+        if (result is not null) result.Message = DbErrorMessageMapper.Friendly(result.Message);
         return BadRequest(result);
     }
 
@@ -56,6 +58,7 @@ public class DoctorController : ControllerBase
             await _auditLogRepository.LogAsync(userId, "CHANGE_PASSWORD", "Users", userId);
             return Ok(result);
         }
+        if (result is not null) result.Message = DbErrorMessageMapper.Friendly(result.Message);
         return BadRequest(result);
     }
 
@@ -137,7 +140,9 @@ public class DoctorController : ControllerBase
         {
             await _auditLogRepository.LogAsync(GetCurrentUserId(), "CREATE_VISIT", "Visits", result.VisitId.Value);
         }
-        return result.Success == 1 ? Ok(result) : BadRequest(result);
+        if (result.Success == 1) return Ok(result);
+        result.Message = DbErrorMessageMapper.Friendly(result.Message);
+        return BadRequest(result);
     }
 
     [HttpPost("diagnoses")]
@@ -152,7 +157,9 @@ public class DoctorController : ControllerBase
         {
             await _auditLogRepository.LogAsync(GetCurrentUserId(), "CREATE_DIAGNOSIS", "Diagnoses", result.DiagnosisId.Value);
         }
-        return result.Success == 1 ? Ok(result) : BadRequest(result);
+        if (result.Success == 1) return Ok(result);
+        result.Message = DbErrorMessageMapper.Friendly(result.Message);
+        return BadRequest(result);
     }
 
     [HttpPost("prescriptions")]
@@ -167,7 +174,9 @@ public class DoctorController : ControllerBase
         {
             await _auditLogRepository.LogAsync(GetCurrentUserId(), "CREATE_PRESCRIPTION", "Prescriptions", result.PrescriptionId.Value);
         }
-        return result.Success == 1 ? Ok(result) : BadRequest(result);
+        if (result.Success == 1) return Ok(result);
+        result.Message = DbErrorMessageMapper.Friendly(result.Message);
+        return BadRequest(result);
     }
 
     [HttpPost("reports")]
@@ -191,6 +200,7 @@ public class DoctorController : ControllerBase
         if (result?.Success != 1)
         {
             _fileStorage.Delete(relativePath);
+            if (result is not null) result.Message = DbErrorMessageMapper.Friendly(result.Message);
             return BadRequest(result);
         }
 
@@ -223,7 +233,9 @@ public class DoctorController : ControllerBase
     {
         var result = await _doctorRepository.MarkNotificationReadAsync(id, GetCurrentUserId());
         if (result is null) return NotFound(new { success = 0, message = "Notification not found." });
-        return result.Success == 1 ? Ok(result) : BadRequest(result);
+        if (result.Success == 1) return Ok(result);
+        result.Message = DbErrorMessageMapper.Friendly(result.Message);
+        return BadRequest(result);
     }
 
     private int GetCurrentUserId()

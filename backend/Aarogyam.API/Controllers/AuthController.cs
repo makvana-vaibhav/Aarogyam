@@ -1,3 +1,4 @@
+using Aarogyam.API.Helpers;
 using Aarogyam.API.Models.Requests;
 using Aarogyam.API.Models.Responses;
 using Aarogyam.API.Repositories;
@@ -66,6 +67,7 @@ public class AuthController : ControllerBase
 
         if (result.Success == 0)
         {
+            result.Message = DbErrorMessageMapper.Friendly(result.Message);
             return BadRequest(result);
         }
 
@@ -93,6 +95,7 @@ public class AuthController : ControllerBase
 
         if (result.Success == 0)
         {
+            result.Message = DbErrorMessageMapper.Friendly(result.Message);
             return BadRequest(result);
         }
 
@@ -120,6 +123,7 @@ public class AuthController : ControllerBase
 
         if (result.Success == 0)
         {
+            result.Message = DbErrorMessageMapper.Friendly(result.Message);
             return BadRequest(result);
         }
 
@@ -144,6 +148,7 @@ public class AuthController : ControllerBase
 
         if (result.Success == 0)
         {
+            result.Message = DbErrorMessageMapper.Friendly(result.Message);
             return Unauthorized(result);
         }
 
@@ -171,6 +176,7 @@ public class AuthController : ControllerBase
 
         if (result.Success == 0)
         {
+            result.Message = DbErrorMessageMapper.Friendly(result.Message);
             return BadRequest(result);
         }
 
@@ -193,6 +199,7 @@ public class AuthController : ControllerBase
 
         if (result.Success == 0)
         {
+            result.Message = DbErrorMessageMapper.Friendly(result.Message);
             return BadRequest(result);
         }
 
@@ -220,6 +227,7 @@ public class AuthController : ControllerBase
 
         if (result.Success == 0)
         {
+            result.Message = DbErrorMessageMapper.Friendly(result.Message);
             return BadRequest(result);
         }
 
@@ -242,6 +250,7 @@ public class AuthController : ControllerBase
 
         if (result.Success == 0)
         {
+            result.Message = DbErrorMessageMapper.Friendly(result.Message);
             return BadRequest(result);
         }
 

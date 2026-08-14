@@ -1,9 +1,8 @@
 import "../styles/styles.css";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import MarketingLayout from "../components/MarketingLayout.jsx";
 import AuthLayout from "../components/AuthLayout.jsx";
 import Home from "../pages/public/Home.jsx";
-import About from "../pages/public/About.jsx";
 import Contact from "../pages/public/Contact.jsx";
 import Privacy from "../pages/public/Privacy.jsx";
 import Terms from "../pages/public/Terms.jsx";
@@ -19,7 +18,7 @@ export default function PublicRoutes() {
     <Routes>
       <Route element={<MarketingLayout />}>
         <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
+        <Route path="/about" element={<Navigate to="/" replace />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/terms" element={<Terms />} />
