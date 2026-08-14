@@ -4,6 +4,7 @@ import { AdminAPI } from "../../lib/adminApi.js";
 import { formatDate } from "../../lib/format.js";
 import { useToast } from "../../context/ToastContext.jsx";
 import ConfirmModal from "../../components/ConfirmModal.jsx";
+import SearchableSelect from "../../components/SearchableSelect.jsx";
 
 const ENTITIES = AdminAPI.masterEntities;
 
@@ -169,12 +170,13 @@ export default function MasterData() {
       return (
         <div className="form-row" key={field.name}>
           <label htmlFor={"f_" + field.name}>{field.label}{reqMark}</label>
-          <select id={"f_" + field.name} value={value || ""} onChange={(e) => setFieldValue(field.name, e.target.value)}>
-            <option value="">Select…</option>
-            {options.map((r) => (
-              <option key={r[field.idField]} value={r[field.idField]}>{r[field.nameField]}</option>
-            ))}
-          </select>
+          <SearchableSelect
+            id={"f_" + field.name}
+            value={value || ""}
+            onChange={(val) => setFieldValue(field.name, val)}
+            options={options.map((r) => ({ value: r[field.idField], label: r[field.nameField] }))}
+            placeholder="Select…"
+          />
         </div>
       );
     }
@@ -210,12 +212,13 @@ export default function MasterData() {
 
       <div className="toolbar">
         {activeEntity.filterBy ? (
-          <select id="filterBySelect" value={filterValue} onChange={(e) => setFilterValue(e.target.value)}>
-            <option value="">All {activeEntity.filterBy.label.toLowerCase()}s</option>
-            {(cache[activeEntity.filterBy.entity] || []).map((r) => (
-              <option key={r[activeEntity.filterBy.idField]} value={r[activeEntity.filterBy.idField]}>{r[activeEntity.filterBy.nameField]}</option>
-            ))}
-          </select>
+          <SearchableSelect
+            id="filterBySelect"
+            value={filterValue}
+            onChange={setFilterValue}
+            options={(cache[activeEntity.filterBy.entity] || []).map((r) => ({ value: r[activeEntity.filterBy.idField], label: r[activeEntity.filterBy.nameField] }))}
+            placeholder={"All " + activeEntity.filterBy.label.toLowerCase() + "s"}
+          />
         ) : null}
         <input type="search" id="rowSearch" placeholder="Search…" value={search} onChange={(e) => setSearch(e.target.value)} />
         <div className="spacer"></div>

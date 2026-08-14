@@ -155,6 +155,72 @@ h1, h2, h3 {
 .form-row select:focus,
 .form-row textarea:focus { outline: none; border-color: var(--accent); }
 
+/* Searchable select — custom dropdown for long option lists (country/state/city,
+   hospital/degree/specialization). Native <select> can't be height-capped with CSS
+   and takes over the screen on mobile, so this opens a small scrollable panel instead. */
+.searchable-select { position: relative; }
+
+.searchable-select-trigger {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  padding: 9px 12px;
+  height: 42px;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.4;
+  transition: border-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  cursor: pointer;
+  text-align: left;
+}
+.searchable-select-trigger:disabled { cursor: not-allowed; opacity: 0.6; }
+.searchable-select-trigger.invalid { border-color: var(--danger); }
+.searchable-select.open .searchable-select-trigger { border-color: var(--accent); }
+.searchable-select-trigger svg { flex-shrink: 0; color: var(--ink-soft); transition: transform 0.2s; }
+.searchable-select.open .searchable-select-trigger svg { transform: rotate(180deg); }
+.searchable-select-value { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.searchable-select-placeholder { color: var(--ink-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.searchable-select-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 60;
+  background: var(--bg-card);
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  box-shadow: var(--shadow-soft);
+  padding: 8px;
+}
+
+.searchable-select-search {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 13.5px;
+  color: var(--ink);
+  margin-bottom: 6px;
+  font-family: var(--sans);
+}
+.searchable-select-search:focus { outline: none; border-color: var(--accent); }
+
+.searchable-select-list { list-style: none; margin: 0; padding: 0; max-height: 220px; overflow-y: auto; }
+
+.searchable-select-option { padding: 9px 10px; border-radius: 6px; font-size: 13.5px; color: var(--ink); cursor: pointer; }
+.searchable-select-option:hover { background: var(--bg-raised); }
+.searchable-select-option.selected { background: var(--accent); color: #fff; }
+.searchable-select-empty { padding: 9px 10px; font-size: 13px; color: var(--ink-soft); }
+.searchable-select-option.clear-option { color: var(--ink-soft); font-style: italic; border-bottom: 1px solid var(--line); margin-bottom: 4px; border-radius: 6px 6px 0 0; }
+
 /* Password field wrapper with eye toggle */
 .password-field-wrapper {
   position: relative;
@@ -504,6 +570,9 @@ h1, h2, h3 {
   font-size: 13.5px;
   color: var(--ink);
 }
+
+.toolbar .searchable-select { min-width: 200px; width: auto; flex: 0 0 auto; }
+.toolbar .searchable-select-trigger { padding: 8px 12px; height: auto; font-size: 13.5px; background: var(--bg-card); }
 
 .toolbar .spacer { flex: 1; }
 

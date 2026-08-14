@@ -4,6 +4,7 @@ import { useDocumentTitle } from "../../lib/useDocumentTitle.js";
 import { AarogyamAuth, isLoggedIn, getDashboardHref } from "../../lib/publicAuth.js";
 import { useLocationCascade } from "../../lib/useLocationCascade.js";
 import PasswordField from "../../components/PasswordField.jsx";
+import SearchableSelect from "../../components/SearchableSelect.jsx";
 
 function LocationFields({ idPrefix, cascade, invalid = {}, fieldErrors = {}, onClearError }) {
   return (
@@ -11,63 +12,50 @@ function LocationFields({ idPrefix, cascade, invalid = {}, fieldErrors = {}, onC
       <div className="form-row-2col">
         <div className={"form-row" + (invalid.country ? " invalid" : "")} id={idPrefix + "-row-country"}>
           <label htmlFor={idPrefix + "-country"}>Country<span className="req">*</span></label>
-          <select
+          <SearchableSelect
             id={idPrefix + "-country"}
-            required
+            invalid={invalid.country}
             value={cascade.countryId}
-            onChange={(e) => {
-              cascade.setCountryId(e.target.value);
+            onChange={(val) => {
+              cascade.setCountryId(val);
               onClearError?.("country");
             }}
-          >
-            <option value="">{cascade.countriesFailed ? "Failed to load. Refresh the page" : "Select country"}</option>
-            {cascade.countries.map((c) => (
-              <option key={c.countryId} value={c.countryId}>{c.countryName}</option>
-            ))}
-          </select>
+            options={cascade.countries.map((c) => ({ value: c.countryId, label: c.countryName }))}
+            placeholder={cascade.countriesFailed ? "Failed to load. Refresh the page" : "Select country"}
+          />
           <div className="field-error">{fieldErrors.country || "Please select a country."}</div>
         </div>
         <div className={"form-row" + (invalid.state ? " invalid" : "")} id={idPrefix + "-row-state"}>
           <label htmlFor={idPrefix + "-state"}>State<span className="req">*</span></label>
-          <select
+          <SearchableSelect
             id={idPrefix + "-state"}
-            required
+            invalid={invalid.state}
             disabled={!cascade.countryId}
             value={cascade.stateId}
-            onChange={(e) => {
-              cascade.setStateId(e.target.value);
+            onChange={(val) => {
+              cascade.setStateId(val);
               onClearError?.("state");
             }}
-          >
-            <option value="">
-              {!cascade.countryId ? "Select country first" : cascade.statesLoading ? "Loading…" : cascade.statesFailed ? "Failed to load" : "Select state"}
-            </option>
-            {cascade.states.map((s) => (
-              <option key={s.stateId} value={s.stateId}>{s.stateName}</option>
-            ))}
-          </select>
+            options={cascade.states.map((s) => ({ value: s.stateId, label: s.stateName }))}
+            placeholder={!cascade.countryId ? "Select country first" : cascade.statesLoading ? "Loading…" : cascade.statesFailed ? "Failed to load" : "Select state"}
+          />
           <div className="field-error">{fieldErrors.state || "Please select a state."}</div>
         </div>
       </div>
       <div className={"form-row" + (invalid.city ? " invalid" : "")} id={idPrefix + "-row-city"}>
         <label htmlFor={idPrefix + "-city"}>City<span className="req">*</span></label>
-        <select
+        <SearchableSelect
           id={idPrefix + "-city"}
-          required
+          invalid={invalid.city}
           disabled={!cascade.stateId}
           value={cascade.cityId}
-          onChange={(e) => {
-            cascade.setCityId(e.target.value);
+          onChange={(val) => {
+            cascade.setCityId(val);
             onClearError?.("city");
           }}
-        >
-          <option value="">
-            {!cascade.stateId ? "Select state first" : cascade.citiesLoading ? "Loading…" : cascade.citiesFailed ? "Failed to load" : "Select city"}
-          </option>
-          {cascade.cities.map((c) => (
-            <option key={c.cityId} value={c.cityId}>{c.cityName}</option>
-          ))}
-        </select>
+          options={cascade.cities.map((c) => ({ value: c.cityId, label: c.cityName }))}
+          placeholder={!cascade.stateId ? "Select state first" : cascade.citiesLoading ? "Loading…" : cascade.citiesFailed ? "Failed to load" : "Select city"}
+        />
         <div className="field-error">{fieldErrors.city || "Please select a city."}</div>
       </div>
     </>
@@ -717,66 +705,57 @@ export default function Register() {
             <div className="form-row-2col">
               <div className={"form-row" + (dInvalid.hospital ? " invalid" : "")} id="d-row-hospital">
                 <label htmlFor="d-hospital">Hospital<span className="req">*</span></label>
-                <select
+                <SearchableSelect
                   id="d-hospital"
-                  required
+                  invalid={dInvalid.hospital}
                   value={dHospital}
-                  onChange={(e) => {
-                    setDHospital(e.target.value);
+                  onChange={(val) => {
+                    setDHospital(val);
                     clearDoctorError("hospital");
                   }}
-                >
-                  <option value="">{hospitals === null ? "Failed to load. Refresh the page" : hospitals.length ? "Select hospital" : "Loading…"}</option>
-                  {(hospitals || []).map((h) => (
-                    <option key={h.hospitalId} value={h.hospitalId}>{h.hospitalName}</option>
-                  ))}
-                </select>
+                  options={(hospitals || []).map((h) => ({ value: h.hospitalId, label: h.hospitalName }))}
+                  placeholder={hospitals === null ? "Failed to load. Refresh the page" : hospitals.length ? "Select hospital" : "Loading…"}
+                />
                 <div className="field-error">{dErrors.hospital || "Please select a hospital."}</div>
               </div>
               <div className={"form-row" + (dInvalid.degree ? " invalid" : "")} id="d-row-degree">
                 <label htmlFor="d-degree">Degree<span className="req">*</span></label>
-                <select
+                <SearchableSelect
                   id="d-degree"
-                  required
+                  invalid={dInvalid.degree}
                   value={dDegree}
-                  onChange={(e) => {
-                    setDDegree(e.target.value);
+                  onChange={(val) => {
+                    setDDegree(val);
                     clearDoctorError("degree");
                   }}
-                >
-                  <option value="">{degrees === null ? "Failed to load. Refresh the page" : degrees.length ? "Select degree" : "Loading…"}</option>
-                  {(degrees || []).map((d) => (
-                    <option key={d.degreeId} value={d.degreeId}>{d.shortName || d.degreeName}</option>
-                  ))}
-                </select>
+                  options={(degrees || []).map((d) => ({ value: d.degreeId, label: d.shortName || d.degreeName }))}
+                  placeholder={degrees === null ? "Failed to load. Refresh the page" : degrees.length ? "Select degree" : "Loading…"}
+                />
                 <div className="field-error">{dErrors.degree || "Please select a degree."}</div>
               </div>
             </div>
             <div className={"form-row" + (dInvalid.specialization ? " invalid" : "")} id="d-row-specialization">
               <label htmlFor="d-specialization">Specialization<span className="req">*</span></label>
-              <select
+              <SearchableSelect
                 id="d-specialization"
-                required
+                invalid={dInvalid.specialization}
                 disabled={!dDegree || specializationsLoading}
                 value={dSpecialization}
-                onChange={(e) => {
-                  setDSpecialization(e.target.value);
+                onChange={(val) => {
+                  setDSpecialization(val);
                   clearDoctorError("specialization");
                 }}
-              >
-                <option value="">
-                  {!dDegree
+                options={doctorSpecializations.map((s) => ({ value: s.specializationId, label: s.specializationName }))}
+                placeholder={
+                  !dDegree
                     ? "Select degree first"
                     : specializationsLoading
                     ? "Loading specializations…"
                     : doctorSpecializations.length
                     ? "Select specialization"
-                    : "No specializations found"}
-                </option>
-                {doctorSpecializations.map((s) => (
-                  <option key={s.specializationId} value={s.specializationId}>{s.specializationName}</option>
-                ))}
-              </select>
+                    : "No specializations found"
+                }
+              />
               <div className="field-error">{dErrors.specialization || "Please select a specialization."}</div>
             </div>
             <div className="form-row-2col">
