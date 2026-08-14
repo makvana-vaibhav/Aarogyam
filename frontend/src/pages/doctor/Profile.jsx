@@ -4,6 +4,7 @@ import { useDocumentTitle } from "../../lib/useDocumentTitle.js";
 import { DoctorAPI } from "../../lib/doctorApi.js";
 import { useLocationCascade } from "../../lib/useLocationCascade.js";
 import PasswordField from "../../components/PasswordField.jsx";
+import SearchableSelect from "../../components/SearchableSelect.jsx";
 import { useToast } from "../../context/ToastContext.jsx";
 
 function joinName(row) {
@@ -169,49 +170,60 @@ export default function Profile() {
             <div className="form-row-2col">
               <div className="form-row">
                 <label htmlFor="hospitalId">Hospital<span className="req">*</span></label>
-                <select id="hospitalId" required value={hospitalId} onChange={(e) => setHospitalId(e.target.value)}>
-                  {hospitals.map((item) => (
-                    <option key={item.hospitalId} value={item.hospitalId}>{item.hospitalName}</option>
-                  ))}
-                </select>
+                <SearchableSelect
+                  id="hospitalId"
+                  value={hospitalId}
+                  onChange={setHospitalId}
+                  options={hospitals.map((item) => ({ value: item.hospitalId, label: item.hospitalName }))}
+                  placeholder={hospitals.length ? "Select hospital" : "Loading…"}
+                  clearable={false}
+                />
               </div>
               <div className="form-row">
                 <label htmlFor="specializationId">Specialization<span className="req">*</span></label>
-                <select id="specializationId" required value={specializationId} onChange={(e) => setSpecializationId(e.target.value)}>
-                  {specializations.map((item) => (
-                    <option key={item.specializationId} value={item.specializationId}>{item.specializationName}</option>
-                  ))}
-                </select>
+                <SearchableSelect
+                  id="specializationId"
+                  value={specializationId}
+                  onChange={setSpecializationId}
+                  options={specializations.map((item) => ({ value: item.specializationId, label: item.specializationName }))}
+                  placeholder={specializations.length ? "Select specialization" : "Loading…"}
+                  clearable={false}
+                />
               </div>
             </div>
             <div className="form-row"><label htmlFor="address">Address<span className="req">*</span></label><textarea id="address" required value={address} onChange={(e) => setAddress(e.target.value)}></textarea></div>
             <div className="form-row-2col">
               <div className="form-row">
                 <label htmlFor="countryId">Country<span className="req">*</span></label>
-                <select id="countryId" required value={location.countryId} onChange={(e) => location.setCountryId(e.target.value)}>
-                  {location.countries.map((c) => (
-                    <option key={c.countryId} value={c.countryId}>{c.countryName}</option>
-                  ))}
-                </select>
+                <SearchableSelect
+                  id="countryId"
+                  value={location.countryId}
+                  onChange={location.setCountryId}
+                  options={location.countries.map((c) => ({ value: c.countryId, label: c.countryName }))}
+                  placeholder={location.countries.length ? "Select country" : "Loading…"}
+                  clearable={false}
+                />
               </div>
               <div className="form-row">
                 <label htmlFor="stateId">State<span className="req">*</span></label>
-                <select id="stateId" required value={location.stateId} onChange={(e) => location.setStateId(e.target.value)}>
-                  <option value="">{location.statesLoading ? "Loading…" : "Select state"}</option>
-                  {location.states.map((s) => (
-                    <option key={s.stateId} value={s.stateId}>{s.stateName}</option>
-                  ))}
-                </select>
+                <SearchableSelect
+                  id="stateId"
+                  value={location.stateId}
+                  onChange={location.setStateId}
+                  options={location.states.map((s) => ({ value: s.stateId, label: s.stateName }))}
+                  placeholder={location.statesLoading ? "Loading…" : "Select state"}
+                />
               </div>
             </div>
             <div className="form-row">
               <label htmlFor="cityId">City<span className="req">*</span></label>
-              <select id="cityId" required value={location.cityId} onChange={(e) => location.setCityId(e.target.value)}>
-                <option value="">{location.citiesLoading ? "Loading…" : "Select city"}</option>
-                {location.cities.map((c) => (
-                  <option key={c.cityId} value={c.cityId}>{c.cityName}</option>
-                ))}
-              </select>
+              <SearchableSelect
+                id="cityId"
+                value={location.cityId}
+                onChange={location.setCityId}
+                options={location.cities.map((c) => ({ value: c.cityId, label: c.cityName }))}
+                placeholder={location.citiesLoading ? "Loading…" : "Select city"}
+              />
             </div>
             <div className="modal-actions" style={{ justifyContent: "flex-start" }}>
               <button className="btn btn-solid" type="submit" disabled={savingProfile}>{savingProfile ? "Saving…" : "Save changes"}</button>
