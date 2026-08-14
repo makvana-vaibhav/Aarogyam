@@ -42,7 +42,7 @@ export default function PublicFooter() {
 
           <div className="footer-col">
             <h4>Company</h4>
-            <Link to="/about">About</Link>
+            <Link to="/#why">Why it exists</Link>
             <Link to="/contact">Contact</Link>
           </div>
 

@@ -77,7 +77,12 @@ export function extractAarogyamId(raw) {
   // 2. Query param style: aarogyamId=..., id=..., patientId=..., or patientAarogyamId=...
   const queryMatch = value.match(/[?&](?:aarogyamId|id|patientId|patientAarogyamId)=([^&#]+)/i);
   if (queryMatch && queryMatch[1]) {
-    const decoded = decodeURIComponent(queryMatch[1]).trim();
+    let decoded = queryMatch[1];
+    try {
+      decoded = decodeURIComponent(decoded).trim();
+    } catch (e) {
+      decoded = decoded.trim();
+    }
     const inner = decoded.match(/(?:ARG|AAR|AAROGYAM)-\d{4}-\d+/i);
     return inner ? inner[0].toUpperCase() : decoded.toUpperCase();
   }

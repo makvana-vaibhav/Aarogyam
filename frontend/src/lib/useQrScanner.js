@@ -86,8 +86,10 @@ export function useQrScanner() {
       }
     }
 
+    let tickBusy = false;
     intervalRef.current = setInterval(async () => {
-      if (!video || video.readyState < 2) return;
+      if (tickBusy || !video || video.readyState < 2) return;
+      tickBusy = true;
 
       let scannedText = null;
 
@@ -117,12 +119,14 @@ export function useQrScanner() {
             navigator.vibrate(100);
           } catch (e) {}
         }
-        showToast("QR Code Scanned!");
+        if (showToast) showToast("QR Code Scanned!");
         const scannedId = extractAarogyamId(scannedText) || scannedText;
         stopScan();
         if (onResultRef.current) {
           onResultRef.current(scannedId);
         }
+      } else {
+        tickBusy = false;
       }
     }, 120);
   }

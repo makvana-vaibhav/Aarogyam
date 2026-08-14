@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Aarogyam.API.Helpers;
 using Aarogyam.API.Models.Requests;
 using Aarogyam.API.Models.Responses;
 using Aarogyam.API.Repositories;
@@ -74,6 +75,7 @@ public class PatientController : ControllerBase
             await _auditLogRepository.LogAsync(GetCurrentUserId(), "UPDATE_PROFILE", "Patients", patient.PatientId);
             return Ok(result);
         }
+        if (result is not null) result.Message = DbErrorMessageMapper.Friendly(result.Message);
         return BadRequest(result);
     }
 
@@ -87,6 +89,7 @@ public class PatientController : ControllerBase
             await _auditLogRepository.LogAsync(userId, "CHANGE_PASSWORD", "Users", userId);
             return Ok(result);
         }
+        if (result is not null) result.Message = DbErrorMessageMapper.Friendly(result.Message);
         return BadRequest(result);
     }
 
@@ -155,6 +158,7 @@ public class PatientController : ControllerBase
         if (result?.Success != 1)
         {
             _fileStorage.Delete(relativePath);
+            if (result is not null) result.Message = DbErrorMessageMapper.Friendly(result.Message);
             return BadRequest(result);
         }
 
@@ -183,9 +187,11 @@ public class PatientController : ControllerBase
         {
             _fileStorage.Delete(report.FilePath);
             await _auditLogRepository.LogAsync(GetCurrentUserId(), "DELETE_REPORT", "MedicalReports", id);
+            return Ok(result);
         }
 
-        return result?.Success == 1 ? Ok(result) : BadRequest(result);
+        if (result is not null) result.Message = DbErrorMessageMapper.Friendly(result.Message);
+        return BadRequest(result);
     }
 
     [HttpGet("reports/{id:int}/download")]
@@ -305,7 +311,9 @@ public class PatientController : ControllerBase
     {
         var result = await _patientRepository.MarkNotificationReadAsync(id, GetCurrentUserId());
         if (result is null) return NotFound(new { success = 0, message = "Notification not found." });
-        return result.Success == 1 ? Ok(result) : BadRequest(result);
+        if (result.Success == 1) return Ok(result);
+        result.Message = DbErrorMessageMapper.Friendly(result.Message);
+        return BadRequest(result);
     }
 
     // ================= Helpers =================

@@ -24,7 +24,6 @@ export default function Home() {
       <section className="section problem" id="problem">
         <div className="wrap">
           <div className="section-head reveal">
-            <span className="section-num">01</span>
             <h2>Records are scattered.<br />Patients are not.</h2>
           </div>
 
@@ -47,7 +46,6 @@ export default function Home() {
       <section className="section features" id="features">
         <div className="wrap">
           <div className="section-head reveal">
-            <span className="section-num">02</span>
             <h2>What you get</h2>
             <p className="lede">Everything hangs off the Aarogyam ID, a permanent identifier issued once, at registration.</p>
           </div>
@@ -102,34 +100,28 @@ export default function Home() {
       <section className="section" id="how">
         <div className="wrap">
           <div className="section-head reveal">
-            <span className="section-num">03</span>
             <h2>How it works</h2>
-            <p className="lede">Five steps from a blank form to a living medical record.</p>
+            <p className="lede">From a blank form to a living medical record.</p>
           </div>
 
-          <div className="steps">
-            <div className="step reveal">
-              <div className="step-num">STEP 01</div>
+          <div className="feature-grid">
+            <div className="feature reveal">
               <h3>Register</h3>
               <p>Sign up as a patient with basic details. An OTP sent to your email verifies it's really you.</p>
             </div>
-            <div className="step reveal d1">
-              <div className="step-num">STEP 02</div>
+            <div className="feature reveal d1">
               <h3>Get your ID</h3>
               <p>Your permanent Aarogyam ID and QR health card are generated on the spot.</p>
             </div>
-            <div className="step reveal d2">
-              <div className="step-num">STEP 03</div>
+            <div className="feature reveal d2">
               <h3>Add your history</h3>
               <p>Upload existing reports and prescriptions so your record starts complete, not empty.</p>
             </div>
-            <div className="step reveal d3">
-              <div className="step-num">STEP 04</div>
+            <div className="feature reveal">
               <h3>Visit any doctor</h3>
               <p>They scan your QR card, see your history, and add diagnoses and prescriptions directly.</p>
             </div>
-            <div className="step reveal d4">
-              <div className="step-num">STEP 05</div>
+            <div className="feature reveal d1">
               <h3>Watch it grow</h3>
               <p>Every interaction lands on your timeline automatically. Download anything, anytime.</p>
             </div>
@@ -141,7 +133,6 @@ export default function Home() {
       <section className="section roles" id="roles">
         <div className="wrap">
           <div className="section-head reveal">
-            <span className="section-num">04</span>
             <h2>Built for both sides of the desk</h2>
           </div>
 
@@ -185,11 +176,27 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ================= WHY ================= */}
+      <section className="section" id="why">
+        <div className="wrap">
+          <div className="section-head reveal">
+            <h2>Why it exists</h2>
+          </div>
+
+          <div className="prose reveal d1">
+            <p>Healthcare records are scattered by design: a lab keeps its report, a hospital keeps its discharge summary, a clinic keeps a prescription on paper. Nobody keeps the whole picture, so when a patient shows up somewhere new, their history effectively starts over — repeated tests, incomplete context for doctors, and hours lost reconstructing what should have been a single scroll.</p>
+            <p>Aarogyam collapses those fragments into one place: a permanent ID issued once, at registration, with every visit, diagnosis, prescription and uploaded report attached to it and readable in seconds by scanning a QR card.</p>
+            <hr className="rule" />
+            <h3>A note on scope</h3>
+            <p>This project is built for <strong>educational and research purposes</strong>. It's a working demonstration of how a centralized digital health identity system can be designed and built, not a certified medical device or a substitute for real medical infrastructure.</p>
+          </div>
+        </div>
+      </section>
+
       {/* ================= SECURITY ================= */}
       <section className="section security">
         <div className="wrap">
           <div className="section-head reveal">
-            <span className="section-num">05</span>
             <h2>Guarded by design</h2>
           </div>
 
@@ -226,7 +233,7 @@ export default function Home() {
           <p className="lede reveal d2">Registration takes about two minutes, and your ID lasts a lifetime.</p>
           <div className="hero-ctas reveal d3">
             <Link className="btn btn-solid btn-lg" to="/register">Create your Aarogyam ID <span className="arr">→</span></Link>
-            <Link className="btn btn-ghost btn-lg" to="/about">Read about the project</Link>
+            <Link className="btn btn-ghost btn-lg" to="/#why">Why it exists</Link>
           </div>
         </div>
       </section>
