@@ -1360,6 +1360,9 @@ a.list-item:hover,
   flex-direction: column;
   gap: 10px;
   margin-top: 14px;
+  max-height: 340px;
+  overflow-y: auto;
+  padding-right: 4px;
 }
 
 .patient-search-card {
