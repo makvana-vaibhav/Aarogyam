@@ -33,8 +33,13 @@ public class DoctorRepository : IDoctorRepository
 
     public async Task<SimpleResult?> UpdateProfileAsync(int doctorId, UpdateDoctorProfileRequest request)
     {
-        // Only touches the fields a doctor can edit - LicenseNumber, DegreeId,
-        // document paths and approval status are untouched by the SP itself.
+        // LicenseNumber, DegreeId, document paths and approval status are untouched
+        // by the SP itself. ProfilePicturePath IS touched by the SP's UPDATE
+        // statement though (it always sets the column), so to avoid silently
+        // wiping out an existing profile picture on every unrelated profile edit,
+        // fetch the current value here and pass it straight through unchanged.
+        var current = await GetDoctorByIdAsync(doctorId);
+
         var parameters = new[]
         {
             new SqlParameter("@DoctorId", doctorId),
@@ -46,13 +51,67 @@ public class DoctorRepository : IDoctorRepository
             new SqlParameter("@Address", request.Address),
             new SqlParameter("@CountryId", request.CountryId),
             new SqlParameter("@StateId", request.StateId),
-            new SqlParameter("@CityId", request.CityId)
+            new SqlParameter("@CityId", request.CityId),
+            new SqlParameter("@ProfilePicturePath", (object?)current?.ProfilePicturePath ?? DBNull.Value)
         };
 
         var results = await _context.SimpleResults
-            .FromSqlRaw("EXEC dbo.spDoctorsUpdateProfile @DoctorId, @FirstName, @MiddleName, @LastName, @HospitalId, @SpecializationId, @Address, @CountryId, @StateId, @CityId", parameters)
+            .FromSqlRaw("EXEC dbo.spDoctorsUpdateProfile @DoctorId, @FirstName, @MiddleName, @LastName, @HospitalId, @SpecializationId, @Address, @CountryId, @StateId, @CityId, @ProfilePicturePath", parameters)
             .ToListAsync();
         return results.FirstOrDefault();
+    }
+
+    public async Task<SimpleResult?> UpdateProfilePictureAsync(int doctorId, string profilePicturePath)
+    {
+        // spDoctorsUpdateProfile requires all editable fields (no partial-update
+        // support), so fetch the doctor's current values and resend them
+        // unchanged alongside the new profile picture path.
+        var current = await GetDoctorByIdAsync(doctorId);
+        if (current is null)
+        {
+            return new SimpleResult { Success = 0, Message = "Doctor not found." };
+        }
+
+        var parameters = new[]
+        {
+            new SqlParameter("@DoctorId", doctorId),
+            new SqlParameter("@FirstName", current.FirstName),
+            new SqlParameter("@MiddleName", (object?)current.MiddleName ?? DBNull.Value),
+            new SqlParameter("@LastName", current.LastName),
+            new SqlParameter("@HospitalId", current.HospitalId),
+            new SqlParameter("@SpecializationId", current.SpecializationId),
+            new SqlParameter("@Address", current.Address),
+            new SqlParameter("@CountryId", current.CountryId),
+            new SqlParameter("@StateId", current.StateId),
+            new SqlParameter("@CityId", current.CityId),
+            new SqlParameter("@ProfilePicturePath", profilePicturePath)
+        };
+
+        var results = await _context.SimpleResults
+            .FromSqlRaw("EXEC dbo.spDoctorsUpdateProfile @DoctorId, @FirstName, @MiddleName, @LastName, @HospitalId, @SpecializationId, @Address, @CountryId, @StateId, @CityId, @ProfilePicturePath", parameters)
+            .ToListAsync();
+        return results.FirstOrDefault();
+    }
+
+    private async Task<DoctorMasterRow?> GetDoctorByIdAsync(int doctorId)
+    {
+        var rows = await _context.DoctorMasterRows
+            .FromSqlRaw("EXEC dbo.spDoctorsGet @DoctorId, @UserId, @ApprovalStatus",
+                new SqlParameter("@DoctorId", doctorId),
+                new SqlParameter("@UserId", DBNull.Value),
+                new SqlParameter("@ApprovalStatus", DBNull.Value))
+            .ToListAsync();
+        return rows.FirstOrDefault();
+    }
+
+    public async Task<UserMasterRow?> GetUserByIdAsync(int userId)
+    {
+        var rows = await _context.UserMasterRows
+            .FromSqlRaw("EXEC dbo.spUsersGet @UserId, @Email",
+                new SqlParameter("@UserId", userId),
+                new SqlParameter("@Email", DBNull.Value))
+            .ToListAsync();
+        return rows.FirstOrDefault();
     }
 
     public async Task<SimpleResult?> ChangePasswordAsync(int userId, string currentPassword, string newPassword)

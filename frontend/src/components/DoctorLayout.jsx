@@ -4,6 +4,7 @@ import { DoctorAPI, requireDoctorAuth, performDoctorLogout, extractAarogyamId } 
 import { initials as formatInitials } from "../lib/format.js";
 import { usePopoverGroup } from "../lib/usePopoverGroup.js";
 import { useQrScanner } from "../lib/useQrScanner.js";
+import { useProfilePicture } from "../lib/useProfilePicture.js";
 import NotifPopover from "./NotifPopover.jsx";
 import AvatarMenu from "./AvatarMenu.jsx";
 import QrScannerModal from "./QrScannerModal.jsx";
@@ -31,6 +32,7 @@ function DoctorShell() {
   const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
   const popovers = usePopoverGroup();
   const scanner = useQrScanner();
+  const pictureUrl = useProfilePicture(DoctorAPI.profilePicture, profile);
 
   const refreshProfile = useCallback(() => {
     return DoctorAPI.profile().then((data) => {
@@ -184,12 +186,18 @@ function DoctorShell() {
             </div>
             <div>
               <button className="pt-avatar-btn" id="avatarBtn" type="button" aria-label="Account" onClick={(e) => popovers.toggle("avatar", e)}>
-                <span className="avatar-circle small" id="sidebarInitials">{avatarInitials}</span>
+                {pictureUrl ? (
+                  <img className="avatar-circle small" id="sidebarInitials" src={pictureUrl} alt="" />
+                ) : (
+                  <span className="avatar-circle small" id="sidebarInitials">{avatarInitials}</span>
+                )}
               </button>
               <AvatarMenu
                 open={popovers.open === "avatar"}
                 name={name}
                 meta={meta}
+                avatarInitials={avatarInitials}
+                pictureUrl={pictureUrl}
                 profileHref="/doctor/profile"
                 onLogout={() => setLogoutConfirmOpen(true)}
                 onClose={popovers.close}

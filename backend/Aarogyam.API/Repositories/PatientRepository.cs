@@ -60,8 +60,13 @@ public class PatientRepository : IPatientRepository
 
     public async Task<SimpleResult?> UpdateProfileAsync(int patientId, UpdatePatientProfileRequest request)
     {
-        // Only touches the fields a patient can edit - UserId, AarogyamId and
-        // QrCodePath are untouched by the SP itself, so no fetch-first needed.
+        // UserId and AarogyamId are untouched by the SP itself, so no fetch-first
+        // needed for them. ProfilePicturePath IS touched by the SP's UPDATE
+        // statement though (it always sets the column), so to avoid silently
+        // wiping out an existing profile picture on every unrelated profile edit,
+        // fetch the current value here and pass it straight through unchanged.
+        var current = await GetProfileByIdAsync(patientId);
+
         var parameters = new[]
         {
             new SqlParameter("@PatientId", patientId),
@@ -75,12 +80,49 @@ public class PatientRepository : IPatientRepository
             new SqlParameter("@CountryId", request.CountryId),
             new SqlParameter("@StateId", request.StateId),
             new SqlParameter("@CityId", request.CityId),
-            new SqlParameter("@EmergencyContact", (object?)request.EmergencyContact ?? DBNull.Value)
+            new SqlParameter("@EmergencyContact", (object?)request.EmergencyContact ?? DBNull.Value),
+            new SqlParameter("@ProfilePicturePath", (object?)current?.ProfilePicturePath ?? DBNull.Value)
         };
 
         var results = await _context.SimpleResults
             .FromSqlRaw(
-                "EXEC dbo.spPatientsUpdateProfile @PatientId, @FirstName, @MiddleName, @LastName, @DateOfBirth, @Gender, @BloodGroup, @Address, @CountryId, @StateId, @CityId, @EmergencyContact",
+                "EXEC dbo.spPatientsUpdateProfile @PatientId, @FirstName, @MiddleName, @LastName, @DateOfBirth, @Gender, @BloodGroup, @Address, @CountryId, @StateId, @CityId, @EmergencyContact, @ProfilePicturePath",
+                parameters)
+            .ToListAsync();
+        return results.FirstOrDefault();
+    }
+
+    public async Task<SimpleResult?> UpdateProfilePictureAsync(int patientId, string profilePicturePath)
+    {
+        // spPatientsUpdateProfile requires all editable fields (no partial-update
+        // support), so fetch the patient's current values and resend them
+        // unchanged alongside the new profile picture path.
+        var current = await GetProfileByIdAsync(patientId);
+        if (current is null)
+        {
+            return new SimpleResult { Success = 0, Message = "Patient not found." };
+        }
+
+        var parameters = new[]
+        {
+            new SqlParameter("@PatientId", patientId),
+            new SqlParameter("@FirstName", current.FirstName),
+            new SqlParameter("@MiddleName", (object?)current.MiddleName ?? DBNull.Value),
+            new SqlParameter("@LastName", current.LastName),
+            new SqlParameter("@DateOfBirth", current.DateOfBirth),
+            new SqlParameter("@Gender", current.Gender),
+            new SqlParameter("@BloodGroup", (object?)current.BloodGroup ?? DBNull.Value),
+            new SqlParameter("@Address", current.Address),
+            new SqlParameter("@CountryId", current.CountryId),
+            new SqlParameter("@StateId", current.StateId),
+            new SqlParameter("@CityId", current.CityId),
+            new SqlParameter("@EmergencyContact", (object?)current.EmergencyContact ?? DBNull.Value),
+            new SqlParameter("@ProfilePicturePath", profilePicturePath)
+        };
+
+        var results = await _context.SimpleResults
+            .FromSqlRaw(
+                "EXEC dbo.spPatientsUpdateProfile @PatientId, @FirstName, @MiddleName, @LastName, @DateOfBirth, @Gender, @BloodGroup, @Address, @CountryId, @StateId, @CityId, @EmergencyContact, @ProfilePicturePath",
                 parameters)
             .ToListAsync();
         return results.FirstOrDefault();

@@ -8,6 +8,7 @@ public interface IPatientRepository
     Task<PatientMasterRow?> GetProfileByUserIdAsync(int userId);
     Task<PatientMasterRow?> GetProfileByIdAsync(int patientId);
     Task<SimpleResult?> UpdateProfileAsync(int patientId, UpdatePatientProfileRequest request);
+    Task<SimpleResult?> UpdateProfilePictureAsync(int patientId, string profilePicturePath);
     Task<SimpleResult?> ChangePasswordAsync(int userId, string currentPassword, string newPassword);
     Task<string?> GetOrGenerateQrCodePathAsync(int patientId);
 

@@ -5,7 +5,13 @@ import { DoctorAPI } from "../../lib/doctorApi.js";
 import { useLocationCascade } from "../../lib/useLocationCascade.js";
 import PasswordField from "../../components/PasswordField.jsx";
 import SearchableSelect from "../../components/SearchableSelect.jsx";
+import { useProfilePicture } from "../../lib/useProfilePicture.js";
+import { initials as formatInitials } from "../../lib/format.js";
 import { useToast } from "../../context/ToastContext.jsx";
+
+const PHOTO_MAX_BYTES = 3 * 1024 * 1024;
+const PHOTO_ACCEPT = ".jpg,.jpeg,.png,.webp";
+const PHOTO_EXT_RE = /\.(jpe?g|png|webp)$/i;
 
 function joinName(row) {
   return [row.firstName, row.middleName, row.lastName].filter(Boolean).join(" ");
@@ -28,6 +34,12 @@ export default function Profile() {
   const [editing, setEditing] = useState(false);
 
   const location = useLocationCascade(DoctorAPI, doctor);
+  const pictureUrl = useProfilePicture(DoctorAPI.profilePicture, doctor);
+
+  const [photoFile, setPhotoFile] = useState(null);
+  const [photoPreview, setPhotoPreview] = useState(null);
+  const [photoAlert, setPhotoAlert] = useState(null);
+  const [savingPhoto, setSavingPhoto] = useState(false);
 
   const [firstName, setFirstName] = useState("");
   const [middleName, setMiddleName] = useState("");
@@ -73,6 +85,56 @@ export default function Profile() {
     if (doctor) populateForm(doctor);
     location.resetToInitial();
     setEditing(false);
+    clearPhotoSelection();
+  }
+
+  function clearPhotoSelection() {
+    setPhotoFile(null);
+    setPhotoAlert(null);
+    setPhotoPreview((current) => {
+      if (current) URL.revokeObjectURL(current);
+      return null;
+    });
+  }
+
+  function handlePhotoSelect(e) {
+    const file = e.target.files && e.target.files[0];
+    e.target.value = "";
+    if (!file) return;
+    setPhotoAlert(null);
+    if (!PHOTO_EXT_RE.test(file.name)) {
+      setPhotoAlert("Please choose a JPG, PNG or WEBP image.");
+      return;
+    }
+    if (file.size > PHOTO_MAX_BYTES) {
+      setPhotoAlert("Image must be under 3MB.");
+      return;
+    }
+    setPhotoFile(file);
+    setPhotoPreview((current) => {
+      if (current) URL.revokeObjectURL(current);
+      return URL.createObjectURL(file);
+    });
+  }
+
+  async function handlePhotoUpload() {
+    if (!photoFile) return;
+    setPhotoAlert(null);
+    setSavingPhoto(true);
+    try {
+      const formData = new FormData();
+      formData.append("File", photoFile);
+      await DoctorAPI.updateProfilePicture(formData);
+      const updated = await DoctorAPI.profile();
+      setDoctor(updated);
+      refreshProfile();
+      clearPhotoSelection();
+      showToast("Profile photo updated.");
+    } catch (err) {
+      setPhotoAlert(err.message);
+    } finally {
+      setSavingPhoto(false);
+    }
   }
 
   async function handleProfileSubmit(e) {
@@ -136,9 +198,16 @@ export default function Profile() {
 
       <div className="card">
         <div className="page-head-row section-head">
-          <div>
-            <div className="card-title">Practice information</div>
-            <div className="card-sub">License <span className="mono" id="licenseValue">{doctor ? doctor.licenseNumber : "—"}</span></div>
+          <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+            {pictureUrl ? (
+              <img className="avatar-circle" src={pictureUrl} alt="" />
+            ) : (
+              <span className="avatar-circle">{doctor ? formatInitials(doctor.firstName, doctor.lastName) : "D"}</span>
+            )}
+            <div>
+              <div className="card-title">Practice information</div>
+              <div className="card-sub">License <span className="mono" id="licenseValue">{doctor ? doctor.licenseNumber : "—"}</span></div>
+            </div>
           </div>
           {!editing ? (
             <button className="btn btn-ghost btn-sm" id="editProfileBtn" type="button" onClick={() => setEditing(true)}>Edit details</button>
@@ -162,6 +231,26 @@ export default function Profile() {
         ) : (
           <form id="profileForm" className="section-space" noValidate onSubmit={handleProfileSubmit}>
             {profileAlert ? <div className="form-alert error">{profileAlert}</div> : null}
+            <div className="form-row" id="rowProfilePhoto">
+              <label htmlFor="profilePhotoInput">Profile photo</label>
+              {photoAlert ? <div className="form-alert error">{photoAlert}</div> : null}
+              <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+                {photoPreview ? (
+                  <img className="avatar-circle" src={photoPreview} alt="" />
+                ) : pictureUrl ? (
+                  <img className="avatar-circle" src={pictureUrl} alt="" />
+                ) : (
+                  <span className="avatar-circle">{doctor ? formatInitials(doctor.firstName, doctor.lastName) : "D"}</span>
+                )}
+                <input id="profilePhotoInput" type="file" accept={PHOTO_ACCEPT} onChange={handlePhotoSelect} />
+                {photoFile ? (
+                  <button type="button" className="btn btn-ghost btn-sm" disabled={savingPhoto} onClick={handlePhotoUpload}>
+                    {savingPhoto ? "Uploading…" : "Change photo"}
+                  </button>
+                ) : null}
+              </div>
+              <span className="hint">JPG, PNG or WEBP, up to 3MB.</span>
+            </div>
             <div className="form-row-2col">
               <div className="form-row"><label htmlFor="firstName">First name<span className="req">*</span></label><input id="firstName" required value={firstName} onChange={(e) => setFirstName(e.target.value)} /></div>
               <div className="form-row"><label htmlFor="middleName">Middle name (optional)</label><input id="middleName" value={middleName} onChange={(e) => setMiddleName(e.target.value)} /></div>

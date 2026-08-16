@@ -18,16 +18,17 @@ CREATE OR ALTER PROCEDURE dbo.spDoctorsManage
     @Address NVARCHAR(200) = NULL,
     @CountryId INT = NULL,
     @StateId INT = NULL,
-    @CityId INT = NULL
+    @CityId INT = NULL,
+    @ProfilePicturePath NVARCHAR(200) = NULL
 AS
 BEGIN
     BEGIN TRY
         IF @Action = 'INSERT'
         BEGIN
             INSERT INTO dbo.Doctors (UserId, FirstName, MiddleName, LastName, LicenseNumber, HospitalId, DegreeId,
-                SpecializationId, LicenseDocumentPath, DegreeDocumentPath, Address, CountryId, StateId, CityId)
+                SpecializationId, LicenseDocumentPath, DegreeDocumentPath, Address, CountryId, StateId, CityId, ProfilePicturePath)
             VALUES (@UserId, @FirstName, @MiddleName, @LastName, @LicenseNumber, @HospitalId, @DegreeId,
-                @SpecializationId, @LicenseDocumentPath, @DegreeDocumentPath, @Address, @CountryId, @StateId, @CityId);
+                @SpecializationId, @LicenseDocumentPath, @DegreeDocumentPath, @Address, @CountryId, @StateId, @CityId, @ProfilePicturePath);
             SELECT 1 AS Success, 'Created.' AS Message, SCOPE_IDENTITY() AS DoctorId;
         END
         ELSE IF @Action = 'UPDATE'
@@ -38,7 +39,8 @@ BEGIN
                 SpecializationId = @SpecializationId, LicenseDocumentPath = @LicenseDocumentPath,
                 DegreeDocumentPath = @DegreeDocumentPath, ApprovalStatus = @ApprovalStatus,
                 ApprovedByUserId = @ApprovedByUserId, ApprovedAt = @ApprovedAt, RejectionReason = @RejectionReason,
-                Address = @Address, CountryId = @CountryId, StateId = @StateId, CityId = @CityId, UpdatedAt = SYSUTCDATETIME()
+                Address = @Address, CountryId = @CountryId, StateId = @StateId, CityId = @CityId,
+                ProfilePicturePath = @ProfilePicturePath, UpdatedAt = SYSUTCDATETIME()
             WHERE DoctorId = @DoctorId;
             SELECT 1 AS Success, 'Updated.' AS Message;
         END

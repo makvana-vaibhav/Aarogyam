@@ -56,6 +56,103 @@ public class EmailService : IEmailService
         }
     }
 
+    public async Task SendNotificationEmailAsync(
+        string toEmail,
+        string patientName,
+        string subject,
+        string bodyMessage)
+    {
+        var message = new MimeMessage();
+        message.From.Add(new MailboxAddress(_settings.SenderName, _settings.SenderEmail));
+        message.To.Add(MailboxAddress.Parse(toEmail));
+        message.Subject = subject;
+        message.Body = new TextPart("html")
+        {
+            Text = GetNotificationEmailHtml(subject, bodyMessage, patientName)
+        };
+
+        using var client = new SmtpClient();
+        try
+        {
+            await client.ConnectAsync(_settings.SmtpHost, _settings.SmtpPort, SecureSocketOptions.StartTls);
+            await client.AuthenticateAsync(_settings.SenderEmail, _settings.SenderPassword);
+            await client.SendAsync(message);
+            _logger.LogInformation("Notification email sent successfully to {Email}", toEmail);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error sending notification email to {Email}", toEmail);
+            throw;
+        }
+        finally
+        {
+            if (client.IsConnected)
+            {
+                await client.DisconnectAsync(true);
+            }
+        }
+    }
+
+    private static string GetNotificationEmailHtml(string title, string bodyMessage, string name)
+    {
+        var year = DateTime.UtcNow.Year;
+        var greetingName = !string.IsNullOrWhiteSpace(name) ? name.Trim() : "";
+        var greetingText = !string.IsNullOrEmpty(greetingName) ? $"Hello {greetingName}," : "Hello,";
+
+        return $@"<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='UTF-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+<title>{title}</title>
+</head>
+<body style='margin: 0; padding: 0; background-color: #f4f5f7; font-family: -apple-system, BlinkMacSystemFont, ""Segoe UI"", Roboto, Helvetica, Arial, sans-serif; color: #1f2937; line-height: 1.5;'>
+  <table width='100%' cellpadding='0' cellspacing='0' border='0' style='background-color: #f4f5f7; padding: 32px 16px;'>
+    <tr>
+      <td align='center'>
+        <table width='100%' cellpadding='0' cellspacing='0' border='0' style='max-width: 480px; background-color: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden;'>
+          <!-- Header -->
+          <tr>
+            <td style='padding: 24px 28px 16px; border-bottom: 1px solid #f3f4f6;'>
+              <table cellpadding='0' cellspacing='0' border='0'>
+                <tr>
+                  <td style='font-size: 20px; font-weight: 700; color: #111827; letter-spacing: -0.3px;'>
+                    Aarogyam
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Content -->
+          <tr>
+            <td style='padding: 24px 28px;'>
+              <h2 style='margin: 0 0 16px; font-size: 18px; font-weight: 600; color: #111827;'>
+                {title}
+              </h2>
+              <p style='margin: 0 0 12px; font-size: 14px; color: #374151;'>
+                {greetingText}
+              </p>
+              <p style='margin: 0; font-size: 14px; color: #4b5563;'>
+                {bodyMessage}
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style='padding: 16px 28px; background-color: #f9fafb; border-top: 1px solid #f3f4f6; text-align: center; font-size: 12px; color: #9ca3af;'>
+              © {year} Aarogyam • Digital Health Platform
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>";
+    }
+
     private static string GetEmailHtml(string otpCode, string title, string subtitle, string name, string email)
     {
         var year = DateTime.UtcNow.Year;

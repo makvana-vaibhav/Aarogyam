@@ -18,6 +18,7 @@ CREATE TABLE dbo.Doctors (
     CountryId INT NOT NULL REFERENCES dbo.CountryMaster(CountryId),
     StateId INT NOT NULL REFERENCES dbo.StateMaster(StateId),
     CityId INT NOT NULL REFERENCES dbo.CityMaster(CityId),
+    ProfilePicturePath NVARCHAR(200) NULL,
     CreatedAt DATETIME2 NOT NULL DEFAULT (SYSUTCDATETIME()),
     UpdatedAt DATETIME2 NULL
 );

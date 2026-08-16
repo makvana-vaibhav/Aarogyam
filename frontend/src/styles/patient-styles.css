@@ -562,13 +562,19 @@ h1, h2, h3 {
 }
 .toolbar input:focus { outline: none; border-color: var(--accent); }
 
-.toolbar select {
+.toolbar select,
+.toolbar input[type="date"] {
   background: var(--bg-card);
   border: 1px solid var(--line-strong);
   border-radius: 6px;
   padding: 8px 12px;
   font-size: 13.5px;
   color: var(--ink);
+}
+
+.toolbar .toolbar-date-label {
+  font-size: 12.5px;
+  color: var(--ink-soft);
 }
 
 .toolbar .spacer { flex: 1; }
@@ -801,6 +807,7 @@ table.data-table { width: 100%; border-collapse: collapse; min-width: 560px; }
   font-size: 18px;
   color: var(--accent);
   flex: none;
+  object-fit: cover;
 }
 
 /* timeline (Medical History) */
@@ -1126,7 +1133,8 @@ table.data-table { width: 100%; border-collapse: collapse; min-width: 560px; }
 .pt-popover-list .list-item { border: none; border-radius: 0; border-bottom: 1px solid var(--line); }
 .pt-popover-list .list-item:last-child { border-bottom: none; }
 
-.pt-account-card { padding: 16px; border-bottom: 1px solid var(--line); }
+.pt-account-card { padding: 16px; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 12px; }
+.pt-account-card .avatar-circle { width: 40px; height: 40px; font-size: 15px; }
 .pt-account-name { font-weight: 600; font-size: 14px; }
 .pt-account-meta { font-family: var(--mono); font-size: 11.5px; color: var(--ink-faint); margin-top: 2px; }
 .pt-popover-menu { padding: 8px; }

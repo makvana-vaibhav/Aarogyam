@@ -4,10 +4,10 @@ namespace Aarogyam.API.Models.Requests;
 
 public class VerifyOtpRequest
 {
-    [Required]
+    [Required(ErrorMessage = "We couldn't identify your account. Please restart the verification process.")]
     public int UserId { get; set; }
 
-    [Required]
-    [MaxLength(10)]
+    [Required(ErrorMessage = "Please enter the OTP code sent to your email.")]
+    [MaxLength(10, ErrorMessage = "OTP code must be 10 characters or fewer.")]
     public string OtpCode { get; set; } = string.Empty;
 }

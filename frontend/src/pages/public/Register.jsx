@@ -6,6 +6,10 @@ import { useLocationCascade } from "../../lib/useLocationCascade.js";
 import PasswordField from "../../components/PasswordField.jsx";
 import SearchableSelect from "../../components/SearchableSelect.jsx";
 
+const PHOTO_MAX_BYTES = 3 * 1024 * 1024;
+const PHOTO_ACCEPT = ".jpg,.jpeg,.png,.webp";
+const PHOTO_EXT_RE = /\.(jpe?g|png|webp)$/i;
+
 function LocationFields({ idPrefix, cascade, invalid = {}, fieldErrors = {}, onClearError }) {
   return (
     <>
@@ -113,6 +117,10 @@ export default function Register() {
   const [pBloodGroup, setPBloodGroup] = useState("");
   const [pAddress, setPAddress] = useState("");
   const [pEmergency, setPEmergency] = useState("");
+  const [pPhotoPath, setPPhotoPath] = useState(null);
+  const [pPhotoPreview, setPPhotoPreview] = useState(null);
+  const [pPhotoUploading, setPPhotoUploading] = useState(false);
+  const [pPhotoAlert, setPPhotoAlert] = useState(null);
   const [patientSubmitting, setPatientSubmitting] = useState(false);
   const [pInvalid, setPInvalid] = useState({});
   const [pErrors, setPErrors] = useState({});
@@ -131,6 +139,10 @@ export default function Register() {
   const [dLicenseFile, setDLicenseFile] = useState(null);
   const [dDegreeFile, setDDegreeFile] = useState(null);
   const [dAddress, setDAddress] = useState("");
+  const [dPhotoPath, setDPhotoPath] = useState(null);
+  const [dPhotoPreview, setDPhotoPreview] = useState(null);
+  const [dPhotoUploading, setDPhotoUploading] = useState(false);
+  const [dPhotoAlert, setDPhotoAlert] = useState(null);
   const [doctorSubmitting, setDoctorSubmitting] = useState(false);
   const [dInvalid, setDInvalid] = useState({});
   const [dErrors, setDErrors] = useState({});
@@ -167,6 +179,74 @@ export default function Register() {
   function clearDoctorError(field) {
     setDInvalid((prev) => ({ ...prev, [field]: false }));
     setDErrors((prev) => ({ ...prev, [field]: "" }));
+  }
+
+  async function handlePPhotoChange(e) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setPPhotoAlert(null);
+    if (!PHOTO_EXT_RE.test(file.name)) {
+      setPPhotoAlert("Please choose a JPG, PNG or WEBP image.");
+      return;
+    }
+    if (file.size > PHOTO_MAX_BYTES) {
+      setPPhotoAlert("Photo must be under 3MB.");
+      return;
+    }
+    setPPhotoPreview((current) => {
+      if (current) URL.revokeObjectURL(current);
+      return URL.createObjectURL(file);
+    });
+    setPPhotoPath(null);
+    setPPhotoUploading(true);
+    try {
+      const res = await AarogyamAuth.uploadDocument(file);
+      if (!res.filePath) throw new Error(res.message || "Failed to upload photo.");
+      setPPhotoPath(res.filePath);
+    } catch (err) {
+      setPPhotoAlert(err.message || "Failed to upload photo.");
+      setPPhotoPreview((current) => {
+        if (current) URL.revokeObjectURL(current);
+        return null;
+      });
+    } finally {
+      setPPhotoUploading(false);
+    }
+  }
+
+  async function handleDPhotoChange(e) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setDPhotoAlert(null);
+    if (!PHOTO_EXT_RE.test(file.name)) {
+      setDPhotoAlert("Please choose a JPG, PNG or WEBP image.");
+      return;
+    }
+    if (file.size > PHOTO_MAX_BYTES) {
+      setDPhotoAlert("Photo must be under 3MB.");
+      return;
+    }
+    setDPhotoPreview((current) => {
+      if (current) URL.revokeObjectURL(current);
+      return URL.createObjectURL(file);
+    });
+    setDPhotoPath(null);
+    setDPhotoUploading(true);
+    try {
+      const res = await AarogyamAuth.uploadDocument(file);
+      if (!res.filePath) throw new Error(res.message || "Failed to upload photo.");
+      setDPhotoPath(res.filePath);
+    } catch (err) {
+      setDPhotoAlert(err.message || "Failed to upload photo.");
+      setDPhotoPreview((current) => {
+        if (current) URL.revokeObjectURL(current);
+        return null;
+      });
+    } finally {
+      setDPhotoUploading(false);
+    }
   }
 
   function goToVerify(userId, email) {
@@ -257,7 +337,8 @@ export default function Register() {
       countryId: Number(patientLocation.countryId),
       stateId: Number(patientLocation.stateId),
       cityId: Number(patientLocation.cityId),
-      emergencyContact: pEmergency.trim() || null
+      emergencyContact: pEmergency.trim() || null,
+      ...(pPhotoPath ? { profilePicturePath: pPhotoPath } : {})
     };
     try {
       const result = await AarogyamAuth.registerPatient(payload);
@@ -385,7 +466,8 @@ export default function Register() {
         address: dAddress.trim(),
         countryId: Number(doctorLocation.countryId),
         stateId: Number(doctorLocation.stateId),
-        cityId: Number(doctorLocation.cityId)
+        cityId: Number(doctorLocation.cityId),
+        ...(dPhotoPath ? { profilePicturePath: dPhotoPath } : {})
       };
 
       const result = await AarogyamAuth.registerDoctor(payload);
@@ -576,6 +658,25 @@ export default function Register() {
                 />
               </div>
             </div>
+            <div className="form-row" id="p-row-photo">
+              <label htmlFor="p-photo">Profile photo (optional)</label>
+              <div className="pdf-upload-box">
+                <input
+                  id="p-photo"
+                  type="file"
+                  accept={PHOTO_ACCEPT}
+                  className="pdf-upload-input"
+                  onChange={handlePPhotoChange}
+                />
+                {pPhotoPreview ? (
+                  <div className="pdf-file-info">
+                    <img src={pPhotoPreview} alt="" className="avatar-circle small" style={{ marginRight: "4px" }} />
+                    {pPhotoUploading ? "Uploading…" : pPhotoPath ? "Photo uploaded." : ""}
+                  </div>
+                ) : null}
+              </div>
+              {pPhotoAlert ? <div className="field-error" style={{ display: "block" }}>{pPhotoAlert}</div> : null}
+            </div>
             <div className={"form-row" + (pInvalid.address ? " invalid" : "")} id="p-row-address">
               <label htmlFor="p-address">Address<span className="req">*</span></label>
               <input
@@ -597,7 +698,7 @@ export default function Register() {
               fieldErrors={pErrors}
               onClearError={clearPatientError}
             />
-            <button id="patientSubmit" className="btn btn-solid btn-block" type="submit" disabled={patientSubmitting}>
+            <button id="patientSubmit" className="btn btn-solid btn-block" type="submit" disabled={patientSubmitting || pPhotoUploading}>
               {patientSubmitting ? "Creating account…" : "Create patient account"}
             </button>
           </form>
@@ -830,6 +931,25 @@ export default function Register() {
                 <div className="field-error">{dErrors.degreeFile || "Please upload your degree certificate document (PDF)."}</div>
               </div>
             </div>
+            <div className="form-row" id="d-row-photo">
+              <label htmlFor="d-photo">Profile photo (optional)</label>
+              <div className="pdf-upload-box">
+                <input
+                  id="d-photo"
+                  type="file"
+                  accept={PHOTO_ACCEPT}
+                  className="pdf-upload-input"
+                  onChange={handleDPhotoChange}
+                />
+                {dPhotoPreview ? (
+                  <div className="pdf-file-info">
+                    <img src={dPhotoPreview} alt="" className="avatar-circle small" style={{ marginRight: "4px" }} />
+                    {dPhotoUploading ? "Uploading…" : dPhotoPath ? "Photo uploaded." : ""}
+                  </div>
+                ) : null}
+              </div>
+              {dPhotoAlert ? <div className="field-error" style={{ display: "block" }}>{dPhotoAlert}</div> : null}
+            </div>
             <div className={"form-row" + (dInvalid.address ? " invalid" : "")} id="d-row-address">
               <label htmlFor="d-address">Address<span className="req">*</span></label>
               <input
@@ -852,7 +972,7 @@ export default function Register() {
               onClearError={clearDoctorError}
             />
             <p className="form-note">Doctor accounts require administrator verification after registration before clinical features are activated.</p>
-            <button id="doctorSubmit" className="btn btn-solid btn-block" type="submit" disabled={doctorSubmitting}>
+            <button id="doctorSubmit" className="btn btn-solid btn-block" type="submit" disabled={doctorSubmitting || dPhotoUploading}>
               {doctorSubmitting ? "Creating account…" : "Create doctor account"}
             </button>
           </form>

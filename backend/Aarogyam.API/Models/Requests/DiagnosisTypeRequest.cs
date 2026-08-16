@@ -4,13 +4,13 @@ namespace Aarogyam.API.Models.Requests;
 
 public class DiagnosisTypeRequest
 {
-    [Required]
-    [MaxLength(100)]
+    [Required(ErrorMessage = "Please enter the diagnosis type name.")]
+    [MaxLength(100, ErrorMessage = "Diagnosis type name must be 100 characters or fewer.")]
     public string DiagnosisTypeName { get; set; } = string.Empty;
 
-    [MaxLength(200)]
+    [MaxLength(200, ErrorMessage = "Description must be 200 characters or fewer.")]
     public string? Description { get; set; }
 
-    [Required]
+    [Required(ErrorMessage = "Please specify whether the diagnosis type is active.")]
     public bool IsActive { get; set; }
 }

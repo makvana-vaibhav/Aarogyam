@@ -59,6 +59,14 @@ public class AuthRepository : IAuthRepository
         if (result?.Success == 1 && result.UserId.HasValue)
         {
             await CreateAndSendOtpAsync(result.UserId.Value, request.Email);
+
+            // spRegisterPatient has no @ProfilePicturePath parameter, so persist an
+            // optional registration-time photo with a follow-up call to
+            // spPatientsUpdateProfile (which already accepts it) instead.
+            if (!string.IsNullOrWhiteSpace(request.ProfilePicturePath))
+            {
+                await SetPatientProfilePictureAsync(result.UserId.Value, request);
+            }
         }
 
         return result;
@@ -99,6 +107,14 @@ public class AuthRepository : IAuthRepository
         if (result?.Success == 1 && result.UserId.HasValue)
         {
             await CreateAndSendOtpAsync(result.UserId.Value, request.Email);
+
+            // spRegisterDoctor has no @ProfilePicturePath parameter, so persist an
+            // optional registration-time photo with a follow-up call to
+            // spDoctorsUpdateProfile (which already accepts it) instead.
+            if (!string.IsNullOrWhiteSpace(request.ProfilePicturePath))
+            {
+                await SetDoctorProfilePictureAsync(result.UserId.Value, request);
+            }
         }
 
         return result;
@@ -320,5 +336,92 @@ public class AuthRepository : IAuthRepository
         }
 
         return (success, result?.Message ?? "Unable to generate OTP.", result?.OtpId, otpCode, expiresAt);
+    }
+
+    private async Task SetPatientProfilePictureAsync(int userId, RegisterPatientRequest request)
+    {
+        try
+        {
+            var patientRows = await _context.PatientMasterRows
+                .FromSqlRaw("EXEC dbo.spPatientsGet @PatientId, @UserId, @AarogyamId, @SearchName",
+                    new SqlParameter("@PatientId", DBNull.Value),
+                    new SqlParameter("@UserId", userId),
+                    new SqlParameter("@AarogyamId", DBNull.Value),
+                    new SqlParameter("@SearchName", DBNull.Value))
+                .ToListAsync();
+
+            var patient = patientRows.FirstOrDefault();
+            if (patient is null) return;
+
+            var parameters = new[]
+            {
+                new SqlParameter("@PatientId", patient.PatientId),
+                new SqlParameter("@FirstName", request.FirstName),
+                new SqlParameter("@MiddleName", (object?)request.MiddleName ?? DBNull.Value),
+                new SqlParameter("@LastName", request.LastName),
+                new SqlParameter("@DateOfBirth", request.DateOfBirth),
+                new SqlParameter("@Gender", request.Gender),
+                new SqlParameter("@BloodGroup", (object?)request.BloodGroup ?? DBNull.Value),
+                new SqlParameter("@Address", request.Address),
+                new SqlParameter("@CountryId", request.CountryId),
+                new SqlParameter("@StateId", request.StateId),
+                new SqlParameter("@CityId", request.CityId),
+                new SqlParameter("@EmergencyContact", (object?)request.EmergencyContact ?? DBNull.Value),
+                new SqlParameter("@ProfilePicturePath", request.ProfilePicturePath!)
+            };
+
+            await _context.SimpleResults
+                .FromSqlRaw(
+                    "EXEC dbo.spPatientsUpdateProfile @PatientId, @FirstName, @MiddleName, @LastName, @DateOfBirth, @Gender, @BloodGroup, @Address, @CountryId, @StateId, @CityId, @EmergencyContact, @ProfilePicturePath",
+                    parameters)
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            // A registration-time photo failing to save must never fail registration itself.
+            _logger.LogWarning(ex, "Failed to save profile picture for newly registered patient (UserId={UserId})", userId);
+        }
+    }
+
+    private async Task SetDoctorProfilePictureAsync(int userId, RegisterDoctorRequest request)
+    {
+        try
+        {
+            var doctorRows = await _context.DoctorMasterRows
+                .FromSqlRaw("EXEC dbo.spDoctorsGet @DoctorId, @UserId, @ApprovalStatus",
+                    new SqlParameter("@DoctorId", DBNull.Value),
+                    new SqlParameter("@UserId", userId),
+                    new SqlParameter("@ApprovalStatus", DBNull.Value))
+                .ToListAsync();
+
+            var doctor = doctorRows.FirstOrDefault();
+            if (doctor is null) return;
+
+            var parameters = new[]
+            {
+                new SqlParameter("@DoctorId", doctor.DoctorId),
+                new SqlParameter("@FirstName", request.FirstName),
+                new SqlParameter("@MiddleName", (object?)request.MiddleName ?? DBNull.Value),
+                new SqlParameter("@LastName", request.LastName),
+                new SqlParameter("@HospitalId", request.HospitalId),
+                new SqlParameter("@SpecializationId", request.SpecializationId),
+                new SqlParameter("@Address", request.Address),
+                new SqlParameter("@CountryId", request.CountryId),
+                new SqlParameter("@StateId", request.StateId),
+                new SqlParameter("@CityId", request.CityId),
+                new SqlParameter("@ProfilePicturePath", request.ProfilePicturePath!)
+            };
+
+            await _context.SimpleResults
+                .FromSqlRaw(
+                    "EXEC dbo.spDoctorsUpdateProfile @DoctorId, @FirstName, @MiddleName, @LastName, @HospitalId, @SpecializationId, @Address, @CountryId, @StateId, @CityId, @ProfilePicturePath",
+                    parameters)
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            // A registration-time photo failing to save must never fail registration itself.
+            _logger.LogWarning(ex, "Failed to save profile picture for newly registered doctor (UserId={UserId})", userId);
+        }
     }
 }
