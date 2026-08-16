@@ -11,7 +11,8 @@ CREATE OR ALTER PROCEDURE dbo.spDoctorsUpdateProfile
     @Address NVARCHAR(200),
     @CountryId INT,
     @StateId INT,
-    @CityId INT
+    @CityId INT,
+    @ProfilePicturePath NVARCHAR(200) = NULL
 AS
 BEGIN
     BEGIN TRY
@@ -19,7 +20,7 @@ BEGIN
         SET FirstName = @FirstName, MiddleName = @MiddleName, LastName = @LastName,
             HospitalId = @HospitalId, SpecializationId = @SpecializationId,
             Address = @Address, CountryId = @CountryId, StateId = @StateId, CityId = @CityId,
-            UpdatedAt = SYSUTCDATETIME()
+            ProfilePicturePath = @ProfilePicturePath, UpdatedAt = SYSUTCDATETIME()
         WHERE DoctorId = @DoctorId;
 
         IF @@ROWCOUNT > 0

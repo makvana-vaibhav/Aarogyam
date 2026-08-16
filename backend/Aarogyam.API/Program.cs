@@ -1,6 +1,7 @@
 using System.Text;
 using Aarogyam.API.Configuration;
 using Aarogyam.API.Data;
+using Aarogyam.API.Helpers;
 using Aarogyam.API.Middleware;
 using Aarogyam.API.Repositories;
 using Aarogyam.API.Services;
@@ -11,7 +12,15 @@ using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        // DB timestamps are stored as UTC (SYSUTCDATETIME()) but come back as Kind=Unspecified.
+        // These converters force the "Z" suffix on serialization so the frontend correctly
+        // interprets them as UTC and converts to the viewer's local timezone.
+        options.JsonSerializerOptions.Converters.Add(new UtcDateTimeConverter());
+        options.JsonSerializerOptions.Converters.Add(new UtcNullableDateTimeConverter());
+    });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -60,6 +69,7 @@ builder.Services.AddSingleton<IQrCodeService, QrCodeService>();
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
 builder.Services.AddScoped<IAuditLogRepository, AuditLogRepository>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 
 QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 

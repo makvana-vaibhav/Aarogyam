@@ -26,7 +26,10 @@ export default function MedicalHistory() {
 
   const [search, setSearch] = useState("");
   const [filterTypeId, setFilterTypeId] = useState("");
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
   const [openVisitIds, setOpenVisitIds] = useState(() => new Set());
+  const [downloading, setDownloading] = useState(false);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [modalLoading, setModalLoading] = useState(false);
@@ -81,8 +84,17 @@ export default function MedicalHistory() {
           )
         : visits;
 
-    return [...result].sort((a, b) => new Date(b.visitDate) - new Date(a.visitDate) || (b.visitId || 0) - (a.visitId || 0));
-  }, [visits, diagnoses, prescriptions, search, filterTypeId]);
+    const dateFiltered = result.filter((visit) => {
+      if (!fromDate && !toDate) return true;
+      const visitDateStr = visit.visitDate ? String(visit.visitDate).slice(0, 10) : null;
+      if (!visitDateStr) return false;
+      if (fromDate && visitDateStr < fromDate) return false;
+      if (toDate && visitDateStr > toDate) return false;
+      return true;
+    });
+
+    return [...dateFiltered].sort((a, b) => new Date(b.visitDate) - new Date(a.visitDate) || (b.visitId || 0) - (a.visitId || 0));
+  }, [visits, diagnoses, prescriptions, search, filterTypeId, fromDate, toDate]);
 
   const diagnosisByVisit = useMemo(() => {
     const map = {};
@@ -136,6 +148,18 @@ export default function MedicalHistory() {
     document.body.style.overflow = "";
   }
 
+  async function handleDownloadHistory() {
+    setDownloading(true);
+    try {
+      const file = await PatientAPI.downloadProfilePdf();
+      downloadBlob(file.blob, file.fileName || "medical-history.pdf");
+    } catch (err) {
+      showToast(err.message, true);
+    } finally {
+      setDownloading(false);
+    }
+  }
+
   if (error) {
     return (
       <div className="pt-content">
@@ -151,6 +175,9 @@ export default function MedicalHistory() {
           <h2>Medical history</h2>
           <p>Every visit, diagnosis and prescription. Click a visit to see the full details.</p>
         </div>
+        <button className="btn btn-ghost btn-sm" id="downloadHistoryBtn" type="button" disabled={downloading} onClick={handleDownloadHistory}>
+          {downloading ? "Preparing…" : "Download medical history"}
+        </button>
       </div>
       <div className="toolbar">
         <input
@@ -166,6 +193,10 @@ export default function MedicalHistory() {
             <option key={item.diagnosisTypeId} value={item.diagnosisTypeId}>{item.diagnosisTypeName}</option>
           ))}
         </select>
+        <label htmlFor="historyFromDate" className="toolbar-date-label">From</label>
+        <input id="historyFromDate" type="date" value={fromDate} max={toDate || undefined} onChange={(e) => setFromDate(e.target.value)} />
+        <label htmlFor="historyToDate" className="toolbar-date-label">To</label>
+        <input id="historyToDate" type="date" value={toDate} min={fromDate || undefined} onChange={(e) => setToDate(e.target.value)} />
       </div>
       <div id="historyList">
         {loading ? (

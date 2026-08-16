@@ -64,7 +64,7 @@ function sanitizeDbError(raw) {
 // { title, errors: { Field: ["..."] } } instead of our own { success, message } shape -
 // without this, every validation failure would show a bare "Request failed (400)".
 function extractErrorMessage(data, status) {
-  let msg = "Request failed (" + status + ")";
+  let msg = "Something went wrong. Please try again.";
   if (data) {
     if (data.message) msg = data.message;
     else if (data.Message) msg = data.Message;

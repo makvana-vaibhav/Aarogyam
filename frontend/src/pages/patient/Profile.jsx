@@ -7,7 +7,13 @@ import { useLocationCascade } from "../../lib/useLocationCascade.js";
 import PasswordField from "../../components/PasswordField.jsx";
 import SearchableSelect from "../../components/SearchableSelect.jsx";
 import { useHealthCard } from "../../lib/useHealthCard.js";
+import { useProfilePicture } from "../../lib/useProfilePicture.js";
+import { initials as formatInitials } from "../../lib/format.js";
 import { useToast } from "../../context/ToastContext.jsx";
+
+const PHOTO_MAX_BYTES = 3 * 1024 * 1024;
+const PHOTO_ACCEPT = ".jpg,.jpeg,.png,.webp";
+const PHOTO_EXT_RE = /\.(jpe?g|png|webp)$/i;
 
 export default function Profile() {
   useDocumentTitle("Profile · Aarogyam Patient");
@@ -20,6 +26,12 @@ export default function Profile() {
 
   const location = useLocationCascade(PatientAPI, profile);
   const { qrUrl, downloadCard, joinName } = useHealthCard(profile);
+  const pictureUrl = useProfilePicture(PatientAPI.profilePicture, profile);
+
+  const [photoFile, setPhotoFile] = useState(null);
+  const [photoPreview, setPhotoPreview] = useState(null);
+  const [photoAlert, setPhotoAlert] = useState(null);
+  const [savingPhoto, setSavingPhoto] = useState(false);
 
   const [firstName, setFirstName] = useState("");
   const [middleName, setMiddleName] = useState("");
@@ -57,10 +69,61 @@ export default function Profile() {
       .catch((err) => setError(err.message));
   }, []);
 
+
   function handleCancelEdit() {
     if (profile) populateForm(profile);
     location.resetToInitial();
     setEditing(false);
+    clearPhotoSelection();
+  }
+
+  function clearPhotoSelection() {
+    setPhotoFile(null);
+    setPhotoAlert(null);
+    setPhotoPreview((current) => {
+      if (current) URL.revokeObjectURL(current);
+      return null;
+    });
+  }
+
+  function handlePhotoSelect(e) {
+    const file = e.target.files && e.target.files[0];
+    e.target.value = "";
+    if (!file) return;
+    setPhotoAlert(null);
+    if (!PHOTO_EXT_RE.test(file.name)) {
+      setPhotoAlert("Please choose a JPG, PNG or WEBP image.");
+      return;
+    }
+    if (file.size > PHOTO_MAX_BYTES) {
+      setPhotoAlert("Image must be under 3MB.");
+      return;
+    }
+    setPhotoFile(file);
+    setPhotoPreview((current) => {
+      if (current) URL.revokeObjectURL(current);
+      return URL.createObjectURL(file);
+    });
+  }
+
+  async function handlePhotoUpload() {
+    if (!photoFile) return;
+    setPhotoAlert(null);
+    setSavingPhoto(true);
+    try {
+      const formData = new FormData();
+      formData.append("File", photoFile);
+      await PatientAPI.updateProfilePicture(formData);
+      const updated = await PatientAPI.profile();
+      setProfile(updated);
+      refreshProfile();
+      clearPhotoSelection();
+      showToast("Profile photo updated.");
+    } catch (err) {
+      setPhotoAlert(err.message);
+    } finally {
+      setSavingPhoto(false);
+    }
   }
 
   async function handleProfileSubmit(e) {
@@ -141,9 +204,16 @@ export default function Profile() {
 
       <div className="card">
         <div className="page-head-row section-head">
-          <div>
-            <div className="card-title">Personal information</div>
-            <div className="card-sub">Aarogyam ID <span className="mono" id="aarogyamIdValue">{profile ? profile.aarogyamId : "—"}</span></div>
+          <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+            {pictureUrl ? (
+              <img className="avatar-circle" src={pictureUrl} alt="" />
+            ) : (
+              <span className="avatar-circle">{profile ? formatInitials(profile.firstName, profile.lastName) : "P"}</span>
+            )}
+            <div>
+              <div className="card-title">Personal information</div>
+              <div className="card-sub">Aarogyam ID <span className="mono" id="aarogyamIdValue">{profile ? profile.aarogyamId : "—"}</span></div>
+            </div>
           </div>
           {!editing ? (
             <button className="btn btn-ghost btn-sm" id="editProfileBtn" type="button" onClick={() => setEditing(true)}>Edit details</button>
@@ -160,6 +230,7 @@ export default function Profile() {
                 <div><div className="dl">Date of birth</div><div className="dv">{formatDate(profile.dateOfBirth)}</div></div>
                 <div><div className="dl">Gender</div><div className="dv">{profile.gender || "Not set"}</div></div>
                 <div><div className="dl">Blood group</div><div className="dv">{profile.bloodGroup || "Not set"}</div></div>
+                <div><div className="dl">Phone number</div><div className="dv">{profile.phoneNumber || "Not added"}</div></div>
                 <div className="full"><div className="dl">Address</div><div className="dv">{profile.address || "Not added"}</div></div>
                 <div><div className="dl">Emergency contact</div><div className="dv">{profile.emergencyContact || "Not added"}</div></div>
               </>
@@ -168,6 +239,26 @@ export default function Profile() {
         ) : (
           <form id="profileForm" className="section-space" noValidate onSubmit={handleProfileSubmit}>
             {profileAlert ? <div className="form-alert error">{profileAlert}</div> : null}
+            <div className="form-row" id="rowProfilePhoto">
+              <label htmlFor="profilePhotoInput">Profile photo</label>
+              {photoAlert ? <div className="form-alert error">{photoAlert}</div> : null}
+              <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+                {photoPreview ? (
+                  <img className="avatar-circle" src={photoPreview} alt="" />
+                ) : pictureUrl ? (
+                  <img className="avatar-circle" src={pictureUrl} alt="" />
+                ) : (
+                  <span className="avatar-circle">{profile ? formatInitials(profile.firstName, profile.lastName) : "P"}</span>
+                )}
+                <input id="profilePhotoInput" type="file" accept={PHOTO_ACCEPT} onChange={handlePhotoSelect} />
+                {photoFile ? (
+                  <button type="button" className="btn btn-ghost btn-sm" disabled={savingPhoto} onClick={handlePhotoUpload}>
+                    {savingPhoto ? "Uploading…" : "Change photo"}
+                  </button>
+                ) : null}
+              </div>
+              <span className="hint">JPG, PNG or WEBP, up to 3MB.</span>
+            </div>
             <div className="form-row-2col">
               <div className="form-row"><label htmlFor="firstName">First name<span className="req">*</span></label><input id="firstName" required value={firstName} onChange={(e) => setFirstName(e.target.value)} /></div>
               <div className="form-row"><label htmlFor="middleName">Middle name (optional)</label><input id="middleName" value={middleName} onChange={(e) => setMiddleName(e.target.value)} /></div>

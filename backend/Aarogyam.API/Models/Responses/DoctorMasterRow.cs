@@ -40,6 +40,8 @@ public class DoctorMasterRow
 
     public int CityId { get; set; }
 
+    public string? ProfilePicturePath { get; set; }
+
     public DateTime CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }

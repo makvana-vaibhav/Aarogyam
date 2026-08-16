@@ -17,12 +17,24 @@ public class DoctorController : ControllerBase
     private readonly IDoctorRepository _doctorRepository;
     private readonly IFileStorageService _fileStorage;
     private readonly IAuditLogRepository _auditLogRepository;
+    private readonly INotificationRepository _notificationRepository;
+    private readonly IEmailService _emailService;
 
-    public DoctorController(IDoctorRepository doctorRepository, IFileStorageService fileStorage, IAuditLogRepository auditLogRepository)
+    private static readonly string[] AllowedProfilePictureExtensions = { ".jpg", ".jpeg", ".png", ".webp" };
+    private const long MaxProfilePictureSizeBytes = 3 * 1024 * 1024;
+
+    public DoctorController(
+        IDoctorRepository doctorRepository,
+        IFileStorageService fileStorage,
+        IAuditLogRepository auditLogRepository,
+        INotificationRepository notificationRepository,
+        IEmailService emailService)
     {
         _doctorRepository = doctorRepository;
         _fileStorage = fileStorage;
         _auditLogRepository = auditLogRepository;
+        _notificationRepository = notificationRepository;
+        _emailService = emailService;
     }
 
     [HttpGet("profile")]
@@ -46,6 +58,68 @@ public class DoctorController : ControllerBase
         }
         if (result is not null) result.Message = DbErrorMessageMapper.Friendly(result.Message);
         return BadRequest(result);
+    }
+
+    [HttpGet("profile/picture")]
+    public async Task<IActionResult> GetProfilePicture()
+    {
+        var doctor = await GetCurrentDoctorAsync();
+        if (doctor is null) return NotFound(new { success = 0, message = "Doctor profile not found." });
+
+        if (string.IsNullOrEmpty(doctor.ProfilePicturePath))
+        {
+            return NotFound(new { success = 0, message = "No profile picture set." });
+        }
+
+        var file = await _fileStorage.ReadAsync(doctor.ProfilePicturePath);
+        if (file is null)
+        {
+            return NotFound(new { success = 0, message = "File not found on disk." });
+        }
+
+        return File(file.Value.Content, file.Value.ContentType, file.Value.FileName);
+    }
+
+    [HttpPatch("profile/picture")]
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> UpdateProfilePicture([FromForm] IFormFile file)
+    {
+        var doctor = await GetCurrentDoctorAsync();
+        if (doctor is null) return NotFound(new { success = 0, message = "Doctor profile not found." });
+
+        if (file is null || file.Length == 0)
+        {
+            return BadRequest(new { success = 0, message = "Please choose a photo to upload." });
+        }
+
+        var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+        if (!AllowedProfilePictureExtensions.Contains(extension))
+        {
+            return BadRequest(new { success = 0, message = "Please upload a JPG, PNG, or WEBP image." });
+        }
+
+        if (file.Length > MaxProfilePictureSizeBytes)
+        {
+            return BadRequest(new { success = 0, message = "Profile picture must be smaller than 3MB." });
+        }
+
+        var storedFileName = $"{Guid.NewGuid():N}{extension}";
+        string relativePath;
+        await using (var stream = file.OpenReadStream())
+        {
+            relativePath = await _fileStorage.SaveAsync("profile-pictures", storedFileName, stream);
+        }
+
+        var result = await _doctorRepository.UpdateProfilePictureAsync(doctor.DoctorId, relativePath);
+        if (result?.Success != 1)
+        {
+            _fileStorage.Delete(relativePath);
+            if (result is not null) result.Message = DbErrorMessageMapper.Friendly(result.Message);
+            return BadRequest(result);
+        }
+
+        await _auditLogRepository.LogAsync(GetCurrentUserId(), "UPDATE_PROFILE_PICTURE", "Doctors", doctor.DoctorId);
+        return Ok(new { success = 1, message = "Profile picture updated.", profilePicturePath = relativePath });
     }
 
     [HttpPut("change-password")]
@@ -139,6 +213,10 @@ public class DoctorController : ControllerBase
         if (result.Success == 1 && result.VisitId.HasValue)
         {
             await _auditLogRepository.LogAsync(GetCurrentUserId(), "CREATE_VISIT", "Visits", result.VisitId.Value);
+            await NotifyPatientAsync(
+                request.PatientId,
+                "New visit recorded",
+                $"Dr. {FormatDoctorName(doctor)} recorded a visit for you on {request.VisitDate:dd MMM yyyy}.");
         }
         if (result.Success == 1) return Ok(result);
         result.Message = DbErrorMessageMapper.Friendly(result.Message);
@@ -156,6 +234,14 @@ public class DoctorController : ControllerBase
         if (result.Success == 1 && result.DiagnosisId.HasValue)
         {
             await _auditLogRepository.LogAsync(GetCurrentUserId(), "CREATE_DIAGNOSIS", "Diagnoses", result.DiagnosisId.Value);
+            var visit = await _doctorRepository.GetVisitByIdAsync(request.VisitId);
+            if (visit is not null)
+            {
+                await NotifyPatientAsync(
+                    visit.PatientId,
+                    "New diagnosis added",
+                    $"Dr. {FormatDoctorName(doctor)} added a diagnosis: {request.DiagnosisTitle}.");
+            }
         }
         if (result.Success == 1) return Ok(result);
         result.Message = DbErrorMessageMapper.Friendly(result.Message);
@@ -173,6 +259,14 @@ public class DoctorController : ControllerBase
         if (result.Success == 1 && result.PrescriptionId.HasValue)
         {
             await _auditLogRepository.LogAsync(GetCurrentUserId(), "CREATE_PRESCRIPTION", "Prescriptions", result.PrescriptionId.Value);
+            var visit = await _doctorRepository.GetVisitByIdAsync(request.VisitId);
+            if (visit is not null)
+            {
+                await NotifyPatientAsync(
+                    visit.PatientId,
+                    "New prescription issued",
+                    $"Dr. {FormatDoctorName(doctor)} issued a new prescription. View it in your Aarogyam account.");
+            }
         }
         if (result.Success == 1) return Ok(result);
         result.Message = DbErrorMessageMapper.Friendly(result.Message);
@@ -207,6 +301,10 @@ public class DoctorController : ControllerBase
         if (result.ReportId.HasValue)
         {
             await _auditLogRepository.LogAsync(GetCurrentUserId(), "UPLOAD_REPORT", "MedicalReports", result.ReportId.Value);
+            await NotifyPatientAsync(
+                request.PatientId,
+                "New medical report uploaded",
+                $"Dr. {FormatDoctorName(doctor)} uploaded a new report: {request.Title}.");
         }
 
         return Ok(result);
@@ -246,5 +344,41 @@ public class DoctorController : ControllerBase
     private Task<Models.Responses.DoctorMasterRow?> GetCurrentDoctorAsync()
     {
         return _doctorRepository.GetProfileByUserIdAsync(GetCurrentUserId());
+    }
+
+    private static string FormatDoctorName(Models.Responses.DoctorMasterRow doctor)
+    {
+        var raw = string.Join(" ", new[] { doctor.FirstName, doctor.MiddleName, doctor.LastName }
+            .Where(part => !string.IsNullOrWhiteSpace(part)));
+        return raw.Trim();
+    }
+
+    // Creates an in-app notification and sends an email to the patient about an
+    // action a doctor just took on their record. Wrapped in try/catch because
+    // this must never fail or block the clinical action it follows (bad email,
+    // SMTP down, patient/user lookup issues, etc.) - the visit/diagnosis/
+    // prescription/report the caller just created must still succeed regardless.
+    private async Task NotifyPatientAsync(int patientId, string title, string message)
+    {
+        try
+        {
+            var patient = await _doctorRepository.GetPatientByIdAsync(patientId);
+            if (patient is null) return;
+
+            await _notificationRepository.CreateAsync(patient.UserId, title, message);
+
+            var user = await _doctorRepository.GetUserByIdAsync(patient.UserId);
+            if (user is null || string.IsNullOrWhiteSpace(user.Email)) return;
+
+            var patientName = string.Join(" ", new[] { patient.FirstName, patient.MiddleName, patient.LastName }
+                .Where(part => !string.IsNullOrWhiteSpace(part))).Trim();
+
+            await _emailService.SendNotificationEmailAsync(user.Email, patientName, title, message);
+        }
+        catch
+        {
+            // Notifications/emails are best-effort only - the visit/diagnosis/
+            // prescription/report the caller just created must still succeed.
+        }
     }
 }

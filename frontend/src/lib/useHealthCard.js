@@ -38,6 +38,23 @@ export function useHealthCard(profile) {
   async function downloadCard() {
     if (!profile || !qrUrl) return;
     const qrImg = await loadImageElement(qrUrl);
+
+    // Small circular profile photo, drawn above the QR in the same right-hand
+    // column — loaded the same way the QR blob is (authenticated fetch -> object
+    // URL -> Image element). If there's no photo, or loading it fails, the card
+    // renders exactly as it always has.
+    let photoImg = null;
+    if (profile.profilePicturePath) {
+      try {
+        const picture = await PatientAPI.profilePicture();
+        const photoObjectUrl = URL.createObjectURL(picture.blob);
+        photoImg = await loadImageElement(photoObjectUrl);
+        URL.revokeObjectURL(photoObjectUrl);
+      } catch (err) {
+        photoImg = null;
+      }
+    }
+
     const scale = 2;
     const width = 900, height = 380;
     const canvas = document.createElement("canvas");
@@ -85,9 +102,36 @@ export function useHealthCard(profile) {
     label("Emergency contact", leftX, 300);
     value(p.emergencyContact || "Not added", leftX, 324, 19);
 
-    const qrSize = 220;
-    const qrX = width - qrSize - 40;
-    const qrY = (height - qrSize) / 2;
+    const rightColCenterX = width - 130; // center of the right-hand region (width-260 to width)
+    let qrSize = 220;
+    let qrX = width - qrSize - 40;
+    let qrY = (height - qrSize) / 2;
+
+    if (photoImg) {
+      const photoSize = 64;
+      const photoTop = 34;
+      const photoCenterY = photoTop + photoSize / 2;
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(rightColCenterX, photoCenterY, photoSize / 2, 0, Math.PI * 2);
+      ctx.closePath();
+      ctx.clip();
+      ctx.drawImage(photoImg, rightColCenterX - photoSize / 2, photoTop, photoSize, photoSize);
+      ctx.restore();
+      ctx.strokeStyle = "#1b4332";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(rightColCenterX, photoCenterY, photoSize / 2, 0, Math.PI * 2);
+      ctx.stroke();
+
+      qrSize = 200;
+      qrX = rightColCenterX - qrSize / 2;
+      const qrAreaTop = photoTop + photoSize + 16;
+      const qrAreaBottom = height - 40;
+      qrY = qrAreaTop + (qrAreaBottom - qrAreaTop - qrSize) / 2;
+    }
+
     ctx.fillStyle = "#ffffff";
     ctx.fillRect(qrX - 8, qrY - 8, qrSize + 16, qrSize + 16);
     ctx.drawImage(qrImg, qrX, qrY, qrSize, qrSize);

@@ -13,7 +13,8 @@ CREATE OR ALTER PROCEDURE dbo.spPatientsUpdateProfile
     @CountryId INT,
     @StateId INT,
     @CityId INT,
-    @EmergencyContact NVARCHAR(20) = NULL
+    @EmergencyContact NVARCHAR(20) = NULL,
+    @ProfilePicturePath NVARCHAR(200) = NULL
 AS
 BEGIN
     BEGIN TRY
@@ -21,7 +22,7 @@ BEGIN
         SET FirstName = @FirstName, MiddleName = @MiddleName, LastName = @LastName,
             DateOfBirth = @DateOfBirth, Gender = @Gender, BloodGroup = @BloodGroup,
             Address = @Address, CountryId = @CountryId, StateId = @StateId, CityId = @CityId,
-            EmergencyContact = @EmergencyContact, UpdatedAt = SYSUTCDATETIME()
+            EmergencyContact = @EmergencyContact, ProfilePicturePath = @ProfilePicturePath, UpdatedAt = SYSUTCDATETIME()
         WHERE PatientId = @PatientId;
 
         IF @@ROWCOUNT > 0

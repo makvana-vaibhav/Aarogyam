@@ -14,6 +14,7 @@ CREATE TABLE dbo.Patients (
     CityId INT NOT NULL REFERENCES dbo.CityMaster(CityId),
     EmergencyContact NVARCHAR(20) NULL,
     QrCodePath NVARCHAR(200) NULL,
+    ProfilePicturePath NVARCHAR(200) NULL,
     CreatedAt DATETIME2 NOT NULL DEFAULT (SYSUTCDATETIME()),
     UpdatedAt DATETIME2 NULL
 );

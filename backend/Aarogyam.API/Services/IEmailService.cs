@@ -9,4 +9,10 @@ public interface IEmailService
         string title = "Reset your password",
         string subtitle = "Use the verification code below to set a new password.",
         string name = "");
+
+    Task SendNotificationEmailAsync(
+        string toEmail,
+        string patientName,
+        string subject,
+        string bodyMessage);
 }

@@ -16,6 +16,8 @@ function request(path, options) {
 export const DoctorAPI = {
   profile: () => request("/doctor/profile"),
   updateProfile: (payload) => request("/doctor/profile", { method: "PUT", body: payload }),
+  profilePicture: () => request("/doctor/profile/picture", { responseType: "blob" }),
+  updateProfilePicture: (formData) => request("/doctor/profile/picture", { method: "PATCH", body: formData }),
   changePassword: (payload) => request("/doctor/change-password", { method: "PUT", body: payload }),
   dashboard: () => request("/doctor/dashboard"),
   myPatients: (search) => request("/doctor/patients" + qs({ search })),

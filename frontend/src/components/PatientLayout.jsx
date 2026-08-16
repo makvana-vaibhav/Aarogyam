@@ -3,6 +3,7 @@ import { NavLink, Outlet } from "react-router-dom";
 import { PatientAPI, requirePatientAuth, performPatientLogout } from "../lib/patientApi.js";
 import { initials as formatInitials } from "../lib/format.js";
 import { usePopoverGroup } from "../lib/usePopoverGroup.js";
+import { useProfilePicture } from "../lib/useProfilePicture.js";
 import NotifPopover from "./NotifPopover.jsx";
 import AvatarMenu from "./AvatarMenu.jsx";
 import PwaInstallPrompt from "./PwaInstallPrompt.jsx";
@@ -19,6 +20,7 @@ export default function PatientLayout() {
   const [notifError, setNotifError] = useState(null);
   const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
   const popovers = usePopoverGroup();
+  const pictureUrl = useProfilePicture(PatientAPI.profilePicture, profile);
 
   const refreshProfile = useCallback(() => {
     return PatientAPI.profile().then((data) => {
@@ -101,12 +103,18 @@ export default function PatientLayout() {
             </div>
             <div>
               <button className="pt-avatar-btn" id="avatarBtn" type="button" aria-label="Account" onClick={(e) => popovers.toggle("avatar", e)}>
-                <span className="avatar-circle small" id="sidebarInitials">{avatarInitials}</span>
+                {pictureUrl ? (
+                  <img className="avatar-circle small" id="sidebarInitials" src={pictureUrl} alt="" />
+                ) : (
+                  <span className="avatar-circle small" id="sidebarInitials">{avatarInitials}</span>
+                )}
               </button>
               <AvatarMenu
                 open={popovers.open === "avatar"}
                 name={name}
                 meta={meta}
+                avatarInitials={avatarInitials}
+                pictureUrl={pictureUrl}
                 profileHref="/patient/profile"
                 onLogout={() => setLogoutConfirmOpen(true)}
                 onClose={popovers.close}

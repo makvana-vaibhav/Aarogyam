@@ -4,10 +4,10 @@ namespace Aarogyam.API.Models.Requests;
 
 public class StateRequest
 {
-    [Required]
+    [Required(ErrorMessage = "Please select a country.")]
     public int CountryId { get; set; }
 
-    [Required]
-    [MaxLength(100)]
+    [Required(ErrorMessage = "Please enter the state name.")]
+    [MaxLength(100, ErrorMessage = "State name must be 100 characters or fewer.")]
     public string StateName { get; set; } = string.Empty;
 }

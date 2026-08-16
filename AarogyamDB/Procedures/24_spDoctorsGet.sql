@@ -5,11 +5,27 @@ CREATE OR ALTER PROCEDURE dbo.spDoctorsGet
 AS
 BEGIN
     IF @DoctorId IS NOT NULL
-        SELECT * FROM dbo.Doctors WHERE DoctorId = @DoctorId;
+        SELECT DoctorId, UserId, FirstName, MiddleName, LastName, LicenseNumber, HospitalId, DegreeId,
+               SpecializationId, LicenseDocumentPath, DegreeDocumentPath, ApprovalStatus, ApprovedByUserId,
+               ApprovedAt, RejectionReason, Address, CountryId, StateId, CityId, ProfilePicturePath,
+               CreatedAt, UpdatedAt
+        FROM dbo.Doctors WHERE DoctorId = @DoctorId;
     ELSE IF @UserId IS NOT NULL
-        SELECT * FROM dbo.Doctors WHERE UserId = @UserId;
+        SELECT DoctorId, UserId, FirstName, MiddleName, LastName, LicenseNumber, HospitalId, DegreeId,
+               SpecializationId, LicenseDocumentPath, DegreeDocumentPath, ApprovalStatus, ApprovedByUserId,
+               ApprovedAt, RejectionReason, Address, CountryId, StateId, CityId, ProfilePicturePath,
+               CreatedAt, UpdatedAt
+        FROM dbo.Doctors WHERE UserId = @UserId;
     ELSE IF @ApprovalStatus IS NOT NULL
-        SELECT * FROM dbo.Doctors WHERE ApprovalStatus = @ApprovalStatus;
+        SELECT DoctorId, UserId, FirstName, MiddleName, LastName, LicenseNumber, HospitalId, DegreeId,
+               SpecializationId, LicenseDocumentPath, DegreeDocumentPath, ApprovalStatus, ApprovedByUserId,
+               ApprovedAt, RejectionReason, Address, CountryId, StateId, CityId, ProfilePicturePath,
+               CreatedAt, UpdatedAt
+        FROM dbo.Doctors WHERE ApprovalStatus = @ApprovalStatus;
     ELSE
-        SELECT * FROM dbo.Doctors;
+        SELECT DoctorId, UserId, FirstName, MiddleName, LastName, LicenseNumber, HospitalId, DegreeId,
+               SpecializationId, LicenseDocumentPath, DegreeDocumentPath, ApprovalStatus, ApprovedByUserId,
+               ApprovedAt, RejectionReason, Address, CountryId, StateId, CityId, ProfilePicturePath,
+               CreatedAt, UpdatedAt
+        FROM dbo.Doctors;
 END

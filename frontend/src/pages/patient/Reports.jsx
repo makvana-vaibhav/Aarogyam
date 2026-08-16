@@ -29,6 +29,10 @@ export default function Reports() {
   const [dragOver, setDragOver] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
 
+  const [search, setSearch] = useState("");
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
+
   const [title, setTitle] = useState("");
   const [reportType, setReportType] = useState("");
   const [reportDate, setReportDate] = useState("");
@@ -36,6 +40,25 @@ export default function Reports() {
   const [selectedFile, setSelectedFile] = useState(null);
 
   const numberByVisitId = useMemo(() => assignVisitNumbers(visits), [visits]);
+
+  const filteredReports = useMemo(() => {
+    const term = search.toLowerCase();
+    return reports.filter((report) => {
+      const matchesTerm =
+        !term ||
+        (report.title || "").toLowerCase().includes(term) ||
+        (report.reportType || "").toLowerCase().includes(term);
+      if (!matchesTerm) return false;
+
+      if (!fromDate && !toDate) return true;
+      const raw = report.reportDate || report.createdAt;
+      const dateStr = raw ? String(raw).slice(0, 10) : null;
+      if (!dateStr) return false;
+      if (fromDate && dateStr < fromDate) return false;
+      if (toDate && dateStr > toDate) return false;
+      return true;
+    });
+  }, [reports, search, fromDate, toDate]);
 
   function loadReports() {
     return PatientAPI.reports().then((rows) => setReports(rows || []));
@@ -142,6 +165,19 @@ export default function Reports() {
         </div>
         <button className="btn btn-solid btn-sm" id="openUploadBtn" type="button" onClick={openUpload}>Upload report</button>
       </div>
+      <div className="toolbar">
+        <input
+          id="reportsSearch"
+          type="search"
+          placeholder="Search reports by title or type…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <label htmlFor="reportsFromDate" className="toolbar-date-label">From</label>
+        <input id="reportsFromDate" type="date" value={fromDate} max={toDate || undefined} onChange={(e) => setFromDate(e.target.value)} />
+        <label htmlFor="reportsToDate" className="toolbar-date-label">To</label>
+        <input id="reportsToDate" type="date" value={toDate} min={fromDate || undefined} onChange={(e) => setToDate(e.target.value)} />
+      </div>
       <div className="table-wrap">
         <table className="data-table">
           <thead>
@@ -150,10 +186,10 @@ export default function Reports() {
           <tbody id="reportsBody">
             {loading ? (
               <tr><td colSpan={6} className="table-loading">Loading reports…</td></tr>
-            ) : !reports.length ? (
-              <tr><td colSpan={6} className="table-empty">No reports uploaded yet.</td></tr>
+            ) : !filteredReports.length ? (
+              <tr><td colSpan={6} className="table-empty">{reports.length ? "No reports match your filters." : "No reports uploaded yet."}</td></tr>
             ) : (
-              reports.map((report) => (
+              filteredReports.map((report) => (
                 <tr key={report.reportId}>
                   <td><div className="row-title">{report.title}</div><div className="row-sub">{report.reportType}</div></td>
                   <td>{formatDate(report.reportDate || report.createdAt)}</td>

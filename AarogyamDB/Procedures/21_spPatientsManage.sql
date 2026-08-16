@@ -13,7 +13,8 @@ CREATE OR ALTER PROCEDURE dbo.spPatientsManage
     @StateId INT = NULL,
     @CityId INT = NULL,
     @EmergencyContact NVARCHAR(20) = NULL,
-    @QrCodePath NVARCHAR(200) = NULL
+    @QrCodePath NVARCHAR(200) = NULL,
+    @ProfilePicturePath NVARCHAR(200) = NULL
 AS
 BEGIN
     BEGIN TRY
@@ -21,9 +22,9 @@ BEGIN
         BEGIN
             DECLARE @AarogyamId NVARCHAR(20) = dbo.fnGenerateAarogyamID();
             INSERT INTO dbo.Patients (UserId, AarogyamId, FirstName, MiddleName, LastName, DateOfBirth, Gender,
-                BloodGroup, Address, CountryId, StateId, CityId, EmergencyContact, QrCodePath)
+                BloodGroup, Address, CountryId, StateId, CityId, EmergencyContact, QrCodePath, ProfilePicturePath)
             VALUES (@UserId, @AarogyamId, @FirstName, @MiddleName, @LastName, @DateOfBirth, @Gender,
-                @BloodGroup, @Address, @CountryId, @StateId, @CityId, @EmergencyContact, @QrCodePath);
+                @BloodGroup, @Address, @CountryId, @StateId, @CityId, @EmergencyContact, @QrCodePath, @ProfilePicturePath);
             SELECT 1 AS Success, 'Created.' AS Message, CAST(SCOPE_IDENTITY() AS INT) AS PatientId, @AarogyamId AS AarogyamId;
         END
         ELSE IF @Action = 'UPDATE'
@@ -32,7 +33,8 @@ BEGIN
             SET UserId = @UserId, FirstName = @FirstName, MiddleName = @MiddleName,
                 LastName = @LastName, DateOfBirth = @DateOfBirth, Gender = @Gender, BloodGroup = @BloodGroup,
                 Address = @Address, CountryId = @CountryId, StateId = @StateId, CityId = @CityId,
-                EmergencyContact = @EmergencyContact, QrCodePath = @QrCodePath, UpdatedAt = SYSUTCDATETIME()
+                EmergencyContact = @EmergencyContact, QrCodePath = @QrCodePath, ProfilePicturePath = @ProfilePicturePath,
+                UpdatedAt = SYSUTCDATETIME()
             WHERE PatientId = @PatientId;
             SELECT 1 AS Success, 'Updated.' AS Message, NULL AS PatientId, NULL AS AarogyamId;
         END

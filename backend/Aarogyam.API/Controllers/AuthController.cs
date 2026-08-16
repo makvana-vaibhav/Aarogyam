@@ -14,6 +14,7 @@ public class AuthController : ControllerBase
     private readonly IAuthRepository _authRepository;
     private readonly IAuditLogRepository _auditLogRepository;
     private readonly IFileStorageService _fileStorageService;
+    private static readonly string[] AllowedImageExtensions = { ".jpg", ".jpeg", ".png", ".webp" };
 
     public AuthController(IAuthRepository authRepository, IAuditLogRepository auditLogRepository, IFileStorageService fileStorageService)
     {
@@ -32,17 +33,21 @@ public class AuthController : ControllerBase
         }
 
         var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
-        if (ext != ".pdf")
+        var isPdf = ext == ".pdf";
+        var isImage = AllowedImageExtensions.Contains(ext);
+        if (!isPdf && !isImage)
         {
-            return BadRequest(new { success = 0, message = "Only PDF documents (.pdf) are allowed." });
+            return BadRequest(new { success = 0, message = "Only PDF documents or JPG/PNG/WEBP images are allowed." });
         }
 
-        if (file.Length > 10 * 1024 * 1024)
+        var maxSizeBytes = isPdf ? 10 * 1024 * 1024 : 3 * 1024 * 1024;
+        if (file.Length > maxSizeBytes)
         {
-            return BadRequest(new { success = 0, message = "PDF document file size cannot exceed 10MB." });
+            var limitText = isPdf ? "10MB" : "3MB";
+            return BadRequest(new { success = 0, message = $"File size cannot exceed {limitText}." });
         }
 
-        var fileName = $"{Guid.NewGuid():N}.pdf";
+        var fileName = $"{Guid.NewGuid():N}{ext}";
         await using var stream = file.OpenReadStream();
         var relativePath = await _fileStorageService.SaveAsync("documents", fileName, stream);
 
@@ -149,7 +154,7 @@ public class AuthController : ControllerBase
         if (result.Success == 0)
         {
             result.Message = DbErrorMessageMapper.Friendly(result.Message);
-            return Unauthorized(result);
+            return BadRequest(result);
         }
 
         if (result.UserId.HasValue)

@@ -134,11 +134,7 @@ public class PdfService : IPdfService
                     column.Item().PaddingTop(4).Column(col =>
                     {
                         col.Spacing(6);
-                        col.Item().Row(r =>
-                        {
-                            r.ConstantItem(28).Text("℞").FontSize(22).Bold().FontColor("#0b392b");
-                            r.RelativeItem().PaddingTop(4).Text("Prescribed Medications & Dosage Instructions").Bold().FontSize(12).FontColor("#0b392b");
-                        });
+                        col.Item().Text("Prescribed Medications & Dosage Instructions").Bold().FontSize(12).FontColor("#0b392b");
 
                         col.Item().Border(1).BorderColor("#e5e7eb").Background("#fafafa").Padding(12).Text(details.PrescriptionText ?? "").FontSize(10.5f).LineHeight(1.5f);
                     });

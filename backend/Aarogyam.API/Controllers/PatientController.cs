@@ -20,6 +20,9 @@ public class PatientController : ControllerBase
     private readonly IPdfService _pdfService;
     private readonly IAuditLogRepository _auditLogRepository;
 
+    private static readonly string[] AllowedProfilePictureExtensions = { ".jpg", ".jpeg", ".png", ".webp" };
+    private const long MaxProfilePictureSizeBytes = 3 * 1024 * 1024;
+
     public PatientController(IPatientRepository patientRepository, IFileStorageService fileStorage, IPdfService pdfService, IAuditLogRepository auditLogRepository)
     {
         _patientRepository = patientRepository;
@@ -77,6 +80,68 @@ public class PatientController : ControllerBase
         }
         if (result is not null) result.Message = DbErrorMessageMapper.Friendly(result.Message);
         return BadRequest(result);
+    }
+
+    [HttpGet("profile/picture")]
+    public async Task<IActionResult> GetProfilePicture()
+    {
+        var patient = await GetCurrentPatientAsync();
+        if (patient is null) return PatientNotFound();
+
+        if (string.IsNullOrEmpty(patient.ProfilePicturePath))
+        {
+            return NotFound(new { success = 0, message = "No profile picture set." });
+        }
+
+        var file = await _fileStorage.ReadAsync(patient.ProfilePicturePath);
+        if (file is null)
+        {
+            return NotFound(new { success = 0, message = "File not found on disk." });
+        }
+
+        return File(file.Value.Content, file.Value.ContentType, file.Value.FileName);
+    }
+
+    [HttpPatch("profile/picture")]
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> UpdateProfilePicture([FromForm] IFormFile file)
+    {
+        var patient = await GetCurrentPatientAsync();
+        if (patient is null) return PatientNotFound();
+
+        if (file is null || file.Length == 0)
+        {
+            return BadRequest(new { success = 0, message = "Please choose a photo to upload." });
+        }
+
+        var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+        if (!AllowedProfilePictureExtensions.Contains(extension))
+        {
+            return BadRequest(new { success = 0, message = "Please upload a JPG, PNG, or WEBP image." });
+        }
+
+        if (file.Length > MaxProfilePictureSizeBytes)
+        {
+            return BadRequest(new { success = 0, message = "Profile picture must be smaller than 3MB." });
+        }
+
+        var storedFileName = $"{Guid.NewGuid():N}{extension}";
+        string relativePath;
+        await using (var stream = file.OpenReadStream())
+        {
+            relativePath = await _fileStorage.SaveAsync("profile-pictures", storedFileName, stream);
+        }
+
+        var result = await _patientRepository.UpdateProfilePictureAsync(patient.PatientId, relativePath);
+        if (result?.Success != 1)
+        {
+            _fileStorage.Delete(relativePath);
+            if (result is not null) result.Message = DbErrorMessageMapper.Friendly(result.Message);
+            return BadRequest(result);
+        }
+
+        await _auditLogRepository.LogAsync(GetCurrentUserId(), "UPDATE_PROFILE_PICTURE", "Patients", patient.PatientId);
+        return Ok(new { success = 1, message = "Profile picture updated.", profilePicturePath = relativePath });
     }
 
     [HttpPut("change-password")]

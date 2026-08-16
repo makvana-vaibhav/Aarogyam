@@ -4,6 +4,7 @@ import { useDocumentTitle } from "../../lib/useDocumentTitle.js";
 import { DoctorAPI, extractAarogyamId } from "../../lib/doctorApi.js";
 import { initials } from "../../lib/format.js";
 import { useToast } from "../../context/ToastContext.jsx";
+import SearchableSelect from "../../components/SearchableSelect.jsx";
 
 function joinName(row) {
   if (!row) return "";
@@ -477,12 +478,13 @@ export default function CreateVisit() {
               <div className="form-row-2col">
                 <div className={"form-row" + (invalid.rowDiagnosisType ? " invalid" : "")} id="rowDiagnosisType">
                   <label htmlFor="diagnosisTypeId">Diagnosis type<span className="req">*</span></label>
-                  <select id="diagnosisTypeId" value={diagnosisTypeId} onChange={(e) => setDiagnosisTypeId(e.target.value)}>
-                    <option value="">Select type</option>
-                    {diagnosisTypes.map((t) => (
-                      <option key={t.diagnosisTypeId} value={t.diagnosisTypeId}>{t.diagnosisTypeName}</option>
-                    ))}
-                  </select>
+                  <SearchableSelect
+                    id="diagnosisTypeId"
+                    value={diagnosisTypeId}
+                    onChange={setDiagnosisTypeId}
+                    options={diagnosisTypes.map((t) => ({ value: t.diagnosisTypeId, label: t.diagnosisTypeName }))}
+                    placeholder="Select type"
+                  />
                   <div className="field-error">Choose a diagnosis type.</div>
                 </div>
                 <div className={"form-row" + (invalid.rowDiagnosisTitle ? " invalid" : "")} id="rowDiagnosisTitle">
