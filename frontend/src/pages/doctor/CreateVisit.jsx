@@ -386,6 +386,12 @@ export default function CreateVisit() {
                         <span>{p.gender || "Gender unrecorded"}</span>
                         <span>•</span>
                         <span>Blood: {p.bloodGroup || "Not set"}</span>
+                        {p.phoneNumber ? (
+                          <>
+                            <span>•</span>
+                            <span>Mobile: {p.phoneNumber}</span>
+                          </>
+                        ) : null}
                         {p.emergencyContact ? (
                           <>
                             <span>•</span>

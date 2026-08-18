@@ -54,5 +54,6 @@ BEGIN
                p.BloodGroup, p.Address, p.CountryId, p.StateId, p.CityId, p.EmergencyContact, p.QrCodePath,
                p.ProfilePicturePath, p.CreatedAt, p.UpdatedAt, u.PhoneNumber
         FROM dbo.Patients p
-        JOIN dbo.Users u ON u.UserId = p.UserId;
+        JOIN dbo.Users u ON u.UserId = p.UserId
+        ORDER BY p.CreatedAt DESC;
 END

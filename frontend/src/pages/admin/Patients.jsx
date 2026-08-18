@@ -132,6 +132,7 @@ export default function Patients() {
                   <div><div className="dl">Date of birth</div><div className="dv">{formatDate(detail.dateOfBirth)}</div></div>
                   <div><div className="dl">Gender</div><div className="dv">{detail.gender}</div></div>
                   <div><div className="dl">Blood group</div><div className="dv">{detail.bloodGroup || "—"}</div></div>
+                  <div><div className="dl">Mobile number</div><div className="dv">{detail.phoneNumber || "—"}</div></div>
                   <div><div className="dl">Emergency contact</div><div className="dv">{detail.emergencyContact || "—"}</div></div>
                   <div><div className="dl">Registered</div><div className="dv">{formatDate(detail.createdAt)}</div></div>
                   <div className="full"><div className="dl">Address</div><div className="dv">{addressLine || "—"}</div></div>

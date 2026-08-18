@@ -119,6 +119,13 @@ export default function PatientDetail() {
     (diagnosisByVisit[item.visitId] = diagnosisByVisit[item.visitId] || []).push(item);
   });
 
+  const numberByVisitId = {};
+  [...visits]
+    .sort((a, b) => new Date(a.visitDate) - new Date(b.visitDate) || (a.visitId || 0) - (b.visitId || 0))
+    .forEach((visit, index) => {
+      numberByVisitId[visit.visitId] = index + 1;
+    });
+
   return (
     <div className="pt-content">
       <div className="card hero-card">
@@ -154,7 +161,7 @@ export default function PatientDetail() {
                     return (
                       <div className="timeline-item clickable" key={visit.visitId} onClick={() => openVisitModal(visit.visitId)}>
                         <div className="timeline-body-card">
-                          <div className="timeline-head"><b>Visit #{visit.visitId}</b><span className="timeline-date">{formatDate(visit.visitDate)}</span></div>
+                          <div className="timeline-head"><b>Visit #{numberByVisitId[visit.visitId]}</b><span className="timeline-date">{formatDate(visit.visitDate)}</span></div>
                           <div className="timeline-body">{(visit.notes || "No notes added.").slice(0, 160)}</div>
                           {items.length ? (
                             <div className="timeline-tags">
@@ -238,7 +245,7 @@ export default function PatientDetail() {
                 <div className="detail-grid">
                   <div><div className="dl">Patient</div><div className="dv">{prescriptionDetail.patientName}</div></div>
                   <div><div className="dl">Date</div><div className="dv">{formatDate(prescriptionDetail.prescriptionDate)}</div></div>
-                  <div><div className="dl">Visit</div><div className="dv">#{prescriptionDetail.visitId}</div></div>
+                  <div><div className="dl">Visit</div><div className="dv">#{numberByVisitId[prescriptionDetail.visitId] || prescriptionDetail.visitId}</div></div>
                   <div><div className="dl">Diagnosis</div><div className="dv">{prescriptionDetail.diagnosisTitle || "Not linked"}</div></div>
                   <div className="full"><div className="dl">Prescription</div><div className="dv">{prescriptionDetail.prescriptionText || "No prescription text."}</div></div>
                 </div>
@@ -270,7 +277,7 @@ export default function PatientDetail() {
               {openVisit ? (
                 <>
                   <div className="detail-grid">
-                    <div><div className="dl">Visit</div><div className="dv">#{openVisit.visitId}</div></div>
+                    <div><div className="dl">Visit</div><div className="dv">#{numberByVisitId[openVisit.visitId] || openVisit.visitId}</div></div>
                     <div><div className="dl">Date</div><div className="dv">{formatDateTime(openVisit.visitDate)}</div></div>
                     <div className="full"><div className="dl">Notes</div><div className="dv">{openVisit.notes || "No notes added."}</div></div>
                   </div>

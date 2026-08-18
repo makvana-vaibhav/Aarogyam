@@ -289,6 +289,7 @@ public class PdfService : IPdfService
                             r.RelativeItem().Column(c =>
                             {
                                 c.Item().Text($"Date of Birth: {patient.DateOfBirth:dd MMM yyyy}").FontSize(9.5f);
+                                c.Item().Text($"Mobile Number: {(string.IsNullOrWhiteSpace(patient.PhoneNumber) ? "Not provided" : patient.PhoneNumber)}").FontSize(9.5f);
                                 c.Item().Text($"Emergency Contact: {(string.IsNullOrWhiteSpace(patient.EmergencyContact) ? "Not provided" : patient.EmergencyContact)}").FontSize(9.5f);
                             });
 

@@ -8,5 +8,5 @@ BEGIN
     ELSE IF @Email IS NOT NULL
         SELECT * FROM dbo.Users WHERE Email = @Email;
     ELSE
-        SELECT * FROM dbo.Users;
+        SELECT * FROM dbo.Users ORDER BY CreatedAt DESC;
 END

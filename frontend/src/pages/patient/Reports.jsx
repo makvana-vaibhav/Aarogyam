@@ -193,7 +193,7 @@ export default function Reports() {
                 <tr key={report.reportId}>
                   <td><div className="row-title">{report.title}</div><div className="row-sub">{report.reportType}</div></td>
                   <td>{formatDate(report.reportDate || report.createdAt)}</td>
-                  <td>{report.visitId ? "#" + report.visitId : "—"}</td>
+                  <td>{report.visitId ? "#" + (numberByVisitId[report.visitId] || report.visitId) : "—"}</td>
                   <td className="mono">{fileSize(report.fileSize)}</td>
                   <td className="mono">{report.doctorId ? "Doctor" : "Self"}</td>
                   <td className="actions">
