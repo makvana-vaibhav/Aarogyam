@@ -12,9 +12,6 @@ CREATE OR ALTER PROCEDURE dbo.spUploadMedicalReport
 AS
 BEGIN
     BEGIN TRY
-        DECLARE @PatientUserId INT;
-        SELECT @PatientUserId = UserId FROM dbo.Patients WHERE PatientId = @PatientId;
-
         BEGIN TRANSACTION;
 
         INSERT INTO dbo.MedicalReports (VisitId, DiagnosisId, PatientId, DoctorId, UploadedByUserId,
@@ -24,11 +21,12 @@ BEGIN
 
         DECLARE @NewReportId INT = CAST(SCOPE_IDENTITY() AS INT);
 
-        IF @UploadedByUserId <> @PatientUserId
-        BEGIN
-            INSERT INTO dbo.Notifications (UserId, Title, Message, IsRead)
-            VALUES (@PatientUserId, 'New Report Uploaded', 'A new medical report has been added to your record.', 0);
-        END
+        -- No notification here when a doctor uploads it: doctor-uploaded reports only
+        -- ever happen as part of the Create Visit wizard, which sends one consolidated
+        -- visit notification/email (with this report attached) via DoctorController's
+        -- /visits/{id}/notify endpoint once the whole submission completes. Patients
+        -- uploading their own report (@UploadedByUserId = the patient's own UserId)
+        -- never needed a notification to themselves anyway.
 
         COMMIT TRANSACTION;
 

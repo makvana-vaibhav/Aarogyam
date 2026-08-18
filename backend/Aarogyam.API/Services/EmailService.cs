@@ -60,16 +60,23 @@ public class EmailService : IEmailService
         string toEmail,
         string patientName,
         string subject,
-        string bodyMessage)
+        string bodyMessage,
+        byte[]? attachmentBytes = null,
+        string? attachmentFileName = null,
+        string? attachmentContentType = null)
     {
         var message = new MimeMessage();
         message.From.Add(new MailboxAddress(_settings.SenderName, _settings.SenderEmail));
         message.To.Add(MailboxAddress.Parse(toEmail));
         message.Subject = subject;
-        message.Body = new TextPart("html")
+
+        var builder = new BodyBuilder { HtmlBody = GetNotificationEmailHtml(subject, bodyMessage, patientName) };
+        if (attachmentBytes is { Length: > 0 } && !string.IsNullOrWhiteSpace(attachmentFileName))
         {
-            Text = GetNotificationEmailHtml(subject, bodyMessage, patientName)
-        };
+            var contentType = ContentType.Parse(string.IsNullOrWhiteSpace(attachmentContentType) ? "application/octet-stream" : attachmentContentType);
+            builder.Attachments.Add(attachmentFileName, attachmentBytes, contentType);
+        }
+        message.Body = builder.ToMessageBody();
 
         using var client = new SmtpClient();
         try

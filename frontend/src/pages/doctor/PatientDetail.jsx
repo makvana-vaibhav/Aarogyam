@@ -134,7 +134,7 @@ export default function PatientDetail() {
           <div>
             <div className="card-title" id="patientName">{patient ? joinName(patient) : "Loading patient…"}</div>
             <div className="card-sub" id="patientMeta">
-              {patient ? `${patient.aarogyamId} • ${patient.gender} • ${patient.bloodGroup || "Blood group not set"}` : "Preparing summary…"}
+              {patient ? `${patient.aarogyamId} • ${patient.gender} • ${patient.bloodGroup || "Blood group not set"}${patient.email ? " • " + patient.email : ""}` : "Preparing summary…"}
             </div>
           </div>
           <div className="qa-row" style={{ marginLeft: "auto" }}>

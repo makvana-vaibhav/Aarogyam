@@ -7,12 +7,6 @@ CREATE OR ALTER PROCEDURE dbo.spCreatePrescription
 AS
 BEGIN
     BEGIN TRY
-        DECLARE @PatientUserId INT;
-        SELECT @PatientUserId = p.UserId
-        FROM dbo.Visits v
-        JOIN dbo.Patients p ON p.PatientId = v.PatientId
-        WHERE v.VisitId = @VisitId;
-
         BEGIN TRANSACTION;
 
         INSERT INTO dbo.Prescriptions (VisitId, DiagnosisId, PrescriptionText, PdfPath, PrescriptionDate)
@@ -20,8 +14,10 @@ BEGIN
 
         DECLARE @NewPrescriptionId INT = CAST(SCOPE_IDENTITY() AS INT);
 
-        INSERT INTO dbo.Notifications (UserId, Title, Message, IsRead)
-        VALUES (@PatientUserId, 'New Prescription', 'A new prescription has been added to your health record.', 0);
+        -- No notification here: prescriptions are only ever created as part of the
+        -- Create Visit wizard, which sends one consolidated visit notification/email
+        -- (with any uploaded report attached) via DoctorController's /visits/{id}/notify
+        -- endpoint once the whole submission completes.
 
         COMMIT TRANSACTION;
 

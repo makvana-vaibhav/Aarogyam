@@ -10,21 +10,21 @@ BEGIN
     IF @PatientId IS NOT NULL
         SELECT p.PatientId, p.UserId, p.AarogyamId, p.FirstName, p.MiddleName, p.LastName, p.DateOfBirth, p.Gender,
                p.BloodGroup, p.Address, p.CountryId, p.StateId, p.CityId, p.EmergencyContact, p.QrCodePath,
-               p.ProfilePicturePath, p.CreatedAt, p.UpdatedAt, u.PhoneNumber
+               p.ProfilePicturePath, p.CreatedAt, p.UpdatedAt, u.PhoneNumber, u.Email
         FROM dbo.Patients p
         JOIN dbo.Users u ON u.UserId = p.UserId
         WHERE p.PatientId = @PatientId;
     ELSE IF @UserId IS NOT NULL
         SELECT p.PatientId, p.UserId, p.AarogyamId, p.FirstName, p.MiddleName, p.LastName, p.DateOfBirth, p.Gender,
                p.BloodGroup, p.Address, p.CountryId, p.StateId, p.CityId, p.EmergencyContact, p.QrCodePath,
-               p.ProfilePicturePath, p.CreatedAt, p.UpdatedAt, u.PhoneNumber
+               p.ProfilePicturePath, p.CreatedAt, p.UpdatedAt, u.PhoneNumber, u.Email
         FROM dbo.Patients p
         JOIN dbo.Users u ON u.UserId = p.UserId
         WHERE p.UserId = @UserId;
     ELSE IF @AarogyamId IS NOT NULL AND @SearchName IS NOT NULL
         SELECT p.PatientId, p.UserId, p.AarogyamId, p.FirstName, p.MiddleName, p.LastName, p.DateOfBirth, p.Gender,
                p.BloodGroup, p.Address, p.CountryId, p.StateId, p.CityId, p.EmergencyContact, p.QrCodePath,
-               p.ProfilePicturePath, p.CreatedAt, p.UpdatedAt, u.PhoneNumber
+               p.ProfilePicturePath, p.CreatedAt, p.UpdatedAt, u.PhoneNumber, u.Email
         FROM dbo.Patients p
         JOIN dbo.Users u ON u.UserId = p.UserId
         WHERE (p.AarogyamId LIKE '%' + LTRIM(RTRIM(@AarogyamId)) + '%')
@@ -32,7 +32,7 @@ BEGIN
     ELSE IF @AarogyamId IS NOT NULL
         SELECT p.PatientId, p.UserId, p.AarogyamId, p.FirstName, p.MiddleName, p.LastName, p.DateOfBirth, p.Gender,
                p.BloodGroup, p.Address, p.CountryId, p.StateId, p.CityId, p.EmergencyContact, p.QrCodePath,
-               p.ProfilePicturePath, p.CreatedAt, p.UpdatedAt, u.PhoneNumber
+               p.ProfilePicturePath, p.CreatedAt, p.UpdatedAt, u.PhoneNumber, u.Email
         FROM dbo.Patients p
         JOIN dbo.Users u ON u.UserId = p.UserId
         WHERE p.AarogyamId LIKE '%' + LTRIM(RTRIM(@AarogyamId)) + '%'
@@ -42,7 +42,7 @@ BEGIN
     ELSE IF @SearchName IS NOT NULL
         SELECT p.PatientId, p.UserId, p.AarogyamId, p.FirstName, p.MiddleName, p.LastName, p.DateOfBirth, p.Gender,
                p.BloodGroup, p.Address, p.CountryId, p.StateId, p.CityId, p.EmergencyContact, p.QrCodePath,
-               p.ProfilePicturePath, p.CreatedAt, p.UpdatedAt, u.PhoneNumber
+               p.ProfilePicturePath, p.CreatedAt, p.UpdatedAt, u.PhoneNumber, u.Email
         FROM dbo.Patients p
         JOIN dbo.Users u ON u.UserId = p.UserId
         WHERE p.FirstName LIKE '%' + @SearchName + '%'
@@ -52,7 +52,7 @@ BEGIN
     ELSE
         SELECT p.PatientId, p.UserId, p.AarogyamId, p.FirstName, p.MiddleName, p.LastName, p.DateOfBirth, p.Gender,
                p.BloodGroup, p.Address, p.CountryId, p.StateId, p.CityId, p.EmergencyContact, p.QrCodePath,
-               p.ProfilePicturePath, p.CreatedAt, p.UpdatedAt, u.PhoneNumber
+               p.ProfilePicturePath, p.CreatedAt, p.UpdatedAt, u.PhoneNumber, u.Email
         FROM dbo.Patients p
         JOIN dbo.Users u ON u.UserId = p.UserId
         ORDER BY p.CreatedAt DESC;

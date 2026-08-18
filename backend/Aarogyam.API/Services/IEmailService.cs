@@ -14,5 +14,8 @@ public interface IEmailService
         string toEmail,
         string patientName,
         string subject,
-        string bodyMessage);
+        string bodyMessage,
+        byte[]? attachmentBytes = null,
+        string? attachmentFileName = null,
+        string? attachmentContentType = null);
 }

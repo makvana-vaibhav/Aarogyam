@@ -62,7 +62,7 @@ export default function MyPatients() {
             ) : (
               rows.map((row) => (
                 <tr key={row.patientId}>
-                  <td><div className="row-title">{joinName(row)}</div><div className="row-sub">{row.gender}</div></td>
+                  <td><div className="row-title">{joinName(row)}</div><div className="row-sub">{row.gender}{row.email ? " • " + row.email : ""}</div></td>
                   <td className="mono">{row.aarogyamId}</td>
                   <td>{row.totalVisits}</td>
                   <td>{formatDate(row.lastVisitDate)}</td>

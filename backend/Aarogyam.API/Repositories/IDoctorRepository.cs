@@ -18,6 +18,7 @@ public interface IDoctorRepository
     Task<VisitRow?> GetVisitByIdAsync(int visitId);
     Task<List<DiagnosisRow>> GetPatientDiagnosesAsync(int patientId, int? diagnosisTypeId);
     Task<List<MedicalReportRow>> GetPatientReportsAsync(int patientId);
+    Task<List<MedicalReportRow>> GetReportsByVisitIdAsync(int visitId);
     Task<List<PrescriptionRow>> GetPatientPrescriptionsAsync(int patientId);
     Task<PrescriptionDetailsRow?> GetPrescriptionDetailsAsync(int prescriptionId);
     Task<string?> GetOrGeneratePrescriptionPdfPathAsync(int prescriptionId);
