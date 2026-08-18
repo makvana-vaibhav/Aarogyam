@@ -12,10 +12,12 @@ BEGIN
         p.DateOfBirth,
         p.Gender,
         p.BloodGroup,
+        u.Email,
         MAX(v.VisitDate) AS LastVisitDate,
         COUNT(v.VisitId) AS TotalVisits
     FROM dbo.Patients p
     JOIN dbo.Visits v ON v.PatientId = p.PatientId
+    JOIN dbo.Users u ON u.UserId = p.UserId
     WHERE v.DoctorId = @DoctorId
       AND (
         @Search IS NULL
@@ -26,6 +28,6 @@ BEGIN
       )
     GROUP BY
         p.PatientId, p.AarogyamId, p.FirstName, p.MiddleName, p.LastName,
-        p.DateOfBirth, p.Gender, p.BloodGroup
+        p.DateOfBirth, p.Gender, p.BloodGroup, u.Email
     ORDER BY MAX(v.VisitDate) DESC;
 END

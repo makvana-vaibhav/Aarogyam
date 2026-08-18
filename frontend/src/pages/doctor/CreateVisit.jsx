@@ -298,6 +298,13 @@ export default function CreateVisit() {
         await DoctorAPI.uploadReport(formData);
       }
 
+      try {
+        await DoctorAPI.notifyVisitPatient(visit.visitId);
+      } catch (notifyErr) {
+        // Best-effort: the visit (and any diagnosis/prescription/report) is
+        // already saved, so a notification hiccup shouldn't block the flow.
+      }
+
       showToast("Visit created successfully.");
       setTimeout(() => {
         navigate("/doctor/patient?patientId=" + patientIdVal);
@@ -386,6 +393,12 @@ export default function CreateVisit() {
                         <span>{p.gender || "Gender unrecorded"}</span>
                         <span>•</span>
                         <span>Blood: {p.bloodGroup || "Not set"}</span>
+                        {p.email ? (
+                          <>
+                            <span>•</span>
+                            <span>{p.email}</span>
+                          </>
+                        ) : null}
                         {p.emergencyContact ? (
                           <>
                             <span>•</span>
@@ -409,7 +422,7 @@ export default function CreateVisit() {
                 <div className="pf-main">
                   <div className="row-title" style={{ fontSize: "15px", fontWeight: 600 }}>{joinName(foundPatient)} (Selected)</div>
                   <div className="row-sub mono" style={{ fontSize: "13px", marginTop: "2px" }}>
-                    {foundPatient.aarogyamId} • {foundPatient.gender} • {foundPatient.bloodGroup || "Blood group not set"}
+                    {foundPatient.aarogyamId} • {foundPatient.gender} • {foundPatient.bloodGroup || "Blood group not set"}{foundPatient.email ? " • " + foundPatient.email : ""}
                   </div>
                 </div>
                 <button
@@ -444,7 +457,7 @@ export default function CreateVisit() {
               <div className="avatar-circle small">{initials(foundPatient.firstName, foundPatient.lastName)}</div>
               <div className="pf-main">
                 <div className="row-title" style={{ fontSize: "15px", fontWeight: 600 }}>{joinName(foundPatient)}</div>
-                <div className="row-sub mono">{foundPatient.aarogyamId} • {foundPatient.gender} • {foundPatient.bloodGroup || "Blood group not set"}</div>
+                <div className="row-sub mono">{foundPatient.aarogyamId} • {foundPatient.gender} • {foundPatient.bloodGroup || "Blood group not set"}{foundPatient.email ? " • " + foundPatient.email : ""}</div>
               </div>
               <button className="btn btn-ghost btn-sm" type="button" onClick={() => goToStep(1)}>Change patient</button>
             </div>

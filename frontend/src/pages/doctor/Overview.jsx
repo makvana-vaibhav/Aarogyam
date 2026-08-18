@@ -116,7 +116,7 @@ export default function Overview() {
               <div className="card result-card" key={row.patientId}>
                 <div className="result-copy">
                   <div className="row-title">{joinName(row)}</div>
-                  <div className="row-sub">AAID {row.aarogyamId} • {row.gender} • {row.bloodGroup || "Blood group not set"}</div>
+                  <div className="row-sub">AAID {row.aarogyamId} • {row.gender} • {row.bloodGroup || "Blood group not set"}{row.email ? " • " + row.email : ""}</div>
                 </div>
                 <Link className="btn btn-solid btn-sm" to={"/doctor/patient?patientId=" + row.patientId}>View record</Link>
               </div>
@@ -144,7 +144,7 @@ export default function Overview() {
               ) : (
                 recentPatients.map((row) => (
                   <tr key={row.patientId}>
-                    <td><div className="row-title">{joinName(row)}</div><div className="row-sub">{row.bloodGroup || "Blood group not set"}</div></td>
+                    <td><div className="row-title">{joinName(row)}</div><div className="row-sub">{row.bloodGroup || "Blood group not set"}{row.email ? " • " + row.email : ""}</div></td>
                     <td className="mono">{row.aarogyamId}</td>
                     <td>{formatDate(row.lastVisitDate)}</td>
                     <td className="actions"><Link className="btn btn-ghost btn-sm" to={"/doctor/patient?patientId=" + row.patientId}>Open</Link></td>

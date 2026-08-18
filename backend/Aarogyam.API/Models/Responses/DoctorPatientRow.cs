@@ -18,6 +18,8 @@ public class DoctorPatientRow
 
     public string? BloodGroup { get; set; }
 
+    public string? Email { get; set; }
+
     public DateTime? LastVisitDate { get; set; }
 
     public int TotalVisits { get; set; }

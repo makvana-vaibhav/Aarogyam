@@ -103,7 +103,7 @@ export default function Patients() {
               patients.map((p) => (
                 <tr key={p.patientId}>
                   <td className="mono">{p.aarogyamId}</td>
-                  <td><div className="row-title">{fullName(p)}</div></td>
+                  <td><div className="row-title">{fullName(p)}</div><div className="row-sub">{p.email}</div></td>
                   <td>{formatDate(p.dateOfBirth)}</td>
                   <td>{p.gender}</td>
                   <td>{p.bloodGroup || "—"}</td>
@@ -129,9 +129,11 @@ export default function Patients() {
               ) : detail ? (
                 <>
                   <div><div className="dl">Aarogyam ID</div><div className="dv"><span className="mono">{detail.aarogyamId}</span></div></div>
+                  <div><div className="dl">Email</div><div className="dv">{detail.email || "—"}</div></div>
                   <div><div className="dl">Date of birth</div><div className="dv">{formatDate(detail.dateOfBirth)}</div></div>
                   <div><div className="dl">Gender</div><div className="dv">{detail.gender}</div></div>
                   <div><div className="dl">Blood group</div><div className="dv">{detail.bloodGroup || "—"}</div></div>
+                  <div><div className="dl">Mobile number</div><div className="dv">{detail.phoneNumber || "—"}</div></div>
                   <div><div className="dl">Emergency contact</div><div className="dv">{detail.emergencyContact || "—"}</div></div>
                   <div><div className="dl">Registered</div><div className="dv">{formatDate(detail.createdAt)}</div></div>
                   <div className="full"><div className="dl">Address</div><div className="dv">{addressLine || "—"}</div></div>

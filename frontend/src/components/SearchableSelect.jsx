@@ -103,7 +103,7 @@ export default function SearchableSelect({
                   className={
                     "searchable-select-option" +
                     (opt.isClear ? " clear-option" : "") +
-                    (String(opt.value) === String(value) ? " selected" : "")
+                    (!opt.isClear && String(opt.value) === String(value) ? " selected" : "")
                   }
                   onClick={() => selectOption(opt)}
                 >

@@ -21,11 +21,13 @@ BEGIN
                SpecializationId, LicenseDocumentPath, DegreeDocumentPath, ApprovalStatus, ApprovedByUserId,
                ApprovedAt, RejectionReason, Address, CountryId, StateId, CityId, ProfilePicturePath,
                CreatedAt, UpdatedAt
-        FROM dbo.Doctors WHERE ApprovalStatus = @ApprovalStatus;
+        FROM dbo.Doctors WHERE ApprovalStatus = @ApprovalStatus
+        ORDER BY CreatedAt DESC;
     ELSE
         SELECT DoctorId, UserId, FirstName, MiddleName, LastName, LicenseNumber, HospitalId, DegreeId,
                SpecializationId, LicenseDocumentPath, DegreeDocumentPath, ApprovalStatus, ApprovedByUserId,
                ApprovedAt, RejectionReason, Address, CountryId, StateId, CityId, ProfilePicturePath,
                CreatedAt, UpdatedAt
-        FROM dbo.Doctors;
+        FROM dbo.Doctors
+        ORDER BY CreatedAt DESC;
 END

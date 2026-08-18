@@ -238,6 +238,16 @@ public class DoctorRepository : IDoctorRepository
             .ToListAsync();
     }
 
+    public Task<List<MedicalReportRow>> GetReportsByVisitIdAsync(int visitId)
+    {
+        return _context.MedicalReportRows
+            .FromSqlRaw("EXEC dbo.spMedicalReportsGet @ReportId, @PatientId, @VisitId",
+                new SqlParameter("@ReportId", DBNull.Value),
+                new SqlParameter("@PatientId", DBNull.Value),
+                new SqlParameter("@VisitId", visitId))
+            .ToListAsync();
+    }
+
     public Task<List<PrescriptionRow>> GetPatientPrescriptionsAsync(int patientId)
     {
         return _context.PrescriptionRows

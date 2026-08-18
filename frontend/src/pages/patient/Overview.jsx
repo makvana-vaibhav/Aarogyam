@@ -111,8 +111,11 @@ export default function Overview() {
                     <div className="cap">Patient</div>
                     <div className="card-title">{joinName(profile)}</div>
                     <div className="card-sub">Aarogyam ID {profile.aarogyamId}</div>
+                    <div className="card-sub">{profile.email}</div>
                     <div className="cap card-cap-spaced">Blood group</div>
                     <div>{profile.bloodGroup || "Not set"}</div>
+                    <div className="cap card-cap-spaced">Mobile number</div>
+                    <div>{profile.phoneNumber || "Not added"}</div>
                     <div className="cap card-cap-spaced">Emergency contact</div>
                     <div>{profile.emergencyContact || "Not added"}</div>
                   </>

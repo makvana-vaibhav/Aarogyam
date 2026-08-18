@@ -213,14 +213,32 @@ public class DoctorController : ControllerBase
         if (result.Success == 1 && result.VisitId.HasValue)
         {
             await _auditLogRepository.LogAsync(GetCurrentUserId(), "CREATE_VISIT", "Visits", result.VisitId.Value);
-            await NotifyPatientAsync(
-                request.PatientId,
-                "New visit recorded",
-                $"Dr. {FormatDoctorName(doctor)} recorded a visit for you on {request.VisitDate:dd MMM yyyy}.");
         }
         if (result.Success == 1) return Ok(result);
         result.Message = DbErrorMessageMapper.Friendly(result.Message);
         return BadRequest(result);
+    }
+
+    // Called once by the frontend after the whole create-visit submission finishes
+    // (visit, plus whichever of diagnosis/prescription/report were included) so the
+    // patient gets exactly ONE "new visit" notification/email per submission, not one
+    // per sub-entity. If a report was uploaded as part of this visit, it's attached.
+    [HttpPost("visits/{id:int}/notify")]
+    public async Task<IActionResult> NotifyVisitPatient(int id)
+    {
+        var doctor = await GetCurrentDoctorAsync();
+        if (doctor is null) return NotFound(new { success = 0, message = "Doctor profile not found." });
+
+        var visit = await _doctorRepository.GetVisitByIdAsync(id);
+        if (visit is null) return NotFound(new { success = 0, message = "Visit not found." });
+
+        await NotifyPatientAsync(
+            visit.PatientId,
+            "New visit recorded",
+            $"Dr. {FormatDoctorName(doctor)} recorded a visit for you on {visit.VisitDate:dd MMM yyyy}.",
+            id);
+
+        return Ok(new { success = 1 });
     }
 
     [HttpPost("diagnoses")]
@@ -234,14 +252,6 @@ public class DoctorController : ControllerBase
         if (result.Success == 1 && result.DiagnosisId.HasValue)
         {
             await _auditLogRepository.LogAsync(GetCurrentUserId(), "CREATE_DIAGNOSIS", "Diagnoses", result.DiagnosisId.Value);
-            var visit = await _doctorRepository.GetVisitByIdAsync(request.VisitId);
-            if (visit is not null)
-            {
-                await NotifyPatientAsync(
-                    visit.PatientId,
-                    "New diagnosis added",
-                    $"Dr. {FormatDoctorName(doctor)} added a diagnosis: {request.DiagnosisTitle}.");
-            }
         }
         if (result.Success == 1) return Ok(result);
         result.Message = DbErrorMessageMapper.Friendly(result.Message);
@@ -259,14 +269,6 @@ public class DoctorController : ControllerBase
         if (result.Success == 1 && result.PrescriptionId.HasValue)
         {
             await _auditLogRepository.LogAsync(GetCurrentUserId(), "CREATE_PRESCRIPTION", "Prescriptions", result.PrescriptionId.Value);
-            var visit = await _doctorRepository.GetVisitByIdAsync(request.VisitId);
-            if (visit is not null)
-            {
-                await NotifyPatientAsync(
-                    visit.PatientId,
-                    "New prescription issued",
-                    $"Dr. {FormatDoctorName(doctor)} issued a new prescription. View it in your Aarogyam account.");
-            }
         }
         if (result.Success == 1) return Ok(result);
         result.Message = DbErrorMessageMapper.Friendly(result.Message);
@@ -301,10 +303,6 @@ public class DoctorController : ControllerBase
         if (result.ReportId.HasValue)
         {
             await _auditLogRepository.LogAsync(GetCurrentUserId(), "UPLOAD_REPORT", "MedicalReports", result.ReportId.Value);
-            await NotifyPatientAsync(
-                request.PatientId,
-                "New medical report uploaded",
-                $"Dr. {FormatDoctorName(doctor)} uploaded a new report: {request.Title}.");
         }
 
         return Ok(result);
@@ -356,9 +354,10 @@ public class DoctorController : ControllerBase
     // Creates an in-app notification and sends an email to the patient about an
     // action a doctor just took on their record. Wrapped in try/catch because
     // this must never fail or block the clinical action it follows (bad email,
-    // SMTP down, patient/user lookup issues, etc.) - the visit/diagnosis/
-    // prescription/report the caller just created must still succeed regardless.
-    private async Task NotifyPatientAsync(int patientId, string title, string message)
+    // SMTP down, patient/user lookup issues, etc.) - the visit the caller just
+    // created must still succeed regardless. When visitId is supplied, any report
+    // uploaded against that visit is attached to the email.
+    private async Task NotifyPatientAsync(int patientId, string title, string message, int? visitId = null)
     {
         try
         {
@@ -373,12 +372,33 @@ public class DoctorController : ControllerBase
             var patientName = string.Join(" ", new[] { patient.FirstName, patient.MiddleName, patient.LastName }
                 .Where(part => !string.IsNullOrWhiteSpace(part))).Trim();
 
-            await _emailService.SendNotificationEmailAsync(user.Email, patientName, title, message);
+            byte[]? attachmentBytes = null;
+            string? attachmentFileName = null;
+            string? attachmentContentType = null;
+            if (visitId.HasValue)
+            {
+                var reports = await _doctorRepository.GetReportsByVisitIdAsync(visitId.Value);
+                var report = reports.FirstOrDefault();
+                if (report is not null)
+                {
+                    var file = await _fileStorage.ReadAsync(report.FilePath);
+                    if (file is not null)
+                    {
+                        await using var ms = new MemoryStream();
+                        await file.Value.Content.CopyToAsync(ms);
+                        attachmentBytes = ms.ToArray();
+                        attachmentFileName = file.Value.FileName;
+                        attachmentContentType = file.Value.ContentType;
+                    }
+                }
+            }
+
+            await _emailService.SendNotificationEmailAsync(user.Email, patientName, title, message, attachmentBytes, attachmentFileName, attachmentContentType);
         }
         catch
         {
-            // Notifications/emails are best-effort only - the visit/diagnosis/
-            // prescription/report the caller just created must still succeed.
+            // Notifications/emails are best-effort only - the visit the caller
+            // just created must still succeed.
         }
     }
 }

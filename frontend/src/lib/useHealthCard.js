@@ -101,6 +101,8 @@ export function useHealthCard(profile) {
     value(p.bloodGroup || "Not set", leftX, 262, 19);
     label("Emergency contact", leftX, 300);
     value(p.emergencyContact || "Not added", leftX, 324, 19);
+    label("Mobile number", leftX, 336);
+    value(p.phoneNumber || "Not added", leftX, 358, 17);
 
     const rightColCenterX = width - 130; // center of the right-hand region (width-260 to width)
     let qrSize = 220;

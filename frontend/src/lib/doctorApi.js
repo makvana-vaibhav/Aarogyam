@@ -30,6 +30,7 @@ export const DoctorAPI = {
   getPrescriptionDetails: (id) => request("/doctor/prescriptions/" + id),
   downloadPrescription: (id) => request("/doctor/prescriptions/" + id + "/download", { responseType: "blob" }),
   createVisit: (payload) => request("/doctor/visits", { method: "POST", body: payload }),
+  notifyVisitPatient: (visitId) => request("/doctor/visits/" + visitId + "/notify", { method: "POST" }),
   createDiagnosis: (payload) => request("/doctor/diagnoses", { method: "POST", body: payload }),
   createPrescription: (payload) => request("/doctor/prescriptions", { method: "POST", body: payload }),
   uploadReport: (formData) => request("/doctor/reports", { method: "POST", body: formData }),

@@ -273,6 +273,10 @@ public class PdfService : IPdfService
                             {
                                 c.Item().Text(fullName).Bold().FontSize(15).FontColor("#0b392b");
                                 c.Item().Text($"Aarogyam ID: {patient.AarogyamId}").Bold().FontSize(11).FontColor("#2d6a4f");
+                                if (!string.IsNullOrWhiteSpace(patient.Email))
+                                {
+                                    c.Item().Text($"Email: {patient.Email}").FontSize(9.5f).FontColor(Colors.Grey.Darken1);
+                                }
                             });
 
                             r.ConstantItem(160).AlignRight().Column(c =>
@@ -289,6 +293,7 @@ public class PdfService : IPdfService
                             r.RelativeItem().Column(c =>
                             {
                                 c.Item().Text($"Date of Birth: {patient.DateOfBirth:dd MMM yyyy}").FontSize(9.5f);
+                                c.Item().Text($"Mobile Number: {(string.IsNullOrWhiteSpace(patient.PhoneNumber) ? "Not provided" : patient.PhoneNumber)}").FontSize(9.5f);
                                 c.Item().Text($"Emergency Contact: {(string.IsNullOrWhiteSpace(patient.EmergencyContact) ? "Not provided" : patient.EmergencyContact)}").FontSize(9.5f);
                             });
 
