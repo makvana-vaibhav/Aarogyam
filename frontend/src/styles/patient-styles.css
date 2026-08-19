@@ -577,6 +577,9 @@ h1, h2, h3 {
   color: var(--ink-soft);
 }
 
+.toolbar .searchable-select { min-width: 200px; width: auto; flex: 0 0 auto; }
+.toolbar .searchable-select-trigger { padding: 8px 12px; height: auto; font-size: 13.5px; background: var(--bg-card); }
+
 .toolbar .spacer { flex: 1; }
 
 .filter-tabs { display: flex; gap: 6px; flex-wrap: wrap; }

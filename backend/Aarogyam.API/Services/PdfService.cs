@@ -8,6 +8,12 @@ namespace Aarogyam.API.Services;
 
 public class PdfService : IPdfService
 {
+    // IST has no daylight-saving offset changes, so a fixed +5:30 is always correct -
+    // avoids depending on the host OS having an "Asia/Kolkata" timezone database entry.
+    private static readonly TimeSpan IstOffset = TimeSpan.FromHours(5.5);
+
+    private static DateTime ToIst(DateTime utc) => DateTime.SpecifyKind(utc, DateTimeKind.Utc).Add(IstOffset);
+
     public byte[] GeneratePrescriptionPdf(PrescriptionDetailsRow details)
     {
         var patientTitleName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase((details.PatientName ?? "").Trim().ToLowerInvariant());
@@ -157,7 +163,7 @@ public class PdfService : IPdfService
                             c.Spacing(2);
                             c.Item().Text("E-Prescription Verification").FontSize(8.5f).Bold().FontColor("#0b392b");
                             c.Item().Text("Generated securely via Aarogyam Electronic Health Record System.").FontSize(8).FontColor(Colors.Grey.Darken1);
-                            c.Item().Text($"Timestamp: {DateTime.UtcNow:dd MMM yyyy HH:mm} UTC").FontSize(7.5f).FontColor(Colors.Grey.Medium);
+                            c.Item().Text($"Timestamp: {ToIst(DateTime.UtcNow):dd MMM yyyy HH:mm} IST").FontSize(7.5f).FontColor(Colors.Grey.Medium);
                         });
 
                         row.ConstantItem(180).AlignRight().Column(c =>
@@ -249,7 +255,7 @@ public class PdfService : IPdfService
 
                         row.ConstantItem(180).AlignRight().Column(col =>
                         {
-                            col.Item().Text($"Generated: {DateTime.UtcNow:dd MMM yyyy}").FontSize(9.5f).Bold();
+                            col.Item().Text($"Generated: {ToIst(DateTime.UtcNow):dd MMM yyyy}").FontSize(9.5f).Bold();
                             col.Item().Text("Authentic Digital Health Record").FontSize(8.5f).FontColor(Colors.Grey.Darken1);
                         });
                     });
@@ -300,7 +306,7 @@ public class PdfService : IPdfService
                             r.RelativeItem().Column(c =>
                             {
                                 c.Item().Text($"Address: {patient.Address}").FontSize(9.5f);
-                                c.Item().Text($"Registered Member Since: {patient.CreatedAt:dd MMM yyyy}").FontSize(9.5f).FontColor(Colors.Grey.Darken1);
+                                c.Item().Text($"Registered Member Since: {ToIst(patient.CreatedAt):dd MMM yyyy}").FontSize(9.5f).FontColor(Colors.Grey.Darken1);
                             });
                         });
                     });
@@ -337,7 +343,7 @@ public class PdfService : IPdfService
                                 {
                                     var visitNotes = string.IsNullOrWhiteSpace(visit.Notes) ? "Routine clinical consultation" : visit.Notes;
 
-                                    table.Cell().BorderBottom(0.5f).BorderColor("#e5e7eb").Padding(6).Text($"{visit.VisitDate:dd MMM yyyy}").FontSize(9);
+                                    table.Cell().BorderBottom(0.5f).BorderColor("#e5e7eb").Padding(6).Text($"{ToIst(visit.VisitDate):dd MMM yyyy}").FontSize(9);
                                     table.Cell().BorderBottom(0.5f).BorderColor("#e5e7eb").Padding(6).Text($"Visit #{visit.VisitId}").FontSize(9).Bold();
                                     table.Cell().BorderBottom(0.5f).BorderColor("#e5e7eb").Padding(6).Text(visitNotes).FontSize(9);
                                 }
