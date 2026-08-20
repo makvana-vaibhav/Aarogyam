@@ -23,6 +23,9 @@ public class PatientController : ControllerBase
     private static readonly string[] AllowedProfilePictureExtensions = { ".jpg", ".jpeg", ".png", ".webp" };
     private const long MaxProfilePictureSizeBytes = 3 * 1024 * 1024;
 
+    private static readonly string[] AllowedReportExtensions = { ".pdf", ".jpg", ".jpeg", ".png", ".doc", ".docx" };
+    private const long MaxReportSizeBytes = 20 * 1024 * 1024;
+
     public PatientController(IPatientRepository patientRepository, IFileStorageService fileStorage, IPdfService pdfService, IAuditLogRepository auditLogRepository)
     {
         _patientRepository = patientRepository;
@@ -191,7 +194,7 @@ public class PatientController : ControllerBase
     }
 
     [HttpPost("reports")]
-    [RequestSizeLimit(25 * 1024 * 1024)]
+    [RequestSizeLimit(21 * 1024 * 1024)]
     public async Task<IActionResult> UploadReport([FromForm] UploadReportRequest request)
     {
         var patient = await GetCurrentPatientAsync();
@@ -202,7 +205,17 @@ public class PatientController : ControllerBase
             return BadRequest(new { success = 0, message = "File is empty." });
         }
 
-        var extension = Path.GetExtension(request.File.FileName);
+        var extension = Path.GetExtension(request.File.FileName).ToLowerInvariant();
+        if (!AllowedReportExtensions.Contains(extension))
+        {
+            return BadRequest(new { success = 0, message = "Please upload a PDF, JPG, PNG, DOC, or DOCX file." });
+        }
+
+        if (request.File.Length > MaxReportSizeBytes)
+        {
+            return BadRequest(new { success = 0, message = "Report file must be smaller than 20 MB." });
+        }
+
         var storedFileName = $"{Guid.NewGuid()}{extension}";
 
         string relativePath;

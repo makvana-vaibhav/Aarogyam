@@ -258,8 +258,9 @@ export default function CreateVisit() {
     const visitDateOnly = visitDate.split("T")[0];
     setSubmitting(true);
 
+    let visit = null;
     try {
-      const visit = await DoctorAPI.createVisit({
+      visit = await DoctorAPI.createVisit({
         patientId: patientIdVal,
         visitDate,
         notes: visitNotes.trim()
@@ -310,7 +311,23 @@ export default function CreateVisit() {
         navigate("/doctor/patient?patientId=" + patientIdVal);
       }, 900);
     } catch (err) {
-      setFlowAlert(err.message);
+      // The visit record (and any diagnosis/prescription already attached to it)
+      // was created before this step failed - roll it back so the doctor doesn't
+      // end up with a half-saved visit that looks successful but is missing
+      // whatever failed (most commonly the report upload).
+      if (visit?.visitId) {
+        try {
+          await DoctorAPI.deleteVisit(visit.visitId);
+          setFlowAlert("Visit was not saved: " + err.message);
+        } catch (rollbackErr) {
+          setFlowAlert(
+            "Visit was not fully saved (" + err.message + "), and we couldn't automatically clean it up. " +
+            "Please check this patient's visit history before trying again."
+          );
+        }
+      } else {
+        setFlowAlert(err.message);
+      }
       setSubmitting(false);
     }
   }
@@ -553,8 +570,8 @@ export default function CreateVisit() {
                 </div>
               </div>
               <div className={"form-row" + (invalid.rowReportFile ? " invalid" : "")} id="rowReportFile">
-                <label htmlFor="reportFile">Report file (PDF or image)<span className="req">*</span></label>
-                <input ref={reportFileRef} id="reportFile" type="file" accept=".pdf,.png,.jpg,.jpeg" />
+                <label htmlFor="reportFile">Report file (PDF, image, or Word doc)<span className="req">*</span></label>
+                <input ref={reportFileRef} id="reportFile" type="file" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx" />
                 <div className="field-error">Select a report file to upload.</div>
               </div>
             </div>

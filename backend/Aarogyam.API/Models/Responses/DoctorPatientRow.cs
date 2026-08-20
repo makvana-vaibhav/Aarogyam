@@ -1,3 +1,6 @@
+using System.Text.Json.Serialization;
+using Aarogyam.API.Helpers;
+
 namespace Aarogyam.API.Models.Responses;
 
 public class DoctorPatientRow
@@ -20,6 +23,7 @@ public class DoctorPatientRow
 
     public string? Email { get; set; }
 
+    [JsonConverter(typeof(IstNullableDateTimeConverter))]
     public DateTime? LastVisitDate { get; set; }
 
     public int TotalVisits { get; set; }

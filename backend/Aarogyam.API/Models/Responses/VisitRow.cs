@@ -1,3 +1,6 @@
+using System.Text.Json.Serialization;
+using Aarogyam.API.Helpers;
+
 namespace Aarogyam.API.Models.Responses;
 
 public class VisitRow
@@ -8,6 +11,7 @@ public class VisitRow
 
     public int DoctorId { get; set; }
 
+    [JsonConverter(typeof(IstDateTimeConverter))]
     public DateTime VisitDate { get; set; }
 
     public string? Notes { get; set; }

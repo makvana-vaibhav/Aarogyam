@@ -337,6 +337,27 @@ public class DoctorRepository : IDoctorRepository
         return rows.FirstOrDefault();
     }
 
+    public async Task<VisitManageResult?> DeleteVisitAsync(int doctorId, int visitId)
+    {
+        var visit = await GetVisitByIdAsync(visitId);
+        if (visit is null || visit.DoctorId != doctorId)
+        {
+            return new VisitManageResult { Success = 0, Message = "Visit not found." };
+        }
+
+        var rows = await _context.VisitManageResults
+            .FromSqlRaw(
+                "EXEC dbo.spVisitsManage @Action, @VisitId, @PatientId, @DoctorId, @VisitDate, @Notes",
+                new SqlParameter("@Action", "DELETE"),
+                new SqlParameter("@VisitId", visitId),
+                new SqlParameter("@PatientId", DBNull.Value),
+                new SqlParameter("@DoctorId", DBNull.Value),
+                new SqlParameter("@VisitDate", DBNull.Value),
+                new SqlParameter("@Notes", DBNull.Value))
+            .ToListAsync();
+        return rows.FirstOrDefault();
+    }
+
     public async Task<DiagnosisManageResult?> CreateDiagnosisAsync(int doctorId, CreateDiagnosisRequest request)
     {
         var visit = await GetVisitByIdAsync(request.VisitId);
