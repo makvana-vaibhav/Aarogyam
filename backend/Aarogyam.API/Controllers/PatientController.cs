@@ -104,8 +104,9 @@ public class PatientController : ControllerBase
 
     [HttpPatch("profile/picture")]
     [Consumes("multipart/form-data")]
-    public async Task<IActionResult> UpdateProfilePicture([FromForm] IFormFile file)
+    public async Task<IActionResult> UpdateProfilePicture([FromForm] FileUploadRequest request)
     {
+        var file = request.File;
         var patient = await GetCurrentPatientAsync();
         if (patient is null) return PatientNotFound();
 

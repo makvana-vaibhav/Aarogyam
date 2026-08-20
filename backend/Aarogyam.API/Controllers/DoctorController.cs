@@ -82,8 +82,9 @@ public class DoctorController : ControllerBase
 
     [HttpPatch("profile/picture")]
     [Consumes("multipart/form-data")]
-    public async Task<IActionResult> UpdateProfilePicture([FromForm] IFormFile file)
+    public async Task<IActionResult> UpdateProfilePicture([FromForm] FileUploadRequest request)
     {
+        var file = request.File;
         var doctor = await GetCurrentDoctorAsync();
         if (doctor is null) return NotFound(new { success = 0, message = "Doctor profile not found." });
 

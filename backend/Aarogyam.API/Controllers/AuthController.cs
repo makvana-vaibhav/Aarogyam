@@ -25,8 +25,9 @@ public class AuthController : ControllerBase
 
     [HttpPost("upload-document")]
     [Consumes("multipart/form-data")]
-    public async Task<IActionResult> UploadDocument([FromForm] IFormFile file)
+    public async Task<IActionResult> UploadDocument([FromForm] FileUploadRequest request)
     {
+        var file = request.File;
         if (file is null || file.Length == 0)
         {
             return BadRequest(new { success = 0, message = "No file was uploaded." });
