@@ -3,6 +3,7 @@ import { useDocumentTitle } from "../../lib/useDocumentTitle.js";
 import { PatientAPI } from "../../lib/patientApi.js";
 import { formatDate, downloadBlob } from "../../lib/format.js";
 import { useToast } from "../../context/ToastContext.jsx";
+import SearchableSelect from "../../components/SearchableSelect.jsx";
 
 function assignVisitNumbers(visits) {
   const sorted = [...visits].sort((a, b) => new Date(a.visitDate) - new Date(b.visitDate));
@@ -187,12 +188,13 @@ export default function MedicalHistory() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <select id="historyFilter" value={filterTypeId} onChange={(e) => setFilterTypeId(e.target.value)}>
-          <option value="">All diagnosis types</option>
-          {diagnosisTypes.map((item) => (
-            <option key={item.diagnosisTypeId} value={item.diagnosisTypeId}>{item.diagnosisTypeName}</option>
-          ))}
-        </select>
+        <SearchableSelect
+          id="historyFilter"
+          value={filterTypeId}
+          onChange={setFilterTypeId}
+          options={diagnosisTypes.map((item) => ({ value: item.diagnosisTypeId, label: item.diagnosisTypeName }))}
+          placeholder="All diagnosis types"
+        />
         <label htmlFor="historyFromDate" className="toolbar-date-label">From</label>
         <input id="historyFromDate" type="date" value={fromDate} max={toDate || undefined} onChange={(e) => setFromDate(e.target.value)} />
         <label htmlFor="historyToDate" className="toolbar-date-label">To</label>
