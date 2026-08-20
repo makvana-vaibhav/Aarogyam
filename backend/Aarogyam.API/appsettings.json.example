@@ -27,6 +27,11 @@
     "BasePath": "Storage"
   },
 
+  "StressTest": {
+    "Enabled": false,
+    "MaxSizeMb": 100
+  },
+
   "Logging": {
     "LogLevel": {
       "Default": "Information",
