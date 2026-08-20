@@ -26,6 +26,7 @@ public interface IDoctorRepository
     Task<List<NotificationRow>> GetNotificationsAsync(int userId, bool unreadOnly);
     Task<SimpleResult?> MarkNotificationReadAsync(int notificationId, int userId);
     Task<VisitManageResult?> CreateVisitAsync(int doctorId, CreateVisitRequest request);
+    Task<VisitManageResult?> DeleteVisitAsync(int doctorId, int visitId);
     Task<DiagnosisManageResult?> CreateDiagnosisAsync(int doctorId, CreateDiagnosisRequest request);
     Task<PrescriptionManageResult?> CreatePrescriptionAsync(int doctorId, CreatePrescriptionRequest request);
     Task<MedicalReportManageResult?> UploadReportAsync(int doctorId, int uploadedByUserId, DoctorUploadReportRequest request, string filePath, int fileSize);

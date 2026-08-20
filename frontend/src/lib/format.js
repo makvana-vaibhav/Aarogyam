@@ -1,18 +1,32 @@
 // Shared formatting helpers, ported from {Patient,Doctor,Admin}Util in the original app.
 // escapeHtml isn't needed — JSX escapes text content automatically.
 
+// The app is India-only, so every timestamp is always shown in IST with a 12-hour
+// AM/PM clock - regardless of the viewer's device locale/timezone settings, which
+// would otherwise silently render times in the browser's own local zone/format.
+const IST_TIME_ZONE = "Asia/Kolkata";
+
 export function formatDate(value) {
   if (!value) return "—";
   const date = new Date(value);
   if (isNaN(date.getTime())) return "—";
-  return date.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+  return date.toLocaleDateString("en-IN", { year: "numeric", month: "short", day: "numeric", timeZone: IST_TIME_ZONE });
 }
 
 export function formatDateTime(value) {
   if (!value) return "—";
   const date = new Date(value);
   if (isNaN(date.getTime())) return "—";
-  return date.toLocaleString(undefined, { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+  const formatted = date.toLocaleString("en-IN", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+    timeZone: IST_TIME_ZONE
+  });
+  return formatted + " IST";
 }
 
 export function formatRelativeTime(value) {

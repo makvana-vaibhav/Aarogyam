@@ -23,6 +23,9 @@ public class DoctorController : ControllerBase
     private static readonly string[] AllowedProfilePictureExtensions = { ".jpg", ".jpeg", ".png", ".webp" };
     private const long MaxProfilePictureSizeBytes = 3 * 1024 * 1024;
 
+    private static readonly string[] AllowedReportExtensions = { ".pdf", ".jpg", ".jpeg", ".png", ".doc", ".docx" };
+    private const long MaxReportSizeBytes = 20 * 1024 * 1024;
+
     public DoctorController(
         IDoctorRepository doctorRepository,
         IFileStorageService fileStorage,
@@ -220,6 +223,28 @@ public class DoctorController : ControllerBase
         return BadRequest(result);
     }
 
+    // Rollback used by the frontend when a later step of the create-visit wizard (diagnosis,
+    // prescription, or report upload) fails after the visit itself was already created - keeps
+    // the wizard's "all or nothing" feel instead of leaving an orphaned, empty visit behind.
+    // Diagnoses/prescriptions attached to this visit cascade-delete with it; if a report was
+    // somehow already attached, the DB delete is rejected (FK) rather than silently losing data.
+    [HttpDelete("visits/{id:int}")]
+    public async Task<IActionResult> DeleteVisit(int id)
+    {
+        var doctor = await GetCurrentDoctorAsync();
+        if (doctor is null) return NotFound(new { success = 0, message = "Doctor profile not found." });
+
+        var result = await _doctorRepository.DeleteVisitAsync(doctor.DoctorId, id);
+        if (result?.Success != 1)
+        {
+            if (result is not null) result.Message = DbErrorMessageMapper.Friendly(result.Message);
+            return BadRequest(result);
+        }
+
+        await _auditLogRepository.LogAsync(GetCurrentUserId(), "DELETE_VISIT", "Visits", id);
+        return Ok(result);
+    }
+
     // Called once by the frontend after the whole create-visit submission finishes
     // (visit, plus whichever of diagnosis/prescription/report were included) so the
     // patient gets exactly ONE "new visit" notification/email per submission, not one
@@ -277,14 +302,24 @@ public class DoctorController : ControllerBase
     }
 
     [HttpPost("reports")]
-    [RequestSizeLimit(25 * 1024 * 1024)]
+    [RequestSizeLimit(21 * 1024 * 1024)]
     public async Task<IActionResult> UploadReport([FromForm] DoctorUploadReportRequest request)
     {
         var doctor = await GetCurrentDoctorAsync();
         if (doctor is null) return NotFound(new { success = 0, message = "Doctor profile not found." });
         if (request.File.Length == 0) return BadRequest(new { success = 0, message = "File is empty." });
 
-        var extension = Path.GetExtension(request.File.FileName);
+        var extension = Path.GetExtension(request.File.FileName).ToLowerInvariant();
+        if (!AllowedReportExtensions.Contains(extension))
+        {
+            return BadRequest(new { success = 0, message = "Please upload a PDF, JPG, PNG, DOC, or DOCX file." });
+        }
+
+        if (request.File.Length > MaxReportSizeBytes)
+        {
+            return BadRequest(new { success = 0, message = "Report file must be smaller than 20 MB." });
+        }
+
         var storedFileName = $"{Guid.NewGuid()}{extension}";
 
         string relativePath;

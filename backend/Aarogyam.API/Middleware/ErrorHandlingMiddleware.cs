@@ -60,6 +60,16 @@ public class ErrorHandlingMiddleware
                 : "Unable to complete the requested operation. Please verify your details.";
             context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
         }
+        else if (exception is Microsoft.AspNetCore.Http.BadHttpRequestException badRequestEx)
+        {
+            // Thrown by Kestrel while reading the request body/multipart form (e.g. a file
+            // upload past [RequestSizeLimit]) - happens during model binding, before the
+            // action runs, so it never reaches the per-endpoint size checks.
+            context.Response.StatusCode = badRequestEx.StatusCode;
+            userFriendlyMessage = badRequestEx.StatusCode == (int)HttpStatusCode.RequestEntityTooLarge
+                ? "The uploaded file is too large. Please upload a file under 20 MB."
+                : "The request could not be processed. Please check your input and try again.";
+        }
 
         var responseObj = new
         {
