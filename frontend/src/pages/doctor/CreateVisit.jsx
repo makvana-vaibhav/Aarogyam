@@ -38,18 +38,18 @@ export default function CreateVisit() {
 
   const [visitDate, setVisitDate] = useState(() => toLocalDatetimeValue(new Date()));
   const [visitNotes, setVisitNotes] = useState("");
-
-  const [diagnosisOpen, setDiagnosisOpen] = useState(false);
+  const [diagnosisOpen, setDiagnosisOpen] = useState(true);
   const [diagnosisTypeId, setDiagnosisTypeId] = useState("");
   const [diagnosisTitle, setDiagnosisTitle] = useState("");
   const [diagnosisDescription, setDiagnosisDescription] = useState("");
 
-  const [prescriptionOpen, setPrescriptionOpen] = useState(false);
+  const [prescriptionOpen, setPrescriptionOpen] = useState(true);
   const [prescriptionText, setPrescriptionText] = useState("");
 
-  const [reportOpen, setReportOpen] = useState(false);
+  const [reportOpen, setReportOpen] = useState(true);
   const [reportTitle, setReportTitle] = useState("");
   const [reportType, setReportType] = useState("");
+  const [reportFileError, setReportFileError] = useState(null);
   const reportFileRef = useRef(null);
 
   const [invalid, setInvalid] = useState({});
@@ -72,6 +72,26 @@ export default function CreateVisit() {
   useEffect(() => {
     DoctorAPI.diagnosisTypes().then(setDiagnosisTypes).catch(() => {});
   }, []);
+
+  function handleFileChange(e) {
+    const file = e.target.files?.[0];
+    setReportFileError(null);
+    setInvalid((v) => ({ ...v, rowReportFile: false }));
+    if (file) {
+      const ext = file.name.slice(file.name.lastIndexOf(".")).toLowerCase();
+      const allowed = [".pdf", ".png", ".jpg", ".jpeg", ".doc", ".docx"];
+      if (!allowed.includes(ext)) {
+        setReportFileError("Please select correct file format and size (PDF, PNG, JPG, JPEG, DOC, DOCX).");
+        setInvalid((v) => ({ ...v, rowReportFile: true }));
+        return;
+      }
+      if (file.size > 20 * 1024 * 1024) {
+        setReportFileError("Please select correct file format and size (Max file size 20 MB).");
+        setInvalid((v) => ({ ...v, rowReportFile: true }));
+        return;
+      }
+    }
+  }
 
   function selectPatient(patient) {
     if (!patient) return;
@@ -221,6 +241,7 @@ export default function CreateVisit() {
   function handleSubmit(e) {
     e.preventDefault();
     setFlowAlert(null);
+    setReportFileError(null);
 
     if (!foundPatient) {
       setFlowAlert("Please find and choose a patient first.");
@@ -230,11 +251,51 @@ export default function CreateVisit() {
 
     const reportFile = reportFileRef.current?.files[0];
     const visitDateValid = !!visitDate;
-    const diagnosisTypeValid = !diagnosisOpen || !!diagnosisTypeId;
-    const diagnosisTitleValid = !diagnosisOpen || !!diagnosisTitle.trim();
-    const prescriptionValid = !prescriptionOpen || !!prescriptionText.trim();
-    const reportTitleValid = !reportOpen || !!reportTitle.trim();
-    const reportFileValid = !reportOpen || !!reportFile;
+
+    // Diagnosis validation: if user enters diagnosis info or leaves fields partially filled
+    const hasDiagnosisInput = !!diagnosisTypeId || !!diagnosisTitle.trim() || !!diagnosisDescription.trim();
+    const shouldSaveDiagnosis = diagnosisOpen && (hasDiagnosisInput || !!diagnosisTypeId || !!diagnosisTitle.trim());
+    let diagnosisTypeValid = true;
+    let diagnosisTitleValid = true;
+    if (shouldSaveDiagnosis) {
+      diagnosisTypeValid = !!diagnosisTypeId;
+      diagnosisTitleValid = !!diagnosisTitle.trim();
+    }
+
+    // Prescription validation
+    const hasPrescriptionInput = !!prescriptionText.trim();
+    const shouldSavePrescription = prescriptionOpen && hasPrescriptionInput;
+    let prescriptionValid = true;
+
+    // Report validation: if title, type, or file is selected
+    const hasReportInput = !!reportTitle.trim() || !!reportType.trim() || !!reportFile;
+    const shouldSaveReport = reportOpen && (hasReportInput || !!reportTitle.trim() || !!reportFile);
+    let reportTitleValid = true;
+    let reportFileValid = true;
+    let reportFileSizeValid = true;
+
+    if (shouldSaveReport) {
+      reportTitleValid = !!reportTitle.trim();
+      reportFileValid = !!reportFile;
+
+      if (reportFile) {
+        const ext = reportFile.name.slice(reportFile.name.lastIndexOf(".")).toLowerCase();
+        const allowed = [".pdf", ".png", ".jpg", ".jpeg", ".doc", ".docx"];
+        if (!allowed.includes(ext) || reportFile.size > 20 * 1024 * 1024) {
+          reportFileSizeValid = false;
+          setReportFileError("Please select correct file format and size (Max 20 MB).");
+        }
+      }
+    }
+
+    const isAllValid =
+      visitDateValid &&
+      diagnosisTypeValid &&
+      diagnosisTitleValid &&
+      prescriptionValid &&
+      reportTitleValid &&
+      reportFileValid &&
+      reportFileSizeValid;
 
     setInvalid({
       rowVisitDate: !visitDateValid,
@@ -242,18 +303,26 @@ export default function CreateVisit() {
       rowDiagnosisTitle: !diagnosisTitleValid,
       rowPrescriptionText: !prescriptionValid,
       rowReportTitle: !reportTitleValid,
-      rowReportFile: !reportFileValid
+      rowReportFile: !reportFileValid || !reportFileSizeValid
     });
 
-    if (!visitDateValid || !diagnosisTypeValid || !diagnosisTitleValid || !prescriptionValid || !reportTitleValid || !reportFileValid) {
-      setFlowAlert("Please fix the highlighted fields.");
+    if (!isAllValid) {
+      if (!diagnosisTypeValid || !diagnosisTitleValid) setDiagnosisOpen(true);
+      if (!prescriptionValid) setPrescriptionOpen(true);
+      if (!reportTitleValid || !reportFileValid || !reportFileSizeValid) setReportOpen(true);
+
+      if (!reportFileSizeValid) {
+        setFlowAlert("Please select correct file format and size (Max 20 MB).");
+      } else {
+        setFlowAlert("Please fill in all required fields and correct the highlighted errors before saving.");
+      }
       return;
     }
 
-    submitVisit(reportFile);
+    submitVisit(reportFile, shouldSaveDiagnosis, shouldSavePrescription, shouldSaveReport);
   }
 
-  async function submitVisit(reportFile) {
+  async function submitVisit(reportFile, shouldSaveDiagnosis, shouldSavePrescription, shouldSaveReport) {
     const patientIdVal = foundPatient.patientId;
     const visitDateOnly = visitDate.split("T")[0];
     setSubmitting(true);
@@ -267,7 +336,7 @@ export default function CreateVisit() {
       });
 
       let diagnosisId = null;
-      if (diagnosisOpen) {
+      if (shouldSaveDiagnosis && diagnosisTypeId && diagnosisTitle.trim()) {
         const diagnosis = await DoctorAPI.createDiagnosis({
           visitId: visit.visitId,
           diagnosisTypeId: Number(diagnosisTypeId),
@@ -278,7 +347,7 @@ export default function CreateVisit() {
         diagnosisId = diagnosis.diagnosisId;
       }
 
-      if (prescriptionOpen) {
+      if (shouldSavePrescription && prescriptionText.trim()) {
         await DoctorAPI.createPrescription({
           visitId: visit.visitId,
           diagnosisId,
@@ -287,7 +356,7 @@ export default function CreateVisit() {
         });
       }
 
-      if (reportOpen) {
+      if (shouldSaveReport && reportTitle.trim() && reportFile) {
         const formData = new FormData();
         formData.append("PatientId", patientIdVal);
         formData.append("VisitId", visit.visitId);
@@ -350,119 +419,103 @@ export default function CreateVisit() {
       {flowAlert ? <div ref={flowAlertRef} id="flowAlert" className="form-alert error" tabIndex={-1} style={{ outline: "none" }}>{flowAlert}</div> : null}
 
       {step === 1 ? (
-        <section className="wizard-panel card" id="panelStep1">
-          <div className="card-title">Find patient</div>
-          <div className="card-sub">Type the patient's name, full or partial Aarogyam ID, or scan their Health Card QR Code. Click any matching patient to continue.</div>
-          
-          <div className={"form-row" + (invalid.rowSearch ? " invalid" : "")} id="rowSearchPatient">
-            <label htmlFor="patientSearchInput">Search patient<span className="req">*</span></label>
-            <div className="lookup-row">
-              <input
-                id="patientSearchInput"
-                placeholder="Type name (e.g. Vaibhav) or ID (e.g. 000010, ARG-2026)…"
-                autoComplete="off"
-                value={searchQuery}
-                onChange={handleQueryChange}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    handleFindClick();
-                  }
-                }}
-              />
-              <div className="lookup-actions">
-                <button className="btn btn-solid" id="lookupBtn" type="button" onClick={handleFindClick}>Find patient</button>
-                <button className="btn btn-ghost" id="scanQrBtn" type="button" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }} onClick={handleScan}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /><path d="M14 14h3v3h-3z" /><path d="M17 17h4v4h-4z" /></svg>
-                  Scan QR
+        <section className="wizard-panel" id="step1Panel">
+          <div className="card">
+            <div className="card-title">Find patient</div>
+            <div className="card-sub">Type the patient's name, full or partial Aarogyam ID, or scan their Health Card QR Code. Click any matching patient to continue.</div>
+
+            <div className={"form-row" + (invalid.rowSearch ? " invalid" : "")} id="rowSearch">
+              <label htmlFor="searchQuery">Search patient<span className="req">*</span></label>
+              <div className="search-input-wrap">
+                <input
+                  id="searchQuery"
+                  type="text"
+                  placeholder="e.g. Vaibhav Makvana or ARG-2026-000001"
+                  value={searchQuery}
+                  onChange={handleQueryChange}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleFindClick();
+                    }
+                  }}
+                />
+                <button className="btn btn-solid" id="findPatientBtn" type="button" onClick={handleFindClick}>
+                  Find patient
                 </button>
               </div>
+              <div className="field-error">Please enter a patient name or Aarogyam ID.</div>
             </div>
-            <div className="field-error">Please enter a patient name or Aarogyam ID.</div>
-          </div>
 
-          <div id="lookupResult">
-            {searchLoading ? (
-              <div className="table-loading" style={{ margin: "14px 0" }}>Searching patients…</div>
-            ) : searchError ? (
-              <div className="form-alert error" style={{ marginTop: "14px" }}>{searchError}</div>
-            ) : null}
+            <div id="lookupResult">
+              {searchLoading ? (
+                <div className="table-loading" style={{ margin: "14px 0" }}>Searching patients…</div>
+              ) : searchError ? (
+                <div className="form-alert error" style={{ marginTop: "14px" }}>{searchError}</div>
+              ) : null}
 
-            {/* Live Search Results List */}
-            {searchResults.length > 0 ? (
-              <div className="patient-search-results">
-                <div style={{ fontSize: "12.5px", fontWeight: 600, color: "var(--ink-soft)", textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: "4px" }}>
-                  Select a matching patient ({searchResults.length}):
-                </div>
-                {searchResults.map((p) => (
-                  <button
-                    key={p.patientId}
-                    type="button"
-                    className="patient-search-card"
-                    onClick={() => selectPatient(p)}
-                  >
-                    <div className="avatar-circle small">{initials(p.firstName, p.lastName)}</div>
-                    <div className="pf-main">
-                      <div className="pf-name">{joinName(p)}</div>
-                      <div className="pf-meta">
-                        <span className="mono" style={{ color: "var(--accent)", fontWeight: 600 }}>{p.aarogyamId}</span>
-                        <span>•</span>
-                        <span>{p.gender || "Gender unrecorded"}</span>
-                        <span>•</span>
-                        <span>Blood: {p.bloodGroup || "Not set"}</span>
-                        {p.email ? (
-                          <>
-                            <span>•</span>
-                            <span>{p.email}</span>
-                          </>
-                        ) : null}
-                        {p.emergencyContact ? (
-                          <>
-                            <span>•</span>
-                            <span>Emergency: {p.emergencyContact}</span>
-                          </>
-                        ) : null}
-                      </div>
-                    </div>
-                    <div className="pf-action">
-                      Select &amp; continue →
-                    </div>
-                  </button>
-                ))}
-              </div>
-            ) : null}
-
-            {/* Selected Patient Banner if already chosen */}
-            {foundPatient && searchResults.length === 0 && !searchLoading ? (
-              <div className="patient-found-card">
-                <div className="avatar-circle small">{initials(foundPatient.firstName, foundPatient.lastName)}</div>
-                <div className="pf-main">
-                  <div className="row-title" style={{ fontSize: "15px", fontWeight: 600 }}>{joinName(foundPatient)} (Selected)</div>
-                  <div className="row-sub mono" style={{ fontSize: "13px", marginTop: "2px" }}>
-                    {foundPatient.aarogyamId} • {foundPatient.gender} • {foundPatient.bloodGroup || "Blood group not set"}{foundPatient.email ? " • " + foundPatient.email : ""}
+              {searchResults.length > 0 ? (
+                <div className="patient-search-results">
+                  <div style={{ fontSize: "12.5px", fontWeight: 600, color: "var(--ink-soft)", textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: "4px" }}>
+                    Select a matching patient ({searchResults.length}):
                   </div>
+                  {searchResults.map((p) => (
+                    <button
+                      key={p.patientId}
+                      type="button"
+                      className="patient-search-card"
+                      onClick={() => selectPatient(p)}
+                    >
+                      <div className="avatar-circle small">{initials(p.firstName, p.lastName)}</div>
+                      <div className="pf-main">
+                        <div className="pf-name">{joinName(p)}</div>
+                        <div className="pf-meta">
+                          <span className="mono" style={{ color: "var(--accent)", fontWeight: 600 }}>{p.aarogyamId}</span>
+                          <span>•</span>
+                          <span>{p.gender || "Gender unrecorded"}</span>
+                          <span>•</span>
+                          <span>Blood: {p.bloodGroup || "Not set"}</span>
+                          {p.email ? (
+                            <>
+                              <span>•</span>
+                              <span>{p.email}</span>
+                            </>
+                          ) : null}
+                          {p.emergencyContact ? (
+                            <>
+                              <span>•</span>
+                              <span>Emergency: {p.emergencyContact}</span>
+                            </>
+                          ) : null}
+                        </div>
+                      </div>
+                      <div className="pf-action">
+                        Select &amp; continue →
+                      </div>
+                    </button>
+                  ))}
                 </div>
-                <button
-                  className="btn btn-solid btn-sm"
-                  type="button"
-                  onClick={() => goToStep(2)}
-                >
-                  Continue →
-                </button>
-              </div>
-            ) : null}
-          </div>
+              ) : null}
 
-          <div className="modal-actions" style={{ justifyContent: "flex-start", marginTop: "18px" }}>
-            <button
-              className="btn btn-solid"
-              id="continueToStep2"
-              type="button"
-              disabled={!foundPatient}
-              onClick={() => goToStep(2)}
-            >
-              Continue to visit details
-            </button>
+              {foundPatient && searchResults.length === 0 && !searchLoading ? (
+                <div className="patient-found-card">
+                  <div className="avatar-circle small">{initials(foundPatient.firstName, foundPatient.lastName)}</div>
+                  <div className="pf-main">
+                    <div className="row-title" style={{ fontSize: "15px", fontWeight: 600 }}>{joinName(foundPatient)} (Selected)</div>
+                    <div className="row-sub mono" style={{ fontSize: "13px", marginTop: "2px" }}>
+                      {foundPatient.aarogyamId} • {foundPatient.gender} • {foundPatient.bloodGroup || "Blood group not set"}{foundPatient.email ? " • " + foundPatient.email : ""}
+                    </div>
+                  </div>
+                  <button
+                    className="btn btn-solid btn-sm"
+                    type="button"
+                    onClick={() => goToStep(2)}
+                  >
+                    Continue →
+                  </button>
+                </div>
+              ) : null}
+            </div>
           </div>
         </section>
       ) : null}
@@ -571,8 +624,11 @@ export default function CreateVisit() {
               </div>
               <div className={"form-row" + (invalid.rowReportFile ? " invalid" : "")} id="rowReportFile">
                 <label htmlFor="reportFile">Report file (PDF, image, or Word doc)<span className="req">*</span></label>
-                <input ref={reportFileRef} id="reportFile" type="file" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx" />
-                <div className="field-error">Select a report file to upload.</div>
+                <input ref={reportFileRef} id="reportFile" type="file" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx" onChange={handleFileChange} />
+                <div className="field-hint" style={{ fontSize: "12.5px", color: "var(--ink-soft)", marginTop: "4px" }}>
+                  Max file size limit: <strong>20 MB</strong>. Supported formats: PDF, PNG, JPG, JPEG, DOC, DOCX.
+                </div>
+                <div className="field-error">{reportFileError || "Select a report file to upload."}</div>
               </div>
             </div>
           </div>

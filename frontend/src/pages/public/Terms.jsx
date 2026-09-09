@@ -6,7 +6,7 @@ export default function Terms() {
 
   return (
     <>
-      <section className="page-head">
+      <section className="page-head legal-head">
         <div className="wrap">
           <span className="eyebrow">Legal</span>
           <h1>Terms of use</h1>
@@ -14,7 +14,7 @@ export default function Terms() {
         </div>
       </section>
 
-      <section className="section">
+      <section className="section legal-section">
         <div className="wrap prose">
           <p>These terms govern your use of the Aarogyam platform. By creating an account or using the service, you agree to them. They are written to be read, not skimmed: they are short.</p>
 

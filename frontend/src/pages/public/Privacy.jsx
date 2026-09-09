@@ -6,7 +6,7 @@ export default function Privacy() {
 
   return (
     <>
-      <section className="page-head">
+      <section className="page-head legal-head">
         <div className="wrap">
           <span className="eyebrow">Legal</span>
           <h1>Privacy policy</h1>
@@ -14,7 +14,7 @@ export default function Privacy() {
         </div>
       </section>
 
-      <section className="section">
+      <section className="section legal-section">
         <div className="wrap prose">
           <p>Aarogyam exists to hold some of the most sensitive information a person has. This policy explains, in plain language, what we collect, why we collect it, and what we will and will not do with it.</p>
 

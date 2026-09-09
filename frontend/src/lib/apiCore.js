@@ -64,6 +64,9 @@ function sanitizeDbError(raw) {
 // { title, errors: { Field: ["..."] } } instead of our own { success, message } shape -
 // without this, every validation failure would show a bare "Request failed (400)".
 function extractErrorMessage(data, status) {
+  if (status === 413) {
+    return "File size exceeds limit (Max 20 MB). Please select correct file format and size.";
+  }
   let msg = "Something went wrong. Please try again.";
   if (data) {
     if (data.message) msg = data.message;
