@@ -100,6 +100,18 @@ export default function Reports() {
       setUploadAlert("Please enter report details and choose a file.");
       return;
     }
+
+    if (selectedFile.size > 20 * 1024 * 1024) {
+      setUploadAlert("Please select correct file format and size (Max 20 MB).");
+      return;
+    }
+
+    const ext = selectedFile.name.slice(selectedFile.name.lastIndexOf(".")).toLowerCase();
+    const allowedExts = [".pdf", ".png", ".jpg", ".jpeg", ".doc", ".docx"];
+    if (!allowedExts.includes(ext)) {
+      setUploadAlert("Please select correct file format and size (PDF, PNG, JPG, JPEG, DOC, DOCX).");
+      return;
+    }
     const formData = new FormData();
     formData.append("Title", title.trim());
     formData.append("ReportType", reportType.trim());
@@ -273,6 +285,7 @@ export default function Reports() {
                   />
                   <span>Drop a file here or click to browse.</span>
                   <div className="filename" id="reportFilename">{selectedFile ? selectedFile.name : "No file selected"}</div>
+                  <div className="drop-sub" style={{ marginTop: "6px", fontSize: "12px", color: "var(--ink-soft)" }}>Max file size limit: 20 MB (PDF, PNG, JPG, JPEG, DOC, DOCX)</div>
                 </label>
               </div>
               <div className="modal-actions">

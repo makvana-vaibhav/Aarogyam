@@ -142,10 +142,22 @@ export default function Home() {
               <h3>Own your record</h3>
               <p>Your history stops depending on which hospital filed it.</p>
               <ul>
-                <li>Lifelong Aarogyam ID &amp; QR card</li>
-                <li>Upload and download reports</li>
-                <li>Full prescription history</li>
-                <li>Chronological health timeline</li>
+                <li>
+                  <svg className="role-check-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M4.5 10l3.5 3.5L15.5 6" /></svg>
+                  <span>Lifelong Aarogyam ID &amp; QR card</span>
+                </li>
+                <li>
+                  <svg className="role-check-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M4.5 10l3.5 3.5L15.5 6" /></svg>
+                  <span>Upload and download reports</span>
+                </li>
+                <li>
+                  <svg className="role-check-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M4.5 10l3.5 3.5L15.5 6" /></svg>
+                  <span>Full prescription history</span>
+                </li>
+                <li>
+                  <svg className="role-check-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M4.5 10l3.5 3.5L15.5 6" /></svg>
+                  <span>Chronological health timeline</span>
+                </li>
               </ul>
             </div>
 
@@ -154,10 +166,22 @@ export default function Home() {
               <h3>Treat with context</h3>
               <p>The patient's full history before the consultation starts.</p>
               <ul>
-                <li>Find patients by ID or QR scan</li>
-                <li>Review complete medical history</li>
-                <li>Record diagnoses per visit</li>
-                <li>Issue prescriptions as PDF</li>
+                <li>
+                  <svg className="role-check-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M4.5 10l3.5 3.5L15.5 6" /></svg>
+                  <span>Find patients by ID or QR scan</span>
+                </li>
+                <li>
+                  <svg className="role-check-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M4.5 10l3.5 3.5L15.5 6" /></svg>
+                  <span>Review complete medical history</span>
+                </li>
+                <li>
+                  <svg className="role-check-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M4.5 10l3.5 3.5L15.5 6" /></svg>
+                  <span>Record diagnoses per visit</span>
+                </li>
+                <li>
+                  <svg className="role-check-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M4.5 10l3.5 3.5L15.5 6" /></svg>
+                  <span>Issue prescriptions as PDF</span>
+                </li>
               </ul>
             </div>
 
@@ -166,10 +190,22 @@ export default function Home() {
               <h3>Keep it trustworthy</h3>
               <p>Verification and oversight for the whole platform.</p>
               <ul>
-                <li>Approve doctors by licence &amp; degree</li>
-                <li>Manage patient and doctor accounts</li>
-                <li>Monitor platform activity</li>
-                <li>Platform-wide statistics</li>
+                <li>
+                  <svg className="role-check-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M4.5 10l3.5 3.5L15.5 6" /></svg>
+                  <span>Approve doctors by licence &amp; degree</span>
+                </li>
+                <li>
+                  <svg className="role-check-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M4.5 10l3.5 3.5L15.5 6" /></svg>
+                  <span>Manage patient and doctor accounts</span>
+                </li>
+                <li>
+                  <svg className="role-check-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M4.5 10l3.5 3.5L15.5 6" /></svg>
+                  <span>Monitor platform activity</span>
+                </li>
+                <li>
+                  <svg className="role-check-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M4.5 10l3.5 3.5L15.5 6" /></svg>
+                  <span>Platform-wide statistics</span>
+                </li>
               </ul>
             </div>
           </div>

@@ -194,26 +194,26 @@ public class PatientController : ControllerBase
     }
 
     [HttpPost("reports")]
-    [RequestSizeLimit(21 * 1024 * 1024)]
+    [RequestSizeLimit(35 * 1024 * 1024)]
     public async Task<IActionResult> UploadReport([FromForm] UploadReportRequest request)
     {
         var patient = await GetCurrentPatientAsync();
         if (patient is null) return PatientNotFound();
 
-        if (request.File.Length == 0)
+        if (request.File == null || request.File.Length == 0)
         {
-            return BadRequest(new { success = 0, message = "File is empty." });
+            return BadRequest(new { success = 0, message = "Please select a valid report file." });
         }
 
         var extension = Path.GetExtension(request.File.FileName).ToLowerInvariant();
         if (!AllowedReportExtensions.Contains(extension))
         {
-            return BadRequest(new { success = 0, message = "Please upload a PDF, JPG, PNG, DOC, or DOCX file." });
+            return BadRequest(new { success = 0, message = "Please select correct file format and size (PDF, JPG, PNG, DOC, or DOCX)." });
         }
 
         if (request.File.Length > MaxReportSizeBytes)
         {
-            return BadRequest(new { success = 0, message = "Report file must be smaller than 20 MB." });
+            return BadRequest(new { success = 0, message = "Please select correct file format and size (Max 20 MB)." });
         }
 
         var storedFileName = $"{Guid.NewGuid()}{extension}";
